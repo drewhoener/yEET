@@ -25,6 +25,21 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>React App</title>
+
+    <!---
+    Lazy-Load fonts so we're not caught up downloading fonts all the time
+    -->
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+      WebFont.load({
+        google: {
+          families: [
+                  'Roboto:300,400,500,700',
+                  'Material Icons'
+          ]
+        }
+      });
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
