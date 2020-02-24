@@ -42,7 +42,8 @@ const useStyles = makeStyles(theme => ({
     },
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
-        width: drawerWidth
+        width: drawerWidth,
+        background: '#777777'
     },
     content: {
         flexGrow: 1,
@@ -104,22 +105,20 @@ export default function ResponsiveNav(props) {
     return (
         <React.Fragment>
             <CssBaseline/>
-            <ElevationScroll {...props}>
-                <AppBar className={classes.appBar}>
-                    <Toolbar>
-                        <IconButton
-                            color="inherit"
-                            aria-label="Open Menu Drawer"
-                            edge="start"
-                            className={classes.menuButton}
-                            onClick={onDrawerToggle}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography variant={"h4"}>yEET</Typography>
-                    </Toolbar>
-                </AppBar>
-            </ElevationScroll>
+            <AppBar position='fixed' className={classes.appBar}>
+                <Toolbar>
+                    <IconButton
+                        color="inherit"
+                        aria-label="Open Menu Drawer"
+                        edge="start"
+                        className={classes.menuButton}
+                        onClick={onDrawerToggle}
+                    >
+                        <MenuIcon/>
+                    </IconButton>
+                    <Typography variant={"h4"}>yEET</Typography>
+                </Toolbar>
+            </AppBar>
             <nav className={classes.drawer} aria-label="review navigation menu">
                 {/*This drawer will not exist on screens greater than xs*/}
                 <Hidden smUp implementation='css'>
@@ -146,8 +145,11 @@ export default function ResponsiveNav(props) {
                             paper: classes.drawerPaper
                         }}
                         variant='permanent'
+                        PaperProps={{
+                            elevation: 3
+                        }}
                         open
-                        >
+                    >
                         {drawer}
                     </Drawer>
                 </Hidden>
