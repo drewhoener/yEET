@@ -20,6 +20,9 @@ import Drawer from "@material-ui/core/Drawer";
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
+    root: {
+        display: 'flex'
+    },
     drawer: {
         [theme.breakpoints.up('sm')]: {
             width: drawerWidth,
@@ -29,8 +32,9 @@ const useStyles = makeStyles(theme => ({
     appBar: {
         //At every breakpoint from small up set the width to be an offset from the always-open drawer
         [theme.breakpoints.up('sm')]: {
-            width: `calc(100% - ${drawerWidth}px)`,
-            marginLeft: drawerWidth
+            //width: `calc(100% - ${drawerWidth}px)`,
+            //marginLeft: drawerWidth,
+            zIndex: theme.zIndex.drawer + 1
         }
     },
     menuButton: {
@@ -43,11 +47,6 @@ const useStyles = makeStyles(theme => ({
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
         width: drawerWidth,
-        background: '#777777'
-    },
-    content: {
-        flexGrow: 1,
-        padding: theme.spacing(3)
     }
 }));
 
@@ -60,7 +59,7 @@ function ElevationScroll(props) {
     });
 
     return React.cloneElement(children, {
-        elevation: trigger ? 4 : 0
+        elevation: trigger ? 5 : 2
     });
 }
 
@@ -80,7 +79,7 @@ export default function ResponsiveNav(props) {
     };
 
     const drawerItems = {
-        'My Reviews': (<RateReview />),
+        'My Reviews': (<RateReview/>),
         'My Account': (<AccountBox/>)
     };
 
@@ -93,7 +92,7 @@ export default function ResponsiveNav(props) {
                 {
                     Object.entries(drawerItems).map(([key, value]) => (
                         <ListItem button key={key.toLowerCase().replace(' ', '_')}>
-                           <ListItemIcon>{React.cloneElement(value)}</ListItemIcon>
+                            <ListItemIcon>{React.cloneElement(value)}</ListItemIcon>
                             <ListItemText primary={key}/>
                         </ListItem>
                     ))
@@ -105,20 +104,22 @@ export default function ResponsiveNav(props) {
     return (
         <React.Fragment>
             <CssBaseline/>
-            <AppBar position='fixed' className={classes.appBar}>
-                <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="Open Menu Drawer"
-                        edge="start"
-                        className={classes.menuButton}
-                        onClick={onDrawerToggle}
-                    >
-                        <MenuIcon/>
-                    </IconButton>
-                    <Typography variant={"h4"}>yEET</Typography>
-                </Toolbar>
-            </AppBar>
+            <ElevationScroll {...props}>
+                <AppBar className={classes.appBar}>
+                    <Toolbar>
+                        <IconButton
+                            color="inherit"
+                            aria-label="Open Menu Drawer"
+                            edge="start"
+                            className={classes.menuButton}
+                            onClick={onDrawerToggle}
+                        >
+                            <MenuIcon/>
+                        </IconButton>
+                        <Typography variant={"h4"}>yEET</Typography>
+                    </Toolbar>
+                </AppBar>
+            </ElevationScroll>
             <nav className={classes.drawer} aria-label="review navigation menu">
                 {/*This drawer will not exist on screens greater than xs*/}
                 <Hidden smUp implementation='css'>
@@ -134,7 +135,7 @@ export default function ResponsiveNav(props) {
                         ModalProps={{
                             keepMounted: true //Apparently this performs better on mobile
                         }}
-                        >
+                    >
                         {drawer}
                     </Drawer>
                 </Hidden>
@@ -146,7 +147,7 @@ export default function ResponsiveNav(props) {
                         }}
                         variant='permanent'
                         PaperProps={{
-                            elevation: 3
+                            elevation: 0
                         }}
                         open
                     >
@@ -154,7 +155,6 @@ export default function ResponsiveNav(props) {
                     </Drawer>
                 </Hidden>
             </nav>
-            <Toolbar/>
         </React.Fragment>
     )
 }
