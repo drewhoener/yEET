@@ -10,13 +10,12 @@ import MenuIcon from '@material-ui/icons/Menu';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import useTheme from "@material-ui/core/styles/useTheme";
 import List from "@material-ui/core/List";
-import {AccountBox, RateReview} from "@material-ui/icons";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
+import {AccountBox, AccountCircle, RateReview} from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
 import Hidden from "@material-ui/core/Hidden";
 import Drawer from "@material-ui/core/Drawer";
+import Button from "@material-ui/core/Button";
+import RoutedListItem from "./RoutedListItem";
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -36,6 +35,9 @@ const useStyles = makeStyles(theme => ({
             //marginLeft: drawerWidth,
             zIndex: theme.zIndex.drawer + 1
         }
+    },
+    title: {
+        flexGrow: 1
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -68,7 +70,7 @@ ElevationScroll.propTypes = {
     window: PropTypes.func
 };
 
-export default function ResponsiveNav(props) {
+function ResponsiveNav(props) {
     const {container} = props;
     const classes = useStyles();
     const theme = useTheme();
@@ -79,8 +81,15 @@ export default function ResponsiveNav(props) {
     };
 
     const drawerItems = {
-        'My Reviews': (<RateReview/>),
-        'My Account': (<AccountBox/>)
+        'My Reviews': {
+            path: '/my-reviews',
+            icon: (<RateReview/>)
+        },
+        'My Account': {
+            path: '/account',
+            icon: (<AccountBox/>)
+
+        }
     };
 
     const drawer = (
@@ -91,10 +100,12 @@ export default function ResponsiveNav(props) {
             <List>
                 {
                     Object.entries(drawerItems).map(([key, value]) => (
-                        <ListItem button key={key.toLowerCase().replace(' ', '_')}>
-                            <ListItemIcon>{React.cloneElement(value)}</ListItemIcon>
-                            <ListItemText primary={key}/>
-                        </ListItem>
+                        <RoutedListItem
+                            key={key.toLowerCase().replace(' ', '_')}
+                            icon={React.cloneElement(value.icon)}
+                            primary={key}
+                            to={value.path}
+                        />
                     ))
                 }
             </List>
@@ -116,7 +127,15 @@ export default function ResponsiveNav(props) {
                         >
                             <MenuIcon/>
                         </IconButton>
-                        <Typography variant={"h4"}>yEET</Typography>
+                        <Typography variant={"h4"} className={classes.title}>yEET</Typography>
+                        <Button
+                            variant="contained"
+                            aria-label="Login Menu"
+                            edge="start"
+                            startIcon={<AccountCircle/>}
+                        >
+                            Login
+                        </Button>
                     </Toolbar>
                 </AppBar>
             </ElevationScroll>
@@ -158,3 +177,5 @@ export default function ResponsiveNav(props) {
         </React.Fragment>
     )
 }
+
+export default ResponsiveNav;
