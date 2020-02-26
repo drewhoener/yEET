@@ -10,7 +10,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import useTheme from "@material-ui/core/styles/useTheme";
 import List from "@material-ui/core/List";
-import {AccountBox, AccountCircle, RateReview} from "@material-ui/icons";
+import {AccountBox, AccountCircle, Create, RateReview, Send} from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
 import Hidden from "@material-ui/core/Hidden";
 import Drawer from "@material-ui/core/Drawer";
@@ -85,10 +85,17 @@ function ResponsiveNav(props) {
             path: '/my-reviews',
             icon: (<RateReview/>)
         },
+        'Request Review': {
+            path: '/request',
+            icon: (<Send/>)
+        },
+        'Write Review': {
+            path: '/write',
+            icon: (<Create/>)
+        },
         'My Account': {
             path: '/account',
             icon: (<AccountBox/>)
-
         }
     };
 
