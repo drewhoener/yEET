@@ -102,7 +102,7 @@ function ResponsiveNav(props) {
     const drawer = (
         <div>
             {/*<div className={classes.toolbar} />*/}
-            <Toolbar/>
+            <div className={classes.toolbar}/>
             <Divider/>
             <List>
                 {
@@ -177,6 +177,7 @@ function ResponsiveNav(props) {
                         }}
                         open
                     >
+                        <div className={classes.toolbar}/>
                         {drawer}
                     </Drawer>
                 </Hidden>
