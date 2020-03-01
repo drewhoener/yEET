@@ -10,11 +10,15 @@ import MenuIcon from '@material-ui/icons/Menu';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import useTheme from "@material-ui/core/styles/useTheme";
 import List from "@material-ui/core/List";
-import {AccountBox, Create, House, RateReview, Send} from "@material-ui/icons";
+import {AccountBox, Create, ExitToApp, House, RateReview, Send} from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
 import Hidden from "@material-ui/core/Hidden";
 import Drawer from "@material-ui/core/Drawer";
 import RoutedListItem from "./RoutedListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItem from "@material-ui/core/ListItem";
+import Button from "@material-ui/core/Button";
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -118,6 +122,12 @@ function ResponsiveNav(props) {
                         />
                     ))
                 }
+                <Hidden smUp>
+                    <ListItem button>
+                        <ListItemIcon><ExitToApp/></ListItemIcon>
+                        <ListItemText primary="Logout"/>
+                    </ListItem>
+                </Hidden>
             </List>
         </div>
     );
@@ -138,6 +148,18 @@ function ResponsiveNav(props) {
                             <MenuIcon/>
                         </IconButton>
                         <Typography variant={"h4"} className={classes.title}>yEET</Typography>
+                        {
+                            //TODO Make this integrate better with the whole UI}
+                        }
+                        <Hidden xsDown>
+                            <Button
+                                variant='outlined'
+                                color='default'
+                                endIcon={<ExitToApp/>}
+                            >
+                                Logout
+                            </Button>
+                        </Hidden>
                     </Toolbar>
                 </AppBar>
             </ElevationScroll>
