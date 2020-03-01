@@ -10,11 +10,10 @@ import MenuIcon from '@material-ui/icons/Menu';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import useTheme from "@material-ui/core/styles/useTheme";
 import List from "@material-ui/core/List";
-import {AccountBox, AccountCircle, Create, RateReview, Send} from "@material-ui/icons";
+import {AccountBox, Create, House, RateReview, Send} from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
 import Hidden from "@material-ui/core/Hidden";
 import Drawer from "@material-ui/core/Drawer";
-import Button from "@material-ui/core/Button";
 import RoutedListItem from "./RoutedListItem";
 
 const drawerWidth = 240;
@@ -81,6 +80,10 @@ function ResponsiveNav(props) {
     };
 
     const drawerItems = {
+        'Home': {
+            path: '/home',
+            icon: (<House/>)
+        },
         'My Reviews': {
             path: '/my-reviews',
             icon: (<RateReview/>)
@@ -135,14 +138,6 @@ function ResponsiveNav(props) {
                             <MenuIcon/>
                         </IconButton>
                         <Typography variant={"h4"} className={classes.title}>yEET</Typography>
-                        <Button
-                            variant="contained"
-                            aria-label="Login Menu"
-                            edge="start"
-                            startIcon={<AccountCircle/>}
-                        >
-                            Login
-                        </Button>
                     </Toolbar>
                 </AppBar>
             </ElevationScroll>
