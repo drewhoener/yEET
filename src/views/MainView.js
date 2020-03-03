@@ -5,6 +5,7 @@ import {Redirect, Route, Switch} from 'react-router-dom';
 import {makeStyles} from "@material-ui/core/styles";
 import LoginProtectedRoute from "../components/LoginProtectedRoute";
 import ReadReviewView from "./ReadReviewView";
+import RequestView from "./RequestView";
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -38,6 +39,9 @@ export default function MainView(props) {
                     </LoginProtectedRoute>
                     <LoginProtectedRoute path='/my-reviews'>
                         <ReadReviewView/>
+                    </LoginProtectedRoute>
+                    <LoginProtectedRoute path='/request'>
+                        <RequestView/>
                     </LoginProtectedRoute>
                 </Switch>
             </main>

@@ -1,0 +1,32 @@
+{
+  "Aidan Charles Greenslade": {
+    "employeeID": 1,
+    "requestedBefore": true,
+    "lastRequested": 1582909932000,
+    "state": {
+      "name": "pending",
+      "color": "#ffc107",
+      "icon": "morehoriz"
+    }
+  },
+  "Charlie Bouhanna": {
+    "employeeID": 2,
+    "requestedBefore": false,
+    "lastRequested": -1,
+    "state": {
+      "name": "available",
+      "color": "#4caf50",
+      "icon": "send"
+    }
+  },
+  "Eli Bildman": {
+    "employeeID": 3,
+    "requestedBefore": true,
+    "lastRequested": 1583076030000,
+    "state": {
+      "name": "cancelled",
+      "color": "#f44336",
+      "icon": "close"
+    }
+  }
+}
