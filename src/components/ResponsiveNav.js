@@ -129,6 +129,7 @@ function ResponsiveNav(props) {
                             primary={key}
                             to={value.path}
                             notify={value.hasOwnProperty('notify') ? value.notify : 0}
+                            onClick={onDrawerToggle}
                         />
                     ))
                 }

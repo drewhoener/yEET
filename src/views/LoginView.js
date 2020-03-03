@@ -42,6 +42,8 @@ export default function LoginView(props) {
     const [password, setPassword] = React.useState("");
     const [loading, setLoading] = React.useState(false);
 
+    console.log(location);
+
     let {from} = location.state || {from: {pathname: "/"}};
 
     const onChange = (f, event) => {
@@ -114,8 +116,8 @@ export default function LoginView(props) {
     return isLoggedIn() ? (
         <Redirect
             to={{
-                pathname: '/home',
-                state: {from: '/home'}
+                pathname: from.pathname,
+                state: from
             }}
         />
     ) : (

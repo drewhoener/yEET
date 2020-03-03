@@ -19,7 +19,7 @@ const useStyle = makeStyles(theme => ({
 }));
 
 function RoutedListItem(props) {
-    const {icon, primary, to, location, notify} = props;
+    const {icon, primary, to, location, notify, onClick} = props;
     const classes = useStyle();
     //Copied from MaterialUI, still figuring out how this works
     const renderLink = React.useMemo(
@@ -32,7 +32,7 @@ function RoutedListItem(props) {
 
     return (
         <li>
-            <ListItem button component={renderLink} selected={location.pathname.toLowerCase() === to}>
+            <ListItem button component={renderLink} onClick={onClick} selected={location.pathname.toLowerCase() === to}>
                 <ListItemIcon>{icon}</ListItemIcon>
                 <ListItemText primary={primary}/>
                 {
