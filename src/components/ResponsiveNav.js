@@ -86,6 +86,11 @@ function ResponsiveNav(props) {
         setDrawerOpen(!drawerOpen);
     };
 
+    const closeDrawer = () => {
+        if (drawerOpen)
+            setDrawerOpen(false);
+    };
+
     const onLogout = () => {
         logoutUser();
         history.replace({pathname: '/login'});
@@ -129,7 +134,7 @@ function ResponsiveNav(props) {
                             primary={key}
                             to={value.path}
                             notify={value.hasOwnProperty('notify') ? value.notify : 0}
-                            onClick={onDrawerToggle}
+                            onClick={closeDrawer}
                         />
                     ))
                 }
@@ -166,6 +171,7 @@ function ResponsiveNav(props) {
                             <Button
                                 variant='outlined'
                                 color='default'
+                                aria-label='Logout'
                                 endIcon={<ExitToApp/>}
                                 onClick={onLogout}
                             >

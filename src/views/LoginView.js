@@ -42,8 +42,6 @@ export default function LoginView(props) {
     const [password, setPassword] = React.useState("");
     const [loading, setLoading] = React.useState(false);
 
-    console.log(location);
-
     let {from} = location.state || {from: {pathname: "/"}};
 
     const onChange = (f, event) => {
@@ -68,8 +66,8 @@ export default function LoginView(props) {
                     <Typography color='secondary' fontWeight='fontWeightBold' align='center'
                                 variant='h1'>yEET</Typography>
                     <Typography align='center' variant='subtitle1'>Your Employee Evaluation Tool</Typography>
-                    <form className={classes.form} onSubmit={onSubmitForm}>
-                        <Backdrop className={classes.backdrop} open={loading}>
+                    <form className={classes.form} onSubmit={onSubmitForm} aria-label='Login Form'>
+                        <Backdrop className={classes.backdrop} open={loading} aria-label="Logging you in">
                             <CircularProgress color="inherit"/>
                         </Backdrop>
                         <TextField
@@ -101,6 +99,7 @@ export default function LoginView(props) {
                             color='secondary'
                             size='large'
                             type='submit'
+                            aria-label="Login"
                             disableElevation
                             disableFocusRipple
                             fullWidth

@@ -24,7 +24,7 @@
     "requestedBefore": true,
     "lastRequested": 1583076030000,
     "state": {
-      "name": "cancelled",
+      "name": "denied",
       "color": "#f44336",
       "icon": "close"
     }

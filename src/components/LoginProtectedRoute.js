@@ -6,7 +6,6 @@ export default function LoginProtectedRoute({children, ...rest}) {
     const [loggedIn, setLoggedIn] = React.useState(isLoggedIn());
     React.useEffect(() => {
         setTimeout(() => {
-            console.log("Timer Expired");
             setLoggedIn(isLoggedIn());
         }, 2);
     }, []);

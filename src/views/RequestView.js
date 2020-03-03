@@ -1,4 +1,5 @@
 import React from 'react';
+import {useHistory} from 'react-router-dom';
 import {makeStyles} from "@material-ui/core/styles";
 import {ListItemSecondaryAction, ListItemText, TextField, useMediaQuery, useTheme} from "@material-ui/core";
 import {Search} from "@material-ui/icons";
@@ -46,13 +47,14 @@ const useStyle = makeStyles(theme => ({
         fontWeight: 'bold'
     },
     requestIcon: {
-        transform: 'translateY(-40%)',
+        transform: 'translateY(-50%)',
     }
 }));
 
 const data = require('../data/users');
 const UserList = ({classes}) => {
     let theme = useTheme();
+    let history = useHistory();
     let largeScreen = useMediaQuery(theme.breakpoints.up('md'));
     return (
         <List className={classes.list}>
@@ -64,17 +66,18 @@ const UserList = ({classes}) => {
                         <React.Fragment key={`${key.toLowerCase().replace(' ', '_')}-${val.employeeID}`}>
                             <Divider/>
                             <ListItem>
-                                <ListItemText className={classes.listItem} primary={key}
+                                <ListItemText tabIndex={0} className={classes.listItem} primary={key}
                                               primaryTypographyProps={{className: classes.listItemText}}
                                               secondary={`Employee ID: ${val.employeeID}`}/>
                                 {
                                     (requestedBefore && time !== null) ?
-                                        <ListItemText className={classes.requestedText}
+                                        <ListItemText tabIndex={0} className={classes.requestedText}
                                                       primary={`Requested ${largeScreen ? 'Review' : ''}`}
                                                       secondary={time.calendar()}/> : null
                                 }
-                                <ListItemSecondaryAction className={classes.requestIcon}>
-                                    <Icon style={{color: val.state.color}}>{val.state.icon}</Icon>
+                                <ListItemSecondaryAction tabIndex={0} className={classes.requestIcon}>
+                                    <IconButton aria-label={val.state.name}
+                                                style={{color: val.state.color}}><Icon>{val.state.icon}</Icon></IconButton>
                                 </ListItemSecondaryAction>
                             </ListItem>
                         </React.Fragment>
@@ -84,7 +87,7 @@ const UserList = ({classes}) => {
             <Divider/>
         </List>
     );
-}
+};
 
 export default function RequestView(props) {
     const classes = useStyle();
@@ -96,11 +99,12 @@ export default function RequestView(props) {
                     className={classes.margin}
                     id="search-users"
                     label="Search Users"
+
                     variant='outlined'
                     fullWidth
                     InputProps={{
                         endAdornment: (
-                            <IconButton position='end'>
+                            <IconButton position='end' aria-label='Search'>
                                 <Search/>
                             </IconButton>
                         ),
