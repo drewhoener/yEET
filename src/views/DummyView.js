@@ -8,7 +8,7 @@ export default function DummyView(props) {
         <React.Fragment>
             {
                 elements.map(i => (
-                    <React.Fragment>
+                    <React.Fragment key={`typography_${i}`}>
                         <Typography paragraph>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
                             ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
