@@ -19,6 +19,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItem from "@material-ui/core/ListItem";
 import Button from "@material-ui/core/Button";
+import {logoutUser} from "../scripts/fakeauth";
+import {useHistory} from 'react-router-dom';
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -74,6 +76,7 @@ ElevationScroll.propTypes = {
 };
 
 function ResponsiveNav(props) {
+    let history = useHistory();
     const {container} = props;
     const classes = useStyles();
     const theme = useTheme();
@@ -81,6 +84,11 @@ function ResponsiveNav(props) {
 
     const onDrawerToggle = () => {
         setDrawerOpen(!drawerOpen);
+    };
+
+    const onLogout = () => {
+        logoutUser();
+        history.replace({pathname: '/login'});
     };
 
     const drawerItems = {
@@ -123,7 +131,7 @@ function ResponsiveNav(props) {
                     ))
                 }
                 <Hidden smUp>
-                    <ListItem button>
+                    <ListItem button onClick={onLogout}>
                         <ListItemIcon><ExitToApp/></ListItemIcon>
                         <ListItemText primary="Logout"/>
                     </ListItem>
@@ -156,6 +164,7 @@ function ResponsiveNav(props) {
                                 variant='outlined'
                                 color='default'
                                 endIcon={<ExitToApp/>}
+                                onClick={onLogout}
                             >
                                 Logout
                             </Button>
