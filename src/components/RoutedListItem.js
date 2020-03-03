@@ -39,7 +39,8 @@ function RoutedListItem(props) {
                     notify > 0 ?
                         (
                             <ListItemAvatar>
-                                <Avatar className={classes.smallIcon} variant='circle'>{notify}</Avatar>
+                                <Avatar aria-label={`${notify} item${notify === 1 ? '' : 's'} unfinished`}
+                                        className={classes.smallIcon} variant='circle'>{notify}</Avatar>
                             </ListItemAvatar>
                         ) : null
                 }

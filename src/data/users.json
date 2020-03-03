@@ -28,5 +28,35 @@
       "color": "#f44336",
       "icon": "close"
     }
+  },
+  "John DeFlumeri": {
+    "employeeID": 4,
+    "requestedBefore": false,
+    "lastRequested": -1,
+    "state": {
+      "name": "available",
+      "color": "#4caf50",
+      "icon": "send"
+    }
+  },
+  "Nebiyou Kebede": {
+    "employeeID": 5,
+    "requestedBefore": true,
+    "lastRequested": 1583076030000,
+    "state": {
+      "name": "available",
+      "color": "#4caf50",
+      "icon": "send"
+    }
+  },
+  "Samuel Jayachandran": {
+    "employeeID": 6,
+    "requestedBefore": true,
+    "lastRequested": 1580907680000,
+    "state": {
+      "name": "pending",
+      "color": "#ffc107",
+      "icon": "morehoriz"
+    }
   }
 }

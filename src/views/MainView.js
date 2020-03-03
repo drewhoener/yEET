@@ -14,7 +14,11 @@ const useStyle = makeStyles(theme => ({
     toolbar: theme.mixins.toolbar,
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3)
+        padding: theme.spacing(3),
+        minHeight: '93vh',
+        [theme.breakpoints.up('md')]: {
+            minHeight: '95vh'
+        }
     }
 }));
 
