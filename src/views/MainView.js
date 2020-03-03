@@ -1,7 +1,7 @@
 import ResponsiveNav from "../components/ResponsiveNav";
 import DummyView from "./DummyView";
 import React from "react";
-import {Redirect, Route, Switch} from 'react-router-dom';
+import {Redirect, Switch} from 'react-router-dom';
 import {makeStyles} from "@material-ui/core/styles";
 import LoginProtectedRoute from "../components/LoginProtectedRoute";
 import ReadReviewView from "./ReadReviewView";
@@ -32,12 +32,7 @@ export default function MainView(props) {
 
                 <Switch>
                     {/*Redirect the '/' path to the home view*/}
-                    <Route exact path='/' render={({location}) => (
-                        <Redirect to={{
-                            pathname: '/home',
-                            state: {from: location}
-                        }}/>
-                    )}/>
+                    <Redirect exact from='/' to='/home'/>
                     <LoginProtectedRoute path='/home'>
                         <DummyView/>
                     </LoginProtectedRoute>
