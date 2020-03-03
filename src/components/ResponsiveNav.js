@@ -106,7 +106,8 @@ function ResponsiveNav(props) {
         },
         'Write Review': {
             path: '/write',
-            icon: (<Create/>)
+            icon: (<Create/>),
+            notify: 1
         },
         'My Account': {
             path: '/account',
@@ -127,6 +128,7 @@ function ResponsiveNav(props) {
                             icon={React.cloneElement(value.icon)}
                             primary={key}
                             to={value.path}
+                            notify={value.hasOwnProperty('notify') ? value.notify : 0}
                         />
                     ))
                 }
