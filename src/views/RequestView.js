@@ -15,8 +15,9 @@ import IconButton from "@material-ui/core/IconButton";
 const useStyle = makeStyles(theme => ({
     root: {
         display: 'flex',
-        alignItems: 'center'
+        padding: theme.spacing(3)
     },
+    toolbar: theme.mixins.toolbar,
     paper: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -93,26 +94,31 @@ export default function RequestView(props) {
     const classes = useStyle();
 
     return (
-        <Container maxWidth='xl'>
-            <Paper className={classes.paper}>
-                <TextField
-                    className={classes.margin}
-                    id="search-users"
-                    label="Search Users"
+        <React.Fragment>
+            <div className={classes.toolbar}/>
+            <div className={classes.root}>
+                <Container maxWidth='xl'>
+                    <Paper className={classes.paper}>
+                        <TextField
+                            className={classes.margin}
+                            id="search-users"
+                            label="Search Users"
 
-                    variant='outlined'
-                    fullWidth
-                    InputProps={{
-                        endAdornment: (
-                            <IconButton position='end' aria-label='Search'>
-                                <Search/>
-                            </IconButton>
-                        ),
-                    }}
-                />
-                {/*<Typography variant='h2' align='center'>Hello World</Typography>*/}
-                <UserList classes={classes}/>
-            </Paper>
-        </Container>
+                            variant='outlined'
+                            fullWidth
+                            InputProps={{
+                                endAdornment: (
+                                    <IconButton position='end' aria-label='Search'>
+                                        <Search/>
+                                    </IconButton>
+                                ),
+                            }}
+                        />
+                        {/*<Typography variant='h2' align='center'>Hello World</Typography>*/}
+                        <UserList classes={classes}/>
+                    </Paper>
+                </Container>
+            </div>
+        </React.Fragment>
     );
 }

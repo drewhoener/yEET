@@ -8,18 +8,17 @@ import Divider from "@material-ui/core/Divider";
 
 const useStyle = makeStyles(theme => ({
     root: {
-        flex: '0 1 auto'
+        flex: '0 1 auto',
+        position: 'sticky',
+        top: 0
+        //position: '-webkit-sticky'
     },
     toolbar: theme.mixins.toolbar,
     wideTab: {
         minWidth: '50%'
     },
     constrained: {
-        flexBasis: '0px',
-        height: '85vh',
-        flex: '1 1 auto',
-        overflowY: 'auto',
-        minHeight: '0px',
+        padding: theme.spacing(3),
         '&::-webkit-scrollbar': {
             width: '0.4em'
         },
@@ -45,19 +44,22 @@ export default function TabbedReviewBar(props) {
 
     return (
         <React.Fragment>
-            <Paper square variant='outlined' className={classes.root}>
-                <Tabs
-                    value={tabValue}
-                    onChange={handleTabChange}
-                    indicatorColor='secondary'
-                    textColor='inherit'
-                    centered
-                >
-                    <Tab className={classes.wideTab} label='My Reviews'/>
-                    <Tab className={classes.wideTab} label='Employee Reviews'/>
-                </Tabs>
-            </Paper>
-            <Paper square variant='elevation' className={classes.constrained}>
+            <div className={classes.root}>
+                <div className={classes.toolbar}/>
+                <Paper square variant='outlined'>
+                    <Tabs
+                        value={tabValue}
+                        onChange={handleTabChange}
+                        indicatorColor='secondary'
+                        textColor='inherit'
+                        centered
+                    >
+                        <Tab className={classes.wideTab} label='My Reviews'/>
+                        <Tab className={classes.wideTab} label='Employee Reviews'/>
+                    </Tabs>
+                </Paper>
+            </div>
+            <Paper square variant='outlined' className={classes.constrained}>
                 <Divider flexItem orientation='horizontal'/>
                 <DummyView/>
             </Paper>

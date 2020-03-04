@@ -11,14 +11,11 @@ const useStyle = makeStyles(theme => ({
     root: {
         display: 'flex'
     },
-    toolbar: theme.mixins.toolbar,
+    toolbar: {
+        ...theme.mixins.toolbar,
+    },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
-        minHeight: '93vh',
-        [theme.breakpoints.up('md')]: {
-            minHeight: '95vh'
-        }
     }
 }));
 
@@ -28,12 +25,11 @@ export default function MainView(props) {
         <div className={classes.root}>
             <ResponsiveNav/>
             <main className={classes.content}>
-                <div className={classes.toolbar}/>
-
                 <Switch>
                     {/*Redirect the '/' path to the home view*/}
                     <Redirect exact from='/' to='/home'/>
                     <LoginProtectedRoute path='/home'>
+                        <div className={classes.toolbar}/>
                         <DummyView/>
                     </LoginProtectedRoute>
                     <LoginProtectedRoute path='/my-reviews'>

@@ -1,15 +1,25 @@
 import Typography from "@material-ui/core/Typography";
 import React from "react";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyle = makeStyles(theme => ({
+    root: {
+        //display: 'flex',
+        padding: theme.spacing(3)
+    },
+    toolbar: theme.mixins.toolbar
+}));
 
 export default function DummyView(props) {
     //Lots of stupid elements to test with
     const elements = [...Array(20).keys()];
+    const classes = useStyle();
     return (
-        <React.Fragment>
+        <div className={classes.root}>
             {
                 elements.map(i => (
                     <React.Fragment key={`typography_${i}`}>
-                        <Typography paragraph>
+                        <Typography tabIndex={0} paragraph>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
                             ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
                             facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
@@ -21,7 +31,7 @@ export default function DummyView(props) {
                             arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
                             donec massa sapien faucibus et molestie ac.
                         </Typography>
-                        <Typography paragraph>
+                        <Typography tabIndex={0} paragraph>
                             Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
                             facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
                             tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
@@ -35,6 +45,6 @@ export default function DummyView(props) {
                     </React.Fragment>
                 ))
             }
-        </React.Fragment>
+        </div>
     );
 }

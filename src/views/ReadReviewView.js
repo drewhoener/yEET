@@ -6,7 +6,6 @@ const useStyle = makeStyles(theme => ({
     inlineFlex: {
         display: 'inline-flex',
         flexDirection: 'column',
-        minHeight: '100%'
     }
 }));
 
