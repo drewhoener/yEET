@@ -3,7 +3,6 @@ import {makeStyles} from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import DummyView from "../views/DummyView";
 import Divider from "@material-ui/core/Divider";
 
 const useStyle = makeStyles(theme => ({
@@ -61,7 +60,7 @@ export default function TabbedReviewBar(props) {
             </div>
             <Paper square variant='outlined' className={classes.constrained}>
                 <Divider flexItem orientation='horizontal'/>
-                <DummyView/>
+                {children}
             </Paper>
         </React.Fragment>
     );

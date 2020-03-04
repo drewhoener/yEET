@@ -6,8 +6,6 @@ import {makeStyles} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import {isLoggedIn, logInUser} from "../scripts/fakeauth";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import {Redirect, useHistory, useLocation} from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
@@ -32,12 +30,17 @@ const useStyles = makeStyles(theme => ({
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff',
     },
+    errorText: {
+        width: '100%',
+        textAlign: 'center'
+    }
 }));
 
 export default function LoginView(props) {
     const classes = useStyles();
     let history = useHistory();
     let location = useLocation();
+    const [error, setError] = React.useState(false);
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [loading, setLoading] = React.useState(false);
@@ -50,10 +53,14 @@ export default function LoginView(props) {
 
     const onSubmitForm = (event) => {
         event.preventDefault();
+        setError(false);
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
-            logInUser(username);
+            if (!logInUser(username, password)) {
+                setError(true);
+                return;
+            }
             history.replace(from);
         }, 5000);
     };
@@ -67,9 +74,6 @@ export default function LoginView(props) {
                                 variant='h1'>yEET</Typography>
                     <Typography align='center' variant='subtitle1'>Your Employee Evaluation Tool</Typography>
                     <form className={classes.form} onSubmit={onSubmitForm} aria-label='Login Form'>
-                        <Backdrop className={classes.backdrop} open={loading} aria-label="Logging you in">
-                            <CircularProgress color="inherit"/>
-                        </Backdrop>
                         <TextField
                             id="login-username"
                             label="Username"
@@ -79,6 +83,7 @@ export default function LoginView(props) {
                             variant='outlined'
                             InputLabelProps={{shrink: true}}
                             value={username}
+                            disabled={loading}
                             onChange={event => onChange(setUsername, event)}
                         />
                         <TextField
@@ -91,6 +96,7 @@ export default function LoginView(props) {
                             variant='outlined'
                             InputLabelProps={{shrink: true}}
                             value={password}
+                            disabled={loading}
                             onChange={event => onChange(setPassword, event)}
                         />
                         <Button
@@ -103,9 +109,12 @@ export default function LoginView(props) {
                             disableElevation
                             disableFocusRipple
                             fullWidth
+                            disabled={loading}
                         >
                             Login
                         </Button>
+                        <Typography className={classes.errorText} variant='subtitle1' color='error' hidden={!error}>Invalid
+                            Username or Password</Typography>
                     </form>
                 </Paper>
             </Container>

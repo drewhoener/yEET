@@ -1,8 +1,10 @@
+const loginData = require('../data/logindata');
 
 const isLoggedIn = () => {
-    const user = localStorage.getItem("loggedIn");
-    if (user === null)
+    const userStr = localStorage.getItem("loggedIn");
+    if (userStr === null)
         return false;
+    const user = JSON.parse(userStr);
     if (user.expire <= Date.now()) {
         console.log("Expiring user...");
         localStorage.removeItem("loggedIn");
@@ -11,8 +13,11 @@ const isLoggedIn = () => {
     return true;
 };
 
-const logInUser = () => {
+const logInUser = (user, pass) => {
+    if (!loginData.login.find((val) => val.user === user && val.pass === pass))
+        return false;
     localStorage.setItem("loggedIn", JSON.stringify({expire: Date.now() + (1000 * 60 * 5)}));
+    return true;
 };
 
 const logoutUser = () => {
