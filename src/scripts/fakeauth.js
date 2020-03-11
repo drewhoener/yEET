@@ -1,4 +1,4 @@
-const loginData = require('../../data/logindata');
+const loginData = require('../data/logindata');
 
 const isLoggedIn = () => {
     const userStr = localStorage.getItem("loggedIn");
