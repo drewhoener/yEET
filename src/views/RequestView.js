@@ -52,7 +52,7 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-const data = require('../data/users');
+const data = require('../../data/users');
 const UserList = ({classes}) => {
     let theme = useTheme();
     let history = useHistory();

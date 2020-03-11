@@ -15,17 +15,17 @@ export async function connect(user, pass, database, authDatabase) {
     }
     const connectionURL = util.format(DBUrl, auth, database, authSource);
     //console.log(connectionURL);
+
+    mongoose.set('useCreateIndex', true);
     await mongoose.connect(connectionURL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });
 
+    pending = false;
+
     database = mongoose.connection;
     database.on('error', console.error.bind(console, 'connection error:'));
-    database.once('open', () => {
-        pending = false;
-        console.log("Database has connected");
-    });
 }
 
 export function close() {
