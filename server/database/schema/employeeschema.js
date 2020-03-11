@@ -29,9 +29,8 @@ employeeSchema.pre('save', function (next) {
     return next();
 });
 
-employeeSchema.methods.validatePassword = async function (password) {
-    return bcrypt.compare(password, this.passwordHash)
-        .catch(() => false);
+employeeSchema.methods.validatePassword = function (password) {
+    return bcrypt.compare(password, this.passwordHash);
 };
 
 employeeSchema.methods.hasManager = () => {

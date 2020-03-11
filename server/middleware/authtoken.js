@@ -1,8 +1,10 @@
-import fs from 'fs';
-import jwt from 'jsonwebtoken';
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
+const path = require('path');
 
-const authKeyPrivate = fs.readFileSync('./../../exempt/ecdsa_secret.pem');
-const authKeyPublic = fs.readFileSync('./../../exempt/ecdsa_secret.pub.pem');
+console.log(__dirname);
+const authKeyPrivate = fs.readFileSync(path.join(__dirname, '../../exempt/ecdsa_secret.pem'));
+const authKeyPublic = fs.readFileSync(path.join(__dirname, '../../exempt/ecdsa_secret.pub.pem'));
 
 /**
  * Issues a JWT Token when validating a login request
@@ -12,10 +14,10 @@ const authKeyPublic = fs.readFileSync('./../../exempt/ecdsa_secret.pub.pem');
 const issueToken = (employee) => {
     const {_id, employeeId, company} = employee;
     return jwt.sign({
-        _id,
+        id: _id.toString(),
         employeeId,
-        company: company.valueOf()
-    }, authKeyPrivate, {algorithm: 'ES512'});
+        company: company.toString()
+    }, authKeyPrivate, {algorithm: 'ES512', expiresIn: '1h'});
 };
 
 /**
