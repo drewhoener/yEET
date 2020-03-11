@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import apiRouter from "./routes/apirouter";
 import mongoAuth from '../exempt/mongo_auth';
 import {connect as connectToDB} from "./database/database";
@@ -7,9 +8,11 @@ import {connect as connectToDB} from "./database/database";
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use('/api', apiRouter);
 
 app.get('/', (req, res) => {
+    console.log('Received GET');
 });
 
 app.listen(3001, () => {
