@@ -17,7 +17,7 @@ const issueToken = (employee) => {
         id: _id.toString(),
         employeeId,
         company: company.toString()
-    }, authKeyPrivate, {algorithm: 'ES512', expiresIn: '1h'});
+    }, authKeyPrivate, {algorithm: 'ES512', expiresIn: '5m'});
 };
 
 /**
@@ -30,7 +30,7 @@ const validateToken = async (token) => {
 };
 
 const authMiddleware = (req, res, next) => {
-    const token = req.cookies.token;
+    const token = req.cookies['auth0'];
     if (!token) {
         res.status(401).send('Unauthorized: Invalid or missing Token');
         return;
@@ -45,6 +45,7 @@ const authMiddleware = (req, res, next) => {
             next();
         })
         .catch(err => {
+            console.log(err);
             res.status(401).send('Unauthorized: Invalid Token');
         });
 };

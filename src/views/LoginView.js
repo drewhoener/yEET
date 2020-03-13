@@ -24,8 +24,27 @@ const useStyles = makeStyles(theme => ({
             padding: 16
         }
     },
-    fullWidth: {
-        width: '100%'
+    employeeCompanyHolder: {
+        width: '100%',
+        display: 'flex',
+        [theme.breakpoints.up('sm')]: {
+            flexDirection: 'row'
+        },
+        [theme.breakpoints.down('xs')]: {
+            flexDirection: 'column'
+        },
+    },
+    companyAC: {
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            paddingRight: theme.spacing(1)
+        }
+    },
+    employeeId: {
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(1)
+        }
     },
     loginButton: {
         marginTop: 8
@@ -44,6 +63,7 @@ export default function LoginView(props) {
     const classes = useStyles();
     let history = useHistory();
     let location = useLocation();
+    const isMobile = /iphone|ipod|ipad|android|blackberry|opera mini|opera mobi|skyfire|maemo|windows phone|palm|iemobile|symbian|symbianos|fennec/i.test(navigator.userAgent.toLowerCase());
     const [error, setError] = React.useState('');
     const [employeeId, setEmployeeId] = React.useState("");
     const [password, setPassword] = React.useState("");
@@ -55,10 +75,11 @@ export default function LoginView(props) {
     let {from} = location.state || {from: {pathname: "/"}};
 
     React.useEffect(() => {
+        console.log(`Path From: `);
+        console.log(from);
         axios.get('/api/companies')
             .then(({data}) => {
-                console.log(data.companies);
-                setCompanies([...companies, ...data.companies]);
+                setCompanies(c => [...c, ...data.companies]);
             })
             .catch(err => {
                 console.log(err);
@@ -93,10 +114,14 @@ export default function LoginView(props) {
             password
         })
             .then(result => {
+                console.log(`Login Result: `);
+                console.log(result);
                 setLoading(false);
                 history.replace(from);
             })
             .catch(err => {
+                console.log(`Login Error: `);
+                console.error(err);
                 const {response} = err;
                 setLoading(false);
                 if (response.status === 500) {
@@ -115,8 +140,44 @@ export default function LoginView(props) {
         autoHighlight: true,
         includeInputInList: true,
         disableOpenOnFocus: true,
-        fullWidth: true
     };
+
+    const select = isMobile ? (
+        <TextField
+            id="mobile-native-company-select"
+            select
+            label="Company"
+            value={selectedCompany.companyId}
+            onChange={event => onChange((val) => setSelectedCompany(companies.find(elem => elem.companyId === val)), event)}
+            SelectProps={{
+                native: true,
+            }}
+            variant="outlined"
+        >
+            {companies.map(elem => (
+                <option key={elem.companyId} value={elem.companyId}>
+                    {elem.companyName}
+                </option>
+            ))}
+        </TextField>
+    ) : (
+        <Autocomplete
+            {...selectOptions}
+            className={classes.companyAC}
+            disabled={loading}
+            id="company-select"
+            value={selectedCompany}
+            onChange={(event, newValue) => {
+                setSelectedCompany(newValue);
+            }}
+            renderInput={params => {
+                return (
+                    <TextField {...params} fullWidth variant='outlined' label="Company"
+                               margin="normal"/>
+                )
+            }}
+        />
+    );
 
     const form = (
         <div className={classes.root}>
@@ -126,36 +187,23 @@ export default function LoginView(props) {
                     <Typography color='secondary' fontWeight='fontWeightBold' align='center'
                                 variant='h1'>yEET</Typography>
                     <Typography align='center' variant='subtitle1'>Your Employee Evaluation Tool</Typography>
-                    <form className={classes.form} onSubmit={onSubmitForm} aria-label='Login Form'>
-                        <div>
-                            <Autocomplete
-                                {...selectOptions}
-                                className={classes.fullWidth}
-                                id="company-select"
-                                value={selectedCompany}
-                                onChange={(event, newValue) => {
-                                    console.log(newValue);
-                                    setSelectedCompany(newValue);
-                                }}
-                                renderInput={params => {
-                                    return (
-                                        <TextField {...params} fullWidth variant='outlined' label="Company"
-                                                   margin="normal"/>
-                                    )
-                                }}
-                            />
-                            <TextField
-                                id="login-username"
-                                label="Employee ID"
-                                placeholder="ID Number"
-                                fullWidth
-                                margin='normal'
-                                variant='outlined'
-                                InputLabelProps={{shrink: true}}
-                                value={employeeId}
-                                disabled={loading}
-                                onChange={event => onChange(setEmployeeId, event)}
-                            />
+                    <form className={classes.form} onSubmit={onSubmitForm} aria-label='Login Form' data-lpignore="true">
+                        <div className={classes.employeeCompanyHolder}>
+                            {select}
+                            <div className={classes.employeeId}>
+                                <TextField
+                                    id="login-username"
+                                    label="Employee ID"
+                                    placeholder="ID Number"
+                                    fullWidth
+                                    margin='normal'
+                                    variant='outlined'
+                                    InputLabelProps={{shrink: true}}
+                                    value={employeeId}
+                                    disabled={loading}
+                                    onChange={event => onChange(setEmployeeId, event)}
+                                />
+                            </div>
                         </div>
                         <TextField
                             id="login-password"

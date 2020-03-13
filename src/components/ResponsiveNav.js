@@ -19,7 +19,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItem from "@material-ui/core/ListItem";
 import Button from "@material-ui/core/Button";
-import {logoutUser} from "../scripts/fakeauth";
+import axios from 'axios';
 import {useHistory} from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -92,8 +92,8 @@ function ResponsiveNav(props) {
     };
 
     const onLogout = () => {
-        logoutUser();
-        history.replace({pathname: '/login'});
+        axios.post('/api/auth/logout')
+            .then().catch().then(() => history.push({pathname: '/login'}));
     };
 
     const drawerItems = {

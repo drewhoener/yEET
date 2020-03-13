@@ -19,7 +19,8 @@ export default function ProtectedModule({component, children, ...rest}) {
             })
             .catch(err => {
                 console.log(`Caught Error`);
-                setLoggedIn(false);
+                console.log(err);
+                console.log(err.response);
                 setCheckingLogin(false);
             });
     }, []);

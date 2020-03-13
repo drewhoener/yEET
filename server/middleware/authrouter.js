@@ -43,6 +43,10 @@ authRouter.post('/login', (req, res, next) => {
         });
 });
 
+authRouter.post('/logout', (req, res) => {
+    res.clearCookie('auth0').sendStatus(200);
+});
+
 // noinspection JSUnresolvedFunction
 authRouter.get('/validate', authMiddleware, (req, res) => {
     res.sendStatus(200);
