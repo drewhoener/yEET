@@ -17,7 +17,7 @@ const issueToken = (employee) => {
         id: _id.toString(),
         employeeId,
         company: company.toString()
-    }, authKeyPrivate, {algorithm: 'ES512', expiresIn: '5m'});
+    }, authKeyPrivate, {algorithm: 'ES512', expiresIn: '20m'});
 };
 
 /**
@@ -45,7 +45,7 @@ const authMiddleware = (req, res, next) => {
             next();
         })
         .catch(err => {
-            console.log(err);
+            console.log(`Token Validation Rejected: ${err.name}`);
             res.status(401).send('Unauthorized: Invalid Token');
         });
 };

@@ -1,9 +1,8 @@
 import ResponsiveNav from "../components/ResponsiveNav";
 import DummyView from "./DummyView";
 import React from "react";
-import {Redirect, Switch} from 'react-router-dom';
+import {Redirect, Route, Switch} from 'react-router-dom';
 import {makeStyles} from "@material-ui/core/styles";
-import ProtectedModule from "../components/ProtectedModule";
 import ReadReviewView from "./ReadReviewView";
 import RequestView from "./RequestView";
 
@@ -28,12 +27,16 @@ export default function MainView(props) {
                 <Switch>
                     {/*Redirect the '/' path to the home view*/}
                     <Redirect exact from='/' to='/home'/>
-                    <ProtectedModule path='/home'>
+                    <Route path='/home'>
                         <div className={classes.toolbar}/>
                         <DummyView/>
-                    </ProtectedModule>
-                    <ProtectedModule path='/my-reviews' component={ReadReviewView}/>
-                    <ProtectedModule path='/request' component={RequestView}/>
+                    </Route>
+                    <Route path='/my-reviews'>
+                        <ReadReviewView/>
+                    </Route>
+                    <Route path='/request'>
+                        <RequestView/>
+                    </Route>
                 </Switch>
             </main>
         </div>

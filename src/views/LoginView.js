@@ -6,7 +6,7 @@ import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import {useHistory, useLocation} from 'react-router-dom';
+import {Redirect, useHistory, useLocation} from 'react-router-dom';
 import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
@@ -64,10 +64,11 @@ export default function LoginView(props) {
     let history = useHistory();
     let location = useLocation();
     const isMobile = /iphone|ipod|ipad|android|blackberry|opera mini|opera mobi|skyfire|maemo|windows phone|palm|iemobile|symbian|symbianos|fennec/i.test(navigator.userAgent.toLowerCase());
+    const [shouldRedirect, setShouldRedirect] = React.useState(false);
     const [error, setError] = React.useState('');
     const [employeeId, setEmployeeId] = React.useState("");
     const [password, setPassword] = React.useState("");
-    const [checking, setChecking] = React.useState(false);
+    const [checking, setChecking] = React.useState(true);
     const [loading, setLoading] = React.useState(false);
     const [companies, setCompanies] = React.useState([{companyId: '-1', companyName: '---'}]);
     const [selectedCompany, setSelectedCompany] = React.useState(companies[0]);
@@ -75,8 +76,7 @@ export default function LoginView(props) {
     let {from} = location.state || {from: {pathname: "/"}};
 
     React.useEffect(() => {
-        console.log(`Path From: `);
-        console.log(from);
+        console.log(`We think login view mounted`);
         axios.get('/api/companies')
             .then(({data}) => {
                 setCompanies(c => [...c, ...data.companies]);
@@ -91,7 +91,7 @@ export default function LoginView(props) {
             .then(response => {
                 console.log('Got Response');
                 console.log(response);
-                history.replace(from);
+                setShouldRedirect(true);
                 setChecking(false);
             })
             .catch(err => {
@@ -240,5 +240,15 @@ export default function LoginView(props) {
         </div>
     );
 
-    return checking ? null : form;
+    const chooseRender = () => {
+        if (checking)
+            return null;
+        if (shouldRedirect)
+            return (
+                <Redirect to={'/home'} from={from}/>
+            );
+        return form;
+    };
+
+    return chooseRender();
 }

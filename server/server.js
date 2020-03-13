@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';

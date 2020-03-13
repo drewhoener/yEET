@@ -28,7 +28,9 @@ function App() {
             <ThemeProvider theme={theme}>
                 <Switch>
                     <Route path="/login" component={LoginView}/>
-                    <ProtectedRoute component={MainView}/>
+                    <ProtectedRoute>
+                        <MainView/>
+                    </ProtectedRoute>
                 </Switch>
             </ThemeProvider>
         </BrowserRouter>
