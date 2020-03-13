@@ -140,6 +140,7 @@ export default function LoginView(props) {
         autoHighlight: true,
         includeInputInList: true,
         disableOpenOnFocus: true,
+        disableClearable: true
     };
 
     const select = isMobile ? (
