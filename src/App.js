@@ -6,6 +6,7 @@ import green from '@material-ui/core/colors/green';
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import MainView from "./views/MainView";
 import LoginView from "./views/LoginView";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const theme = createMuiTheme({
     palette: {
@@ -26,12 +27,8 @@ function App() {
         <BrowserRouter>
             <ThemeProvider theme={theme}>
                 <Switch>
-                    <Route path="/login">
-                        <LoginView/>
-                    </Route>
-                    <Route>
-                        <MainView/>
-                    </Route>
+                    <Route path="/login" component={LoginView}/>
+                    <ProtectedRoute component={MainView}/>
                 </Switch>
             </ThemeProvider>
         </BrowserRouter>

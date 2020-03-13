@@ -3,7 +3,7 @@ import DummyView from "./DummyView";
 import React from "react";
 import {Redirect, Switch} from 'react-router-dom';
 import {makeStyles} from "@material-ui/core/styles";
-import LoginProtectedRoute from "../components/LoginProtectedRoute";
+import ProtectedModule from "../components/ProtectedModule";
 import ReadReviewView from "./ReadReviewView";
 import RequestView from "./RequestView";
 
@@ -28,16 +28,12 @@ export default function MainView(props) {
                 <Switch>
                     {/*Redirect the '/' path to the home view*/}
                     <Redirect exact from='/' to='/home'/>
-                    <LoginProtectedRoute path='/home'>
+                    <ProtectedModule path='/home'>
                         <div className={classes.toolbar}/>
                         <DummyView/>
-                    </LoginProtectedRoute>
-                    <LoginProtectedRoute path='/my-reviews'>
-                        <ReadReviewView/>
-                    </LoginProtectedRoute>
-                    <LoginProtectedRoute path='/request'>
-                        <RequestView/>
-                    </LoginProtectedRoute>
+                    </ProtectedModule>
+                    <ProtectedModule path='/my-reviews' component={ReadReviewView}/>
+                    <ProtectedModule path='/request' component={RequestView}/>
                 </Switch>
             </main>
         </div>

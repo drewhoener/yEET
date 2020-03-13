@@ -29,4 +29,24 @@ const validateToken = async (token) => {
     return jwt.verify(token, authKeyPublic, {algorithm: 'ES512'});
 };
 
-export {validateToken, issueToken};
+const authMiddleware = (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) {
+        res.status(401).send('Unauthorized: Invalid or missing Token');
+        return;
+    }
+    validateToken(token)
+        .then(decoded => {
+            if (!decoded) {
+                res.status(500).send('Internal Server Error');
+                return;
+            }
+            req.tokenData = Object.assign({}, decoded);
+            next();
+        })
+        .catch(err => {
+            res.status(401).send('Unauthorized: Invalid Token');
+        });
+};
+
+export {validateToken, issueToken, authMiddleware};

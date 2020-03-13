@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import Employee from "../database/schema/employeeschema";
-import {issueToken} from "./authtoken";
+import {authMiddleware, issueToken} from "./authtoken";
 import {ObjectId} from 'mongodb';
 
 const authRouter = new Router();
@@ -8,7 +8,8 @@ const authRouter = new Router();
 // noinspection JSUnresolvedFunction
 authRouter.post('/login', (req, res, next) => {
     const {companyId, employeeNumber, password} = req.body;
-    if (!companyId || !employeeNumber || employeeNumber < 1 || !password || password === '') {
+    //There needs to be a better way to do this
+    if (!companyId || companyId === '-1' || !employeeNumber || employeeNumber < 1 || !password || password === '') {
         res.status(400).send('Bad Request, missing fields');
         return;
     }
@@ -40,6 +41,11 @@ authRouter.post('/login', (req, res, next) => {
         .catch(err => {
             res.status(500).send('Internal Server Error');
         });
+});
+
+// noinspection JSUnresolvedFunction
+authRouter.get('/validate', authMiddleware, (req, res) => {
+    res.sendStatus(200);
 });
 
 function getNanoSecTime() {

@@ -1,12 +1,13 @@
 import React from "react";
 import {CssBaseline, TextField} from "@material-ui/core";
+import {Autocomplete} from '@material-ui/lab';
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import {isLoggedIn, logInUser} from "../scripts/fakeauth";
-import {Redirect, useHistory, useLocation} from 'react-router-dom';
+import {useHistory, useLocation} from 'react-router-dom';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -22,6 +23,9 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.up('sm')]: {
             padding: 16
         }
+    },
+    fullWidth: {
+        width: '100%'
     },
     loginButton: {
         marginTop: 8
@@ -40,12 +44,39 @@ export default function LoginView(props) {
     const classes = useStyles();
     let history = useHistory();
     let location = useLocation();
-    const [error, setError] = React.useState(false);
-    const [username, setUsername] = React.useState("");
+    const [error, setError] = React.useState('');
+    const [employeeId, setEmployeeId] = React.useState("");
     const [password, setPassword] = React.useState("");
+    const [checking, setChecking] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
+    const [companies, setCompanies] = React.useState([{companyId: '-1', companyName: '---'}]);
+    const [selectedCompany, setSelectedCompany] = React.useState(companies[0]);
 
     let {from} = location.state || {from: {pathname: "/"}};
+
+    React.useEffect(() => {
+        axios.get('/api/companies')
+            .then(({data}) => {
+                console.log(data.companies);
+                setCompanies([...companies, ...data.companies]);
+            })
+            .catch(err => {
+                console.log(err);
+                const error = {companyId: '-1', companyName: 'Error Fetching Companies'};
+                setCompanies([error]);
+                setSelectedCompany(error);
+            });
+        axios.get('/api/auth/validate')
+            .then(response => {
+                console.log('Got Response');
+                console.log(response);
+                history.replace(from);
+                setChecking(false);
+            })
+            .catch(err => {
+                setChecking(false);
+            });
+    }, []);
 
     const onChange = (f, event) => {
         f(event.target.value);
@@ -53,16 +84,38 @@ export default function LoginView(props) {
 
     const onSubmitForm = (event) => {
         event.preventDefault();
-        setError(false);
+        setError('');
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            if (!logInUser(username, password)) {
-                setError(true);
-                return;
-            }
-            history.replace(from);
-        }, 5000);
+        console.log(selectedCompany);
+        axios.post('/api/auth/login', {
+            companyId: selectedCompany.companyId,
+            employeeNumber: employeeId,
+            password
+        })
+            .then(result => {
+                setLoading(false);
+                history.replace(from);
+            })
+            .catch(err => {
+                const {response} = err;
+                setLoading(false);
+                if (response.status === 500) {
+                    setError('Internal Error, please try again');
+                    return;
+                }
+                setError('Invalid Username or Password');
+            });
+    };
+
+    const selectOptions = {
+        options: companies,
+        getOptionLabel: val => val.companyName,
+        autoComplete: true,
+        autoSelect: true,
+        autoHighlight: true,
+        includeInputInList: true,
+        disableOpenOnFocus: true,
+        fullWidth: true
     };
 
     const form = (
@@ -74,18 +127,36 @@ export default function LoginView(props) {
                                 variant='h1'>yEET</Typography>
                     <Typography align='center' variant='subtitle1'>Your Employee Evaluation Tool</Typography>
                     <form className={classes.form} onSubmit={onSubmitForm} aria-label='Login Form'>
-                        <TextField
-                            id="login-username"
-                            label="Username"
-                            placeholder="UserID"
-                            fullWidth
-                            margin='normal'
-                            variant='outlined'
-                            InputLabelProps={{shrink: true}}
-                            value={username}
-                            disabled={loading}
-                            onChange={event => onChange(setUsername, event)}
-                        />
+                        <div>
+                            <Autocomplete
+                                {...selectOptions}
+                                className={classes.fullWidth}
+                                id="company-select"
+                                value={selectedCompany}
+                                onChange={(event, newValue) => {
+                                    console.log(newValue);
+                                    setSelectedCompany(newValue);
+                                }}
+                                renderInput={params => {
+                                    return (
+                                        <TextField {...params} fullWidth variant='outlined' label="Company"
+                                                   margin="normal"/>
+                                    )
+                                }}
+                            />
+                            <TextField
+                                id="login-username"
+                                label="Employee ID"
+                                placeholder="ID Number"
+                                fullWidth
+                                margin='normal'
+                                variant='outlined'
+                                InputLabelProps={{shrink: true}}
+                                value={employeeId}
+                                disabled={loading}
+                                onChange={event => onChange(setEmployeeId, event)}
+                            />
+                        </div>
                         <TextField
                             id="login-password"
                             label="Password"
@@ -113,22 +184,13 @@ export default function LoginView(props) {
                         >
                             Login
                         </Button>
-                        <Typography className={classes.errorText} variant='subtitle1' color='error' hidden={!error}>Invalid
-                            Username or Password</Typography>
+                        <Typography className={classes.errorText} variant='subtitle1' color='error'
+                                    hidden={!error.length}>{error}</Typography>
                     </form>
                 </Paper>
             </Container>
         </div>
     );
 
-    return isLoggedIn() ? (
-        <Redirect
-            to={{
-                pathname: from.pathname,
-                state: from
-            }}
-        />
-    ) : (
-        form
-    );
+    return checking ? null : form;
 }
