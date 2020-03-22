@@ -51,7 +51,6 @@ const authMiddleware = (req, res, next) => {
                 return;
             }
             req.tokenData = Object.assign({}, decoded);
-            console.log(`Refreshing token`);
             res.cookie('auth0', reIssueToken(token), {httpOnly: true});
             next();
         })

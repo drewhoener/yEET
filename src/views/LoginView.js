@@ -85,15 +85,12 @@ export default function LoginView(props) {
                 setCompanies(c => [...c, ...data.companies]);
             })
             .catch(err => {
-                console.log(err);
                 const error = {companyId: '-1', companyName: 'Error Fetching Companies'};
                 setCompanies([error]);
                 setSelectedCompany(error);
             });
         axios.get('/api/auth/validate')
             .then(response => {
-                console.log('Got Response');
-                console.log(response);
                 setShouldRedirect(true);
                 setChecking(false);
             })
@@ -110,21 +107,16 @@ export default function LoginView(props) {
         event.preventDefault();
         setError('');
         setLoading(true);
-        console.log(selectedCompany);
         axios.post('/api/auth/login', {
             companyId: selectedCompany.companyId,
             employeeNumber: employeeId,
             password
         })
             .then(result => {
-                console.log(`Login Result: `);
-                console.log(result);
                 setLoading(false);
                 history.replace(from);
             })
             .catch(err => {
-                console.log(`Login Error: `);
-                console.error(err);
                 const {response} = err;
                 setLoading(false);
                 if (response.status === 500) {

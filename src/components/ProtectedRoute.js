@@ -10,35 +10,31 @@ export default function ProtectedRoute({children, ...rest}) {
     const checkLogin = useCallback(() => {
         axios.get('/api/auth/validate')
             .then(response => {
-                console.log('Got Response');
-                console.log(response);
+                //console.log(response);
                 setLoggedIn(true);
                 setCheckingLogin(false);
             })
             .catch(err => {
-                console.log(`Caught Error`);
-                console.log(err);
-                console.log(err.response);
                 setLoggedIn(false);
                 setCheckingLogin(false);
             });
     }, []);
 
     React.useEffect(() => {
-        console.log(`Mounted Main View`);
+        //console.log(`Mounted Main View`);
         setCheckingLogin(true);
-        console.log('Sending auth request...');
+        //console.log('Sending auth request...');
         checkLogin();
     }, [checkLogin]);
 
     const renderAt = () => {
         checkLogin();
         if (checkingLogin) {
-            console.log('Checking Login');
+            //console.log('Checking Login');
             return null;
         }
         if (!loggedIn) {
-            console.log(`Reached Login Redirect`);
+            //console.log(`Reached Login Redirect`);
             return (
                 <Redirect
                     to={{
@@ -48,7 +44,7 @@ export default function ProtectedRoute({children, ...rest}) {
                 />
             );
         }
-        console.log(`Showing Actual Render`);
+        //console.log(`Showing Actual Render`);
         return (
             <Route {...rest}>
                 {children}
