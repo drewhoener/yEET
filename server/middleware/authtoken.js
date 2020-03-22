@@ -1,8 +1,7 @@
-const fs = require('fs');
-const jwt = require('jsonwebtoken');
-const path = require('path');
+import fs from 'fs';
+import jwt from 'jsonwebtoken';
+import path from 'path';
 
-console.log(__dirname);
 const authKeyPrivate = fs.readFileSync(path.join(__dirname, '../../exempt/ecdsa_secret.pem'));
 const authKeyPublic = fs.readFileSync(path.join(__dirname, '../../exempt/ecdsa_secret.pub.pem'));
 const expiresIn = '6h';
