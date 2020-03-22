@@ -5,6 +5,7 @@ const path = require('path');
 console.log(__dirname);
 const authKeyPrivate = fs.readFileSync(path.join(__dirname, '../../exempt/ecdsa_secret.pem'));
 const authKeyPublic = fs.readFileSync(path.join(__dirname, '../../exempt/ecdsa_secret.pub.pem'));
+const expiresIn = '6h';
 
 /**
  * Issues a JWT Token when validating a login request
@@ -17,7 +18,15 @@ const issueToken = (employee) => {
         id: _id.toString(),
         employeeId,
         company: company.toString()
-    }, authKeyPrivate, {algorithm: 'ES512', expiresIn: '20m'});
+    }, authKeyPrivate, {algorithm: 'ES512', expiresIn});
+};
+
+const reIssueToken = ({id, employeeId, company}) => {
+    return jwt.sign({
+        id,
+        employeeId,
+        company
+    }, authKeyPrivate, {algorithm: 'ES512', expiresIn});
 };
 
 /**
@@ -42,6 +51,8 @@ const authMiddleware = (req, res, next) => {
                 return;
             }
             req.tokenData = Object.assign({}, decoded);
+            console.log(`Refreshing token`);
+            res.cookie('auth0', reIssueToken(token), {httpOnly: true});
             next();
         })
         .catch(err => {

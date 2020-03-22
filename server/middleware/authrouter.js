@@ -39,7 +39,7 @@ authRouter.post('/login', (req, res, next) => {
                 })
         })
         .catch(err => {
-            res.status(500).send('Internal Server Error');
+            res.status(401).send('Invalid Username or Password');
         });
 });
 
