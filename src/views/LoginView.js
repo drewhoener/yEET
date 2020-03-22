@@ -46,6 +46,9 @@ const useStyles = makeStyles(theme => ({
             paddingLeft: theme.spacing(1)
         }
     },
+    helperCenered: {
+        textAlign: 'center'
+    },
     loginButton: {
         marginTop: 8
     },
@@ -217,6 +220,9 @@ export default function LoginView(props) {
                             InputLabelProps={{shrink: true}}
                             value={password}
                             disabled={loading}
+                            error={"Testing"}
+                            helperText={'Helper Text Text'}
+                            FormHelperTextProps={{className: classes.helperCenered}}
                             onChange={event => onChange(setPassword, event)}
                         />
                         <Button
