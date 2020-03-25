@@ -37,6 +37,9 @@ const validateToken = async (token) => {
     return jwt.verify(token, authKeyPublic, {algorithm: 'ES512'});
 };
 
+/**
+ * Needs to be on requests that access protected resources
+ * */
 const authMiddleware = (req, res, next) => {
     const token = req.cookies['auth0'];
     if (!token) {
