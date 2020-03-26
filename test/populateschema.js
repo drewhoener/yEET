@@ -1,6 +1,6 @@
 import mongoAuth from '../exempt/mongo_auth';
 import {close as disconnectDB, connect as connectDB} from '../server/database/database';
-import employee_data from '../data/Scranton_Select_Security-employees'
+import employee_data from '../data/320_employees';
 import Employee from "../server/database/schema/employeeschema";
 import Company from "../server/database/schema/companyschema";
 import moment from "moment";
@@ -62,7 +62,7 @@ function constructEmployee(data, company) {
 
 async function populateCompany() {
     let {companyId, companyName} = employee_data[0];
-    await Company.deleteOne({companyId: {'$eq': companyId}});
+    //await Company.deleteOne({companyId: {'$eq': companyId}});
     const company = new Company({companyId, name: companyName});
     await company.save();
     return company;
