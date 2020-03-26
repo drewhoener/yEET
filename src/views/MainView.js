@@ -6,6 +6,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import LoginProtectedRoute from "../components/LoginProtectedRoute";
 import ReadReviewView from "./ReadReviewView";
 import RequestView from "./RequestView";
+import RespondView from "./RespondView";
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -37,6 +38,9 @@ export default function MainView(props) {
                     </LoginProtectedRoute>
                     <LoginProtectedRoute path='/request'>
                         <RequestView/>
+                    </LoginProtectedRoute>
+                    <LoginProtectedRoute path='/write'>
+                        <RespondView/>
                     </LoginProtectedRoute>
                 </Switch>
             </main>
