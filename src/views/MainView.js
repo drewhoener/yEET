@@ -1,10 +1,10 @@
-import ResponsiveNav from "../components/ResponsiveNav";
-import DummyView from "./DummyView";
-import React from "react";
-import {Redirect, Route, Switch} from 'react-router-dom';
-import {makeStyles} from "@material-ui/core/styles";
-import ReadReviewView from "./ReadReviewView";
-import RequestView from "./RequestView";
+import ResponsiveNav from '../components/ResponsiveNav';
+import DummyView from './DummyView';
+import React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+import ReadReviewView from './ReadReviewView';
+import RequestView from './RequestView';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -25,7 +25,7 @@ export default function MainView(props) {
             <ResponsiveNav/>
             <main className={classes.content}>
                 <Switch>
-                    {/*Redirect the '/' path to the home view*/}
+                    {/* Redirect the '/' path to the home view*/ }
                     <Redirect exact from='/' to='/home'/>
                     <Route path='/home'>
                         <div className={classes.toolbar}/>
