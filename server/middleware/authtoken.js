@@ -53,7 +53,7 @@ const authMiddleware = (req, res, next) => {
                 return;
             }
             req.tokenData = Object.assign({}, decoded);
-            res.cookie('auth0', reIssueToken(token), {httpOnly: true});
+            res.cookie('auth0', reIssueToken(decoded), {httpOnly: true});
             next();
         })
         .catch(err => {
