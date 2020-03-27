@@ -1,11 +1,11 @@
-import React from "react";
-import {Link, withRouter} from "react-router-dom";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
-import {makeStyles} from "@material-ui/core/styles";
+import React from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyle = makeStyles(theme => ({
     smallIcon: {
@@ -14,14 +14,14 @@ const useStyle = makeStyles(theme => ({
         margin: '0 auto',
         marginRight: 0,
         fontSize: '.8rem'
-        //paddingRight: 0
+        // paddingRight: 0
     },
 }));
 
 function RoutedListItem(props) {
-    const {icon, primary, to, location, notify, onClick} = props;
+    const { icon, primary, to, location, notify, onClick } = props;
     const classes = useStyle();
-    //Copied from MaterialUI, still figuring out how this works
+    // Copied from MaterialUI, still figuring out how this works
     const renderLink = React.useMemo(
         () =>
             React.forwardRef((linkProps, ref) => (
@@ -39,8 +39,8 @@ function RoutedListItem(props) {
                     notify > 0 ?
                         (
                             <ListItemAvatar>
-                                <Avatar aria-label={`${notify} item${notify === 1 ? '' : 's'} unfinished`}
-                                        className={classes.smallIcon} variant='circle'>{notify}</Avatar>
+                                <Avatar aria-label={ `${ notify } item${ notify === 1 ? '' : 's' } unfinished` }
+                                        className={ classes.smallIcon } variant='circle'>{ notify }</Avatar>
                             </ListItemAvatar>
                         ) : null
                 }
@@ -50,4 +50,4 @@ function RoutedListItem(props) {
     );
 }
 
-export default withRouter(RoutedListItem)
+export default withRouter(RoutedListItem);

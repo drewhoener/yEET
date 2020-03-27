@@ -1,26 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import useScrollTrigger from "@material-ui/core/useScrollTrigger";
-import {CssBaseline} from "@material-ui/core";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
+import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import { CssBaseline } from '@material-ui/core';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import useTheme from "@material-ui/core/styles/useTheme";
-import List from "@material-ui/core/List";
-import {AccountBox, Create, ExitToApp, House, RateReview, Send} from "@material-ui/icons";
-import Divider from "@material-ui/core/Divider";
-import Hidden from "@material-ui/core/Hidden";
-import Drawer from "@material-ui/core/Drawer";
-import RoutedListItem from "./RoutedListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItem from "@material-ui/core/ListItem";
-import Button from "@material-ui/core/Button";
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import useTheme from '@material-ui/core/styles/useTheme';
+import List from '@material-ui/core/List';
+import { AccountBox, Create, ExitToApp, House, RateReview, Send } from '@material-ui/icons';
+import Divider from '@material-ui/core/Divider';
+import Hidden from '@material-ui/core/Hidden';
+import Drawer from '@material-ui/core/Drawer';
+import RoutedListItem from './RoutedListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItem from '@material-ui/core/ListItem';
+import Button from '@material-ui/core/Button';
 import axios from 'axios';
-import {useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -34,10 +34,10 @@ const useStyles = makeStyles(theme => ({
         }
     },
     appBar: {
-        //At every breakpoint from small up set the width to be an offset from the always-open drawer
+        // At every breakpoint from small up set the width to be an offset from the always-open drawer
         [theme.breakpoints.up('sm')]: {
-            //width: `calc(100% - ${drawerWidth}px)`,
-            //marginLeft: drawerWidth,
+            // width: `calc(100% - ${drawerWidth}px)`,
+            // marginLeft: drawerWidth,
             zIndex: theme.zIndex.drawer + 1
         }
     },
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
     },
     menuButton: {
         marginRight: theme.spacing(2),
-        //Don't display the menu button if we're not actually allowing the drawer to be collapsed
+        // Don't display the menu button if we're not actually allowing the drawer to be collapsed
         [theme.breakpoints.up('sm')]: {
             display: 'none',
         },
@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ElevationScroll(props) {
-    const {children, window} = props;
+    const { children, window } = props;
     const trigger = useScrollTrigger({
         disableHysteresis: true,
         threshold: 0,
@@ -76,8 +76,8 @@ ElevationScroll.propTypes = {
 };
 
 function ResponsiveNav(props) {
-    let history = useHistory();
-    const {container} = props;
+    const history = useHistory();
+    const { container } = props;
     const classes = useStyles();
     const theme = useTheme();
     const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -87,13 +87,14 @@ function ResponsiveNav(props) {
     };
 
     const closeDrawer = () => {
-        if (drawerOpen)
+        if (drawerOpen) {
             setDrawerOpen(false);
+        }
     };
 
     const onLogout = () => {
         axios.post('/api/auth/logout')
-            .then().catch().then(() => history.push({pathname: '/login'}));
+            .then().catch().then(() => history.push({ pathname: '/login' }));
     };
 
     const drawerItems = {
@@ -122,19 +123,19 @@ function ResponsiveNav(props) {
 
     const drawer = (
         <div>
-            {/*<div className={classes.toolbar} />*/}
+            {/* <div className={classes.toolbar} />*/ }
             <div className={classes.toolbar}/>
             <Divider/>
             <List>
                 {
                     Object.entries(drawerItems).map(([key, value]) => (
                         <RoutedListItem
-                            key={key.toLowerCase().replace(' ', '_')}
-                            icon={React.cloneElement(value.icon)}
-                            primary={key}
-                            to={value.path}
-                            notify={value.hasOwnProperty('notify') ? value.notify : 0}
-                            onClick={closeDrawer}
+                            key={ key.toLowerCase().replace(' ', '_') }
+                            icon={ React.cloneElement(value.icon) }
+                            primary={ key }
+                            to={ value.path }
+                            notify={ value.notify ? value.notify : 0 }
+                            onClick={ closeDrawer }
                         />
                     ))
                 }
@@ -158,14 +159,14 @@ function ResponsiveNav(props) {
                             color="inherit"
                             aria-label="Open Menu Drawer"
                             edge="start"
-                            className={classes.menuButton}
-                            onClick={onDrawerToggle}
+                            className={ classes.menuButton }
+                            onClick={ onDrawerToggle }
                         >
                             <MenuIcon/>
                         </IconButton>
-                        <Typography variant={"h4"} className={classes.title}>yEET</Typography>
+                        <Typography variant={ 'h4' } className={ classes.title }>yEET</Typography>
                         {
-                            //TODO Make this integrate better with the whole UI}
+                            // TODO Make this integrate better with the whole UI}
                         }
                         <Hidden xsDown>
                             <Button
@@ -182,43 +183,44 @@ function ResponsiveNav(props) {
                 </AppBar>
             </ElevationScroll>
             <nav className={classes.drawer} aria-label="review navigation menu">
-                {/*This drawer will not exist on screens greater than xs*/}
+                {/* This drawer will not exist on screens greater than xs*/ }
                 <Hidden smUp implementation='css'>
                     <Drawer
-                        container={container}
+                        container={ container }
                         variant="temporary"
-                        anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-                        open={drawerOpen}
-                        onClose={onDrawerToggle}
-                        classes={{
+                        anchor={ theme.direction === 'rtl' ? 'right' : 'left' }
+                        open={ drawerOpen }
+                        onClose={ onDrawerToggle }
+                        classes={ {
                             paper: classes.drawerPaper
-                        }}
-                        ModalProps={{
-                            keepMounted: true //Apparently this performs better on mobile
-                        }}
+                        } }
+                        ModalProps={ {
+                            // Apparently this performs better on mobile
+                            keepMounted: true
+                        } }
                     >
-                        {drawer}
+                        { drawer }
                     </Drawer>
                 </Hidden>
-                {/*This drawer will not be visible on screens greater than XS. Permanent drawer*/}
+                {/* This drawer will not be visible on screens greater than XS. Permanent drawer*/ }
                 <Hidden xsDown implementation='css'>
                     <Drawer
-                        classes={{
+                        classes={ {
                             paper: classes.drawerPaper
-                        }}
+                        } }
                         variant='permanent'
-                        PaperProps={{
+                        PaperProps={ {
                             elevation: 0
-                        }}
+                        } }
                         open
                     >
-                        <div className={classes.toolbar}/>
-                        {drawer}
+                        <div className={ classes.toolbar }/>
+                        { drawer }
                     </Drawer>
                 </Hidden>
             </nav>
         </React.Fragment>
-    )
+    );
 }
 
 export default ResponsiveNav;

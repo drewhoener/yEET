@@ -1,12 +1,12 @@
-import React from "react";
-import {CssBaseline, TextField} from "@material-ui/core";
-import {Autocomplete} from '@material-ui/lab';
-import Container from "@material-ui/core/Container";
-import Paper from "@material-ui/core/Paper";
-import {makeStyles} from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import {Redirect, useHistory, useLocation} from 'react-router-dom';
+import React from 'react';
+import { CssBaseline, TextField } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
+import Container from '@material-ui/core/Container';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
@@ -64,28 +64,28 @@ const useStyles = makeStyles(theme => ({
 
 export default function LoginView(props) {
     const classes = useStyles();
-    let history = useHistory();
-    let location = useLocation();
+    const history = useHistory();
+    const location = useLocation();
     const isMobile = /iphone|ipod|ipad|android|blackberry|opera mini|opera mobi|skyfire|maemo|windows phone|palm|iemobile|symbian|symbianos|fennec/i.test(navigator.userAgent.toLowerCase());
     const [shouldRedirect, setShouldRedirect] = React.useState(false);
     const [error, setError] = React.useState('');
-    const [employeeId, setEmployeeId] = React.useState("");
-    const [password, setPassword] = React.useState("");
+    const [employeeId, setEmployeeId] = React.useState('');
+    const [password, setPassword] = React.useState('');
     const [checking, setChecking] = React.useState(true);
     const [loading, setLoading] = React.useState(false);
-    const [companies, setCompanies] = React.useState([{companyId: '-1', companyName: '---'}]);
+    const [companies, setCompanies] = React.useState([{ companyId: '-1', companyName: '---' }]);
     const [selectedCompany, setSelectedCompany] = React.useState(companies[0]);
 
-    let {from} = location.state || {from: {pathname: "/"}};
+    const { from } = location.state || { from: { pathname: '/' } };
 
     React.useEffect(() => {
-        console.log(`We think login view mounted`);
+        console.log('We think login view mounted');
         axios.get('/api/companies')
-            .then(({data}) => {
+            .then(({ data }) => {
                 setCompanies(c => [...c, ...data.companies]);
             })
             .catch(err => {
-                const error = {companyId: '-1', companyName: 'Error Fetching Companies'};
+                const error = { companyId: '-1', companyName: 'Error Fetching Companies' };
                 setCompanies([error]);
                 setSelectedCompany(error);
             });
@@ -117,7 +117,7 @@ export default function LoginView(props) {
                 history.replace(from);
             })
             .catch(err => {
-                const {response} = err;
+                const { response } = err;
                 setLoading(false);
                 if (response.status === 500) {
                     setError('Internal Error, please try again');
@@ -168,9 +168,9 @@ export default function LoginView(props) {
             }}
             renderInput={params => {
                 return (
-                    <TextField {...params} fullWidth variant='outlined' label="Company"
+                    <TextField { ...params } fullWidth variant='outlined' label="Company"
                                margin="normal"/>
-                )
+                );
             }}
         />
     );
@@ -194,10 +194,10 @@ export default function LoginView(props) {
                                     fullWidth
                                     margin='normal'
                                     variant='outlined'
-                                    InputLabelProps={{shrink: true}}
-                                    value={employeeId}
-                                    disabled={loading}
-                                    onChange={event => onChange(setEmployeeId, event)}
+                                    InputLabelProps={ { shrink: true } }
+                                    value={ employeeId }
+                                    disabled={ loading }
+                                    onChange={ event => onChange(setEmployeeId, event) }
                                 />
                             </div>
                         </div>
@@ -209,16 +209,16 @@ export default function LoginView(props) {
                             fullWidth
                             margin='normal'
                             variant='outlined'
-                            InputLabelProps={{shrink: true}}
-                            value={password}
-                            disabled={loading}
-                            //error={true}
-                            //helperText={'Helper Text Text'}
-                            FormHelperTextProps={{className: classes.helperCenered}}
-                            onChange={event => onChange(setPassword, event)}
+                            InputLabelProps={ { shrink: true } }
+                            value={ password }
+                            disabled={ loading }
+                            // error={true}
+                            // helperText={'Helper Text Text'}
+                            FormHelperTextProps={ { className: classes.helperCenered } }
+                            onChange={ event => onChange(setPassword, event) }
                         />
                         <Button
-                            className={classes.loginButton}
+                            className={ classes.loginButton }
                             variant='contained'
                             color='secondary'
                             size='large'
@@ -227,12 +227,12 @@ export default function LoginView(props) {
                             disableElevation
                             disableFocusRipple
                             fullWidth
-                            disabled={loading}
+                            disabled={ loading }
                         >
                             Login
                         </Button>
-                        <Typography className={classes.errorText} variant='subtitle1' color='error'
-                                    hidden={!error.length}>{error}</Typography>
+                        <Typography className={ classes.errorText } variant='subtitle1' color='error'
+                                    hidden={ !error.length }>{ error }</Typography>
                     </form>
                 </Paper>
             </Container>
@@ -240,12 +240,14 @@ export default function LoginView(props) {
     );
 
     const chooseRender = () => {
-        if (checking)
+        if (checking) {
             return null;
-        if (shouldRedirect)
+        }
+        if (shouldRedirect) {
             return (
-                <Redirect to={'/home'} from={from}/>
+                <Redirect to={ '/home' } from={ from }/>
             );
+        }
         return form;
     };
 

@@ -1,17 +1,17 @@
-import Typography from "@material-ui/core/Typography";
-import React from "react";
-import {makeStyles} from "@material-ui/core/styles";
+import Typography from '@material-ui/core/Typography';
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyle = makeStyles(theme => ({
     root: {
-        //display: 'flex',
+        // display: 'flex',
         padding: theme.spacing(3)
     },
     toolbar: theme.mixins.toolbar
 }));
 
 export default function DummyView(props) {
-    //Lots of stupid elements to test with
+    // Lots of stupid elements to test with
     const elements = [...Array(20).keys()];
     const classes = useStyle();
     return (

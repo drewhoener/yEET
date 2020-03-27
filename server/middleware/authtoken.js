@@ -12,20 +12,20 @@ const expiresIn = '6h';
  * @return The signed Token
  * */
 const issueToken = (employee) => {
-    const {_id, employeeId, company} = employee;
+    const { _id, employeeId, company } = employee;
     return jwt.sign({
         id: _id.toString(),
         employeeId,
         company: company.toString()
-    }, authKeyPrivate, {algorithm: 'ES512', expiresIn});
+    }, authKeyPrivate, { algorithm: 'ES512', expiresIn });
 };
 
-const reIssueToken = ({id, employeeId, company}) => {
+const reIssueToken = ({ id, employeeId, company }) => {
     return jwt.sign({
         id,
         employeeId,
         company
-    }, authKeyPrivate, {algorithm: 'ES512', expiresIn});
+    }, authKeyPrivate, { algorithm: 'ES512', expiresIn });
 };
 
 /**
@@ -34,7 +34,7 @@ const reIssueToken = ({id, employeeId, company}) => {
  * @return A promise for the decrypted token
  * */
 const validateToken = async (token) => {
-    return jwt.verify(token, authKeyPublic, {algorithm: 'ES512'});
+    return jwt.verify(token, authKeyPublic, { algorithm: 'ES512' });
 };
 
 /**
@@ -53,7 +53,7 @@ const authMiddleware = (req, res, next) => {
                 return;
             }
             req.tokenData = Object.assign({}, decoded);
-            res.cookie('auth0', reIssueToken(token), {httpOnly: true});
+            res.cookie('auth0', reIssueToken(decoded), { httpOnly: true });
             next();
         })
         .catch(err => {
@@ -62,4 +62,4 @@ const authMiddleware = (req, res, next) => {
         });
 };
 
-export {validateToken, issueToken, authMiddleware};
+export { validateToken, issueToken, authMiddleware };

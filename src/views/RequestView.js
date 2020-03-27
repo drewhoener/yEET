@@ -1,16 +1,17 @@
 import React from 'react';
-import {useHistory} from 'react-router-dom';
-import {makeStyles} from "@material-ui/core/styles";
-import {ListItemSecondaryAction, ListItemText, TextField, useMediaQuery, useTheme} from "@material-ui/core";
-import {Search} from "@material-ui/icons";
-import Divider from "@material-ui/core/Divider";
-import ListItem from "@material-ui/core/ListItem";
-import List from "@material-ui/core/List";
-import Icon from "@material-ui/core/Icon";
-import Container from "@material-ui/core/Container";
-import moment from "moment";
-import Paper from "@material-ui/core/Paper";
-import IconButton from "@material-ui/core/IconButton";
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+import { makeStyles } from '@material-ui/core/styles';
+import { ListItemSecondaryAction, ListItemText, TextField, useMediaQuery, useTheme } from '@material-ui/core';
+import { Search } from '@material-ui/icons';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import List from '@material-ui/core/List';
+import Icon from '@material-ui/core/Icon';
+import Container from '@material-ui/core/Container';
+import moment from 'moment';
+import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -53,36 +54,48 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const data = require('../data/users');
-const UserList = ({classes}) => {
-    let theme = useTheme();
-    let history = useHistory();
-    let largeScreen = useMediaQuery(theme.breakpoints.up('md'));
+const UserList = ({ classes }) => {
+    const theme = useTheme();
+    const history = useHistory();
+    const largeScreen = useMediaQuery(theme.breakpoints.up('md'));
+
+    React.useEffect(() => {
+        console.log('Sending request for employees');
+        axios.get('/api/employees')
+            .then(result => {
+                console.log(result);
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }, []);
+
     return (
-        <List className={classes.list}>
+        <List className={ classes.list }>
             {
                 Object.entries(data).map(([key, val]) => {
-                    let {requestedBefore, lastRequested} = val;
-                    let time = requestedBefore ? moment(lastRequested) : null;
+                    const { requestedBefore, lastRequested } = val;
+                    const time = requestedBefore ? moment(lastRequested) : null;
                     return (
-                        <React.Fragment key={`${key.toLowerCase().replace(' ', '_')}-${val.employeeID}`}>
+                        <React.Fragment key={ `${ key.toLowerCase().replace(' ', '_') }-${ val.employeeID }` }>
                             <Divider/>
                             <ListItem>
-                                <ListItemText tabIndex={0} className={classes.listItem} primary={key}
-                                              primaryTypographyProps={{className: classes.listItemText}}
-                                              secondary={`Employee ID: ${val.employeeID}`}/>
+                                <ListItemText tabIndex={ 0 } className={ classes.listItem } primary={ key }
+                                              primaryTypographyProps={ { className: classes.listItemText } }
+                                              secondary={ `Employee ID: ${ val.employeeID }` }/>
                                 {
                                     (requestedBefore && time !== null) ?
-                                        <ListItemText tabIndex={0} className={classes.requestedText}
-                                                      primary={`Requested ${largeScreen ? 'Review' : ''}`}
-                                                      secondary={time.calendar()}/> : null
+                                        <ListItemText tabIndex={ 0 } className={ classes.requestedText }
+                                                      primary={ `Requested ${ largeScreen ? 'Review' : '' }` }
+                                                      secondary={ time.calendar() }/> : null
                                 }
-                                <ListItemSecondaryAction tabIndex={0} className={classes.requestIcon}>
-                                    <IconButton aria-label={val.state.name}
-                                                style={{color: val.state.color}}><Icon>{val.state.icon}</Icon></IconButton>
+                                <ListItemSecondaryAction tabIndex={ 0 } className={ classes.requestIcon }>
+                                    <IconButton aria-label={ val.state.name }
+                                                style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
                                 </ListItemSecondaryAction>
                             </ListItem>
                         </React.Fragment>
-                    )
+                    );
                 })
             }
             <Divider/>
@@ -95,26 +108,26 @@ export default function RequestView(props) {
 
     return (
         <React.Fragment>
-            <div className={classes.toolbar}/>
-            <div className={classes.root}>
+            <div className={ classes.toolbar }/>
+            <div className={ classes.root }>
                 <Container maxWidth='xl'>
-                    <Paper className={classes.paper}>
+                    <Paper className={ classes.paper }>
                         <TextField
-                            className={classes.margin}
+                            className={ classes.margin }
                             id="search-users"
                             label="Search Users"
 
                             variant='outlined'
                             fullWidth
-                            InputProps={{
+                            InputProps={ {
                                 endAdornment: (
                                     <IconButton position='end' aria-label='Search'>
                                         <Search/>
                                     </IconButton>
                                 ),
-                            }}
+                            } }
                         />
-                        {/*<Typography variant='h2' align='center'>Hello World</Typography>*/}
+                        {/* <Typography variant='h2' align='center'>Hello World</Typography>*/ }
                         <UserList classes={classes}/>
                     </Paper>
                 </Container>
