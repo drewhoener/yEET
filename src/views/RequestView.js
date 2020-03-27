@@ -1,22 +1,25 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
-import { ListItemSecondaryAction, ListItemText, TextField, useMediaQuery, useTheme } from '@material-ui/core';
+import { Checkbox, ListItemIcon, ListItemText, TextField, useMediaQuery, useTheme } from '@material-ui/core';
 import { Search } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
-import Icon from '@material-ui/core/Icon';
 import Container from '@material-ui/core/Container';
-import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { now } from 'moment';
 
 const useStyle = makeStyles(theme => ({
     root: {
         display: 'flex',
         padding: theme.spacing(3)
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff'
     },
     toolbar: theme.mixins.toolbar,
     paper: {
@@ -50,55 +53,107 @@ const useStyle = makeStyles(theme => ({
     },
     requestIcon: {
         transform: 'translateY(-50%)',
+    },
+    loaderDiv: {
+        minWidth: '100%',
+        display: 'flex',
+        justifyContent: 'center'
     }
 }));
 
-const data = require('../data/users');
+function getNanoSecTime() {
+    const hrTime = process.hrtime();
+    return hrTime[0] * 1000000000 + hrTime[1];
+}
+
+const Loader = ({ classes }) => {
+    return (
+        <div className={ classes.loaderDiv }>
+            <CircularProgress size='7.3rem' thickness={ 2 } variant='indeterminate'/>
+        </div>
+    );
+};
+
 const UserList = ({ classes }) => {
     const theme = useTheme();
-    const history = useHistory();
     const largeScreen = useMediaQuery(theme.breakpoints.up('md'));
+    const [loading, setLoading] = React.useState(true);
+    const [employees, setEmployees] = React.useState([]);
+    const [checkedItems, setCheckedItems] = React.useState([]);
 
     React.useEffect(() => {
         console.log('Sending request for employees');
         axios.get('/api/employees')
             .then(result => {
+                console.log('Got Result');
                 console.log(result);
+                setLoading(false);
+                if (result.data && result.data.employees) {
+                    setEmployees(result.data.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName)));
+                }
             })
             .catch(err => {
                 console.error(err);
             });
     }, []);
 
+    const updateCheckedItem = value => () => {
+        console.log(value);
+        const milli = now();
+        console.log('Starting Iteration:');
+        const index = checkedItems.indexOf(value);
+        const newCheckedItems = [...checkedItems];
+        if (index === -1) {
+            newCheckedItems.push(value);
+        } else {
+            newCheckedItems.splice(index, 1);
+        }
+        console.log(`Ending Iteration: ${ (now() - milli) }`);
+        setCheckedItems(newCheckedItems);
+    };
+
     return (
         <List className={ classes.list }>
             {
-                Object.entries(data).map(([key, val]) => {
-                    const { requestedBefore, lastRequested } = val;
-                    const time = requestedBefore ? moment(lastRequested) : null;
+                loading &&
+                <Loader classes={ classes }/>
+            }
+            {
+                employees.map(employee => {
                     return (
-                        <React.Fragment key={ `${ key.toLowerCase().replace(' ', '_') }-${ val.employeeID }` }>
+                        <React.Fragment key={ employee._id }>
                             <Divider/>
-                            <ListItem>
-                                <ListItemText tabIndex={ 0 } className={ classes.listItem } primary={ key }
+                            <ListItem role={ undefined } button onClick={ updateCheckedItem(employee.employeeId) }>
+                                <ListItemIcon>
+                                    <Checkbox
+                                        edge="start"
+                                        checked={ checkedItems.indexOf(employee.employeeId) !== -1 }
+                                        tabIndex={ -1 }
+                                        disableRipple
+                                        inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
+                                    />
+                                </ListItemIcon>
+                                <ListItemText tabIndex={ 0 } className={ classes.listItem }
+                                              primary={ `${ employee.firstName } ${ employee.lastName }` }
                                               primaryTypographyProps={ { className: classes.listItemText } }
-                                              secondary={ `Employee ID: ${ val.employeeID }` }/>
+                                              secondary={ employee.position }/>
                                 {
-                                    (requestedBefore && time !== null) ?
-                                        <ListItemText tabIndex={ 0 } className={ classes.requestedText }
-                                                      primary={ `Requested ${ largeScreen ? 'Review' : '' }` }
-                                                      secondary={ time.calendar() }/> : null
+                                    /*
+                                    <ListItemSecondaryAction tabIndex={ 0 } className={ classes.requestIcon }>
+                                        <IconButton aria-label={ val.state.name }
+                                                    style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
+                                    </ListItemSecondaryAction>
+                                    */
                                 }
-                                <ListItemSecondaryAction tabIndex={ 0 } className={ classes.requestIcon }>
-                                    <IconButton aria-label={ val.state.name }
-                                                style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
-                                </ListItemSecondaryAction>
                             </ListItem>
                         </React.Fragment>
                     );
                 })
             }
-            <Divider/>
+            {
+                !loading &&
+                <Divider/>
+            }
         </List>
     );
 };
@@ -128,7 +183,7 @@ export default function RequestView(props) {
                             } }
                         />
                         {/* <Typography variant='h2' align='center'>Hello World</Typography>*/ }
-                        <UserList classes={classes}/>
+                        <UserList classes={ classes }/>
                     </Paper>
                 </Container>
             </div>

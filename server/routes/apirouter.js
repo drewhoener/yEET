@@ -33,17 +33,25 @@ apiRouter.get('/employees', authMiddleware, (req, res) => {
         return;
     }
 
-    Employee.find({ company: new ObjectId(req.tokenData.company), _id: { '$ne': req.tokenData.employeeId } })
+    Employee.find({ company: new ObjectId(req.tokenData.company), _id: { '$ne': new ObjectId(req.tokenData.id) } })
         .then(result => {
             // console.log(result);
             if (!result) {
                 result = [];
             }
             res.status(200).json({
-                employees: result
+                employees: result.map(({ _id, employeeId, firstName, lastName, startDate, position }) => ({
+                    _id,
+                    employeeId,
+                    firstName,
+                    lastName,
+                    startDate,
+                    position
+                }))
             });
         })
         .catch(err => {
+            console.error(err);
             res.status(500).send('Internal Error');
         });
 });
