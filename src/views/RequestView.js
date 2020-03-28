@@ -61,13 +61,8 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-function getNanoSecTime() {
-    const hrTime = process.hrtime();
-    return hrTime[0] * 1000000000 + hrTime[1];
-}
-
-function employeeName(employee) {
-    return employee.firstName + ' ' + employee.lastname;
+function employeeName({ firstName, lastName }) {
+    return `${ firstName } ${ lastName }`;
 }
 
 const Loader = ({ classes }) => {
@@ -79,12 +74,12 @@ const Loader = ({ classes }) => {
 };
 
 
-const UserList = ({ classes }) => {
+const UserList = ({ classes, search }) => {
     const theme = useTheme();
     const largeScreen = useMediaQuery(theme.breakpoints.up('md'));
     const [loading, setLoading] = React.useState(true);
     const [employees, setEmployees] = React.useState([]);
-    const [renderedEmployees, setRenderedEmployees] = React.useState([]);
+    // const [renderedEmployees, setRenderedEmployees] = React.useState([]);
     const [checkedItems, setCheckedItems] = React.useState([]);
 
     React.useEffect(() => {
@@ -96,7 +91,7 @@ const UserList = ({ classes }) => {
                 setLoading(false);
                 if (result.data && result.data.employees) {
                     setEmployees(result.data.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName)));
-                    setRenderedEmployees(result.data.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName)));
+                    // setRenderedEmployees(result.data.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName)));
                 }
             })
             .catch(err => {
@@ -104,15 +99,8 @@ const UserList = ({ classes }) => {
             });
     }, []);
 
-    const handleChange = (e) => {
-        const searchString = e.target.value;
-        filterEmployees(searchString);
-    };
-
-    const filterEmployees = (searchString) => {
-        setRenderedEmployees(employees.filter((employee) => {
-            return employeeName(employee).toLowerCase().substring(0, searchString.length) === searchString.toLowerCase();
-        }));
+    const matchesFilter = (employee) => {
+        return employeeName(employee).toLowerCase().substring(0, search.length) === search.toLowerCase();
     };
 
     const updateCheckedItem = value => () => {
@@ -132,28 +120,14 @@ const UserList = ({ classes }) => {
 
     return (
         <div className = {classes.list}>
-            <TextField
-                className={ classes.margin }
-                id="search-users"
-                label="Search Users"
-                variant='outlined'
-                fullWidth
-                InputProps={ {
-                    endAdornment: (
-                        <IconButton position='end' aria-label='Search'>
-                            <Search/>
-                        </IconButton>
-                    ),
-                } }
-                onChange = {handleChange}
-            />
+
             <List>
                 {
                     loading &&
                     <Loader classes={ classes }/>
                 }
                 {
-                    renderedEmployees.map(employee => {
+                    employees.filter(matchesFilter).map(employee => {
                         return (
                             <React.Fragment key={ employee._id }>
                                 <Divider/>
@@ -197,6 +171,12 @@ const UserList = ({ classes }) => {
 
 export default function RequestView(props) {
     const classes = useStyle();
+    const [searchKey, setSearchKey] = React.useState('');
+
+    const handleChange = (e) => {
+        const searchString = e.target.value;
+        setSearchKey(searchString.toLowerCase());
+    };
 
     return (
         <React.Fragment>
@@ -204,7 +184,22 @@ export default function RequestView(props) {
             <div className={ classes.root }>
                 <Container maxWidth='xl'>
                     <Paper className={ classes.paper }>
-                        <UserList classes = {classes}/>
+                        <TextField
+                            className={ classes.margin }
+                            id="search-users"
+                            label="Search Users"
+                            variant='outlined'
+                            fullWidth
+                            InputProps={ {
+                                endAdornment: (
+                                    <IconButton position='end' aria-label='Search'>
+                                        <Search/>
+                                    </IconButton>
+                                ),
+                            } }
+                            onChange={ handleChange }
+                        />
+                        <UserList search={ searchKey } classes={ classes }/>
                     </Paper>
                 </Container>
             </div>
