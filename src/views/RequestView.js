@@ -66,6 +66,10 @@ function getNanoSecTime() {
     return hrTime[0] * 1000000000 + hrTime[1];
 }
 
+function employeeName(employee) {
+    return employee.firstName + " " + employee.lastname;
+}
+
 const Loader = ({ classes }) => {
     return (
         <div className={ classes.loaderDiv }>
@@ -74,11 +78,13 @@ const Loader = ({ classes }) => {
     );
 };
 
+
 const UserList = ({ classes }) => {
     const theme = useTheme();
     const largeScreen = useMediaQuery(theme.breakpoints.up('md'));
     const [loading, setLoading] = React.useState(true);
     const [employees, setEmployees] = React.useState([]);
+    const [renderedEmployees, setRenderedEmployees] = React.useState([]);
     const [checkedItems, setCheckedItems] = React.useState([]);
 
     React.useEffect(() => {
@@ -90,12 +96,24 @@ const UserList = ({ classes }) => {
                 setLoading(false);
                 if (result.data && result.data.employees) {
                     setEmployees(result.data.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName)));
+                    setRenderedEmployees(result.data.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName)));
                 }
             })
             .catch(err => {
                 console.error(err);
             });
     }, []);
+
+    const handleChange = (e) => {
+        let searchString = e.target.value;
+        filterEmployees(searchString);
+    }
+
+    const filterEmployees = (searchString) => {
+        setRenderedEmployees(employees.filter((employee) => {
+            return employeeName(employee).toLowerCase().substring(0, searchString.length) === searchString.toLowerCase();
+        }));
+    }
 
     const updateCheckedItem = value => () => {
         console.log(value);
@@ -113,50 +131,69 @@ const UserList = ({ classes }) => {
     };
 
     return (
-        <List className={ classes.list }>
-            {
-                loading &&
-                <Loader classes={ classes }/>
-            }
-            {
-                employees.map(employee => {
-                    return (
-                        <React.Fragment key={ employee._id }>
-                            <Divider/>
-                            <ListItem role={ undefined } button onClick={ updateCheckedItem(employee.employeeId) }>
-                                <ListItemIcon>
-                                    <Checkbox
-                                        edge="start"
-                                        checked={ checkedItems.indexOf(employee.employeeId) !== -1 }
-                                        tabIndex={ -1 }
-                                        disableRipple
-                                        inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
-                                    />
-                                </ListItemIcon>
-                                <ListItemText tabIndex={ 0 } className={ classes.listItem }
-                                              primary={ `${ employee.firstName } ${ employee.lastName }` }
-                                              primaryTypographyProps={ { className: classes.listItemText } }
-                                              secondary={ employee.position }/>
-                                {
-                                    /*
-                                    <ListItemSecondaryAction tabIndex={ 0 } className={ classes.requestIcon }>
-                                        <IconButton aria-label={ val.state.name }
-                                                    style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
-                                    </ListItemSecondaryAction>
-                                    */
-                                }
-                            </ListItem>
-                        </React.Fragment>
-                    );
-                })
-            }
-            {
-                !loading &&
-                <Divider/>
-            }
-        </List>
+        <div className = {classes.list}>
+            <TextField
+                className={ classes.margin }
+                id="search-users"
+                label="Search Users"
+                variant='outlined'
+                fullWidth
+                InputProps={ {
+                    endAdornment: (
+                        <IconButton position='end' aria-label='Search'>
+                            <Search/>
+                        </IconButton>
+                    ),
+                } }
+                onChange = {handleChange}
+            />
+            <List>
+                {
+                    loading &&
+                    <Loader classes={ classes }/>
+                }
+                {
+                    renderedEmployees.map(employee => {
+                        return (
+                            <React.Fragment key={ employee._id }>
+                                <Divider/>
+                                <ListItem role={ undefined } button onClick={ updateCheckedItem(employee.employeeId) }>
+                                    <ListItemIcon>
+                                        <Checkbox
+                                            edge="start"
+                                            checked={ checkedItems.indexOf(employee.employeeId) !== -1 }
+                                            tabIndex={ -1 }
+                                            disableRipple
+                                            inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
+                                        />
+                                    </ListItemIcon>
+                                    <ListItemText tabIndex={ 0 } className={ classes.listItem }
+                                                primary={ `${ employee.firstName } ${ employee.lastName }` }
+                                                primaryTypographyProps={ { className: classes.listItemText } }
+                                                secondary={ employee.position }/>
+                                    {
+                                        /*
+                                        <ListItemSecondaryAction tabIndex={ 0 } className={ classes.requestIcon }>
+                                            <IconButton aria-label={ val.state.name }
+                                                        style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
+                                        </ListItemSecondaryAction>
+                                        */
+                                    }
+                                </ListItem>
+                            </React.Fragment>
+                        );
+                    })
+                }
+                {
+                    !loading &&
+                    <Divider/>
+                }
+            </List>
+        </div>
     );
 };
+
+
 
 export default function RequestView(props) {
     const classes = useStyle();
@@ -167,23 +204,7 @@ export default function RequestView(props) {
             <div className={ classes.root }>
                 <Container maxWidth='xl'>
                     <Paper className={ classes.paper }>
-                        <TextField
-                            className={ classes.margin }
-                            id="search-users"
-                            label="Search Users"
-
-                            variant='outlined'
-                            fullWidth
-                            InputProps={ {
-                                endAdornment: (
-                                    <IconButton position='end' aria-label='Search'>
-                                        <Search/>
-                                    </IconButton>
-                                ),
-                            } }
-                        />
-                        {/* <Typography variant='h2' align='center'>Hello World</Typography>*/ }
-                        <UserList classes={ classes }/>
+                        <UserList classes = {classes}/>
                     </Paper>
                 </Container>
             </div>
