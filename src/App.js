@@ -10,7 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 const theme = createMuiTheme({
     palette: {
-        primary: purple,
+        primary: green,
         secondary: green,
     },
     status: {
