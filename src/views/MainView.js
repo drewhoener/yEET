@@ -4,7 +4,7 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import ReadReviewView from './ReadReviewView';
-import RequestView from './RequestView';
+import RequestViewVirtualized from './RequestViewVirtualized';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -15,6 +15,10 @@ const useStyle = makeStyles(theme => ({
     },
     content: {
         flexGrow: 1,
+        height: '100vh',
+        minHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     }
 }));
 
@@ -35,7 +39,7 @@ export default function MainView(props) {
                         <ReadReviewView/>
                     </Route>
                     <Route path='/request'>
-                        <RequestView/>
+                        <RequestViewVirtualized/>
                     </Route>
                 </Switch>
             </main>

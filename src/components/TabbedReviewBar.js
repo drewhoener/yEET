@@ -9,7 +9,8 @@ const useStyle = makeStyles(theme => ({
     root: {
         flex: '0 1 auto',
         position: 'sticky',
-        top: 0
+        top: 0,
+        zIndex: 100,
         // position: '-webkit-sticky'
     },
     toolbar: theme.mixins.toolbar,

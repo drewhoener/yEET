@@ -17,7 +17,7 @@ const useStyle = makeStyles(theme => ({
     inlineFlex: {
         display: 'inline-flex',
         flexDirection: 'column',
-        width: '100%'
+        width: '100%',
     },
     panelEnclosed: {
         padding: theme.spacing(3),
