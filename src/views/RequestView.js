@@ -67,7 +67,7 @@ function getNanoSecTime() {
 }
 
 function employeeName(employee) {
-    return employee.firstName + " " + employee.lastname;
+    return employee.firstName + ' ' + employee.lastname;
 }
 
 const Loader = ({ classes }) => {
@@ -105,15 +105,15 @@ const UserList = ({ classes }) => {
     }, []);
 
     const handleChange = (e) => {
-        let searchString = e.target.value;
+        const searchString = e.target.value;
         filterEmployees(searchString);
-    }
+    };
 
     const filterEmployees = (searchString) => {
         setRenderedEmployees(employees.filter((employee) => {
             return employeeName(employee).toLowerCase().substring(0, searchString.length) === searchString.toLowerCase();
         }));
-    }
+    };
 
     const updateCheckedItem = value => () => {
         console.log(value);
