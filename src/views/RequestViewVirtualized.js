@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import ListItem from '@material-ui/core/ListItem';
 import { AutoSizer, List } from 'react-virtualized';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Loader from '../components/Loader';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -61,14 +61,6 @@ const useStyle = makeStyles(theme => ({
     },
 }));
 
-const Loader = ({ classes }) => {
-    return (
-        <div className={ classes.loaderDiv }>
-            <CircularProgress size='7.3rem' thickness={ 2 } variant='indeterminate'/>
-        </div>
-    );
-};
-
 export default function RequestViewVirtualized(props) {
     const classes = useStyle();
     const [searchKey, setSearchKey] = React.useState('');
@@ -76,9 +68,9 @@ export default function RequestViewVirtualized(props) {
     const [matchedEmployees, setMatchedEmployees] = React.useState(0);
     const [loading, setLoading] = React.useState(true);
 
-    const matchesFilter = ({ firstName, lastName }) => {
+    const matchesFilter = React.useCallback(({ firstName, lastName }) => {
         return `${ firstName } ${ lastName }`.toLowerCase().substring(0, searchKey.length) === searchKey.toLowerCase();
-    };
+    }, [searchKey]);
 
     const handleChange = (e) => {
         const searchString = e.target.value;
@@ -91,7 +83,7 @@ export default function RequestViewVirtualized(props) {
             return;
         }
         setMatchedEmployees(employees.filter(matchesFilter).length);
-    }, [employees, searchKey]);
+    }, [employees, searchKey, matchesFilter]);
 
     React.useEffect(() => {
         console.log('Sending request for employees');
@@ -106,7 +98,7 @@ export default function RequestViewVirtualized(props) {
                         setLoading(false);
                         // setRenderedEmployees(result.data.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName)));
                     }
-                }, 2500);
+                }, 1500);
 
             })
             .catch(err => {
@@ -169,10 +161,7 @@ export default function RequestViewVirtualized(props) {
                             } }
                             onChange={ handleChange }
                         />
-                        {
-                            loading &&
-                            <Loader classes={ classes }/>
-                        }
+                        <Loader className={ classes.loaderDiv } visible={ loading }/>
                         <div className={ classes.autoContainer }>
                             <AutoSizer>
                                 {
@@ -182,7 +171,7 @@ export default function RequestViewVirtualized(props) {
                                             width={ width }
                                             height={ height }
                                             rowCount={ matchedEmployees }
-                                            rowHeight={ 55 }
+                                            rowHeight={ 65 }
                                             rowRenderer={ rowRenderer }
                                             overscanRowCount={ 5 }
                                         />
