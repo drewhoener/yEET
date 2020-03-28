@@ -32,6 +32,7 @@
     "serve": "serve -s build",
     "populatedb": "babel-node ./test/populateschema.js",
     "testdb": "babel-node ./test/testfetchpromise.js",
+    "populateresponse": "babel-node ./test/test_dummy_requests.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

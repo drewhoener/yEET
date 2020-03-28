@@ -1,14 +1,15 @@
-import mongoose, {Schema} from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const requestSchema = new Schema({
+    company: { type: mongoose.ObjectId, required: true },
     /**
      * The time that the request was issued
      * */
-    timeRequested: {type: Date, required: true},
+    timeRequested: { type: Date, required: true },
     /**
      * The user that needs a review done for them
      * */
-    userRequesting: {type: mongoose.ObjectId, required: true, index: true},
+    userRequesting: { type: mongoose.ObjectId, required: true, index: true },
     /**
      * The user receiving the request
      * This is the person that will eventually write the request
