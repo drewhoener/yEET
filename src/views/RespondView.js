@@ -52,7 +52,6 @@ const RequestList = ({classes, status}) => {
         <List className={classes.list}>
             {
                 reqs.map(req => { 
-                    console.log(reqs);
                     let sender;                         // Get the request sender's data
                     for (let user in users2.users) {    // There's probably a way to do this 10x less awful with the actual DB and mongoose (?)
                         if (users2.users[user].employeeID == req.senderID) {
