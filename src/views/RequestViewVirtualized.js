@@ -9,16 +9,15 @@ import axios from 'axios';
 import ListItem from '@material-ui/core/ListItem';
 import { AutoSizer, List } from 'react-virtualized';
 import Loader from '../components/Loader';
+import Fuse from 'fuse.js';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 
 const useStyle = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexGrow: '1',
         padding: theme.spacing(3)
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff'
     },
     paperContainer: {
         display: 'flex',
@@ -48,42 +47,140 @@ const useStyle = makeStyles(theme => ({
     },
     smallScrollbar: {
         '&::-webkit-scrollbar': {
-            width: '0.4em'
+            width: '0.8em',
+            height: '0.6em'
         },
         '&::-webkit-scrollbar-track': {
-            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-            webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+            boxShadow: 'inset 0 0 10px rgba(0,0,0,0.00)',
+            webkitBoxShadow: 'inset 0 0 10px rgba(0,0,0,0.00)'
         },
         '&::-webkit-scrollbar-thumb': {
             backgroundColor: 'rgba(0,0,0,.1)',
-            outline: '1px solid slategrey'
+            outline: '2px solid slategrey'
         }
     },
 }));
+
+const useDividerStyles = makeStyles(theme => ({
+    flexHolder: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        margin: theme.spacing(1)
+    },
+    text: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexShrink: 1,
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+    },
+    dividerLeft: {
+        //width: '15%',
+        maxWidth: '3%',
+        flex: '1 1 auto',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+    },
+    dividerRight: {
+        //width: '95%',
+        maxWidth: '97%',
+        flex: '1 0 auto',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+    },
+    flexed: {
+        flexGrow: 1
+    }
+}));
+
+const TextDivider = ({ content, ...rest }) => {
+    const classes = useDividerStyles();
+    return (
+        <div { ...rest } className={ classes.flexHolder }>
+            <div className={ classes.dividerLeft }>
+                <Divider className={ classes.flexed } orientation={ 'horizontal' }/>
+            </div>
+            <div className={ classes.text }>
+                <Typography align='center' variant='h5'>{ content }</Typography>
+            </div>
+            <div className={ classes.dividerRight }>
+                <Divider className={ classes.flexed } orientation={ 'horizontal' }/>
+            </div>
+        </div>
+    );
+};
+
+const searchOptions = {
+    includeScore: true,
+    threshold: 0.4,
+    location: 0,
+    distance: 95,
+    minMatchCharLength: 1,
+    keys: [
+        'lastName',
+        'firstName',
+        'position',
+        'employeeId',
+    ]
+};
 
 export default function RequestViewVirtualized(props) {
     const classes = useStyle();
     const [searchKey, setSearchKey] = React.useState('');
     const [employees, setEmployees] = React.useState([]);
-    const [matchedEmployees, setMatchedEmployees] = React.useState(0);
+    const [selectedEmployees, setSelectedEmployees] = React.useState([]);
+    const [matchedEmployees, setMatchedEmployees] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
-
-    const matchesFilter = React.useCallback(({ firstName, lastName }) => {
-        return `${ firstName } ${ lastName }`.toLowerCase().substring(0, searchKey.length) === searchKey.toLowerCase();
-    }, [searchKey]);
+    const [searcher, setSearcher] = React.useState(new Fuse([], searchOptions));
 
     const handleChange = (e) => {
         const searchString = e.target.value;
         setSearchKey(searchString.toLowerCase());
     };
 
+    const onSelectItem = id => () => {
+        const index = selectedEmployees.indexOf(id);
+        const selected = [...selectedEmployees];
+
+        if (index === -1) {
+            selected.push(id);
+        } else {
+            selected.splice(index, 1);
+        }
+
+        setSelectedEmployees(selected);
+    };
+
     React.useEffect(() => {
+        setSearcher(new Fuse(employees, searchOptions));
+    }, [employees]);
+
+    React.useEffect(() => {
+        // console.log('Setting filtered users');
         if (!searchKey) {
-            setMatchedEmployees(employees.length);
+            setMatchedEmployees(employees.map((val, idx) => idx));
             return;
         }
-        setMatchedEmployees(employees.filter(matchesFilter).length);
-    }, [employees, searchKey, matchesFilter]);
+        const results = searcher.search(searchKey);
+        // console.log('Results: ');
+        // console.log(results);
+        setMatchedEmployees(results.sort((o1, o2) => {
+                const compareScore = o1.score - o2.score;
+                if (compareScore !== 0) {
+                    return compareScore;
+                }
+                return o1.item.lastName.localeCompare(o2.item.lastName);
+            }).map(item => item.refIndex)
+        );
+    }, [searcher, employees, searchKey]);
 
     React.useEffect(() => {
         console.log('Sending request for employees');
@@ -98,7 +195,7 @@ export default function RequestViewVirtualized(props) {
                         setLoading(false);
                         // setRenderedEmployees(result.data.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName)));
                     }
-                }, 1500);
+                }, 750);
 
             })
             .catch(err => {
@@ -118,22 +215,29 @@ export default function RequestViewVirtualized(props) {
                              // Style object to be applied to row (to position it)
                              style,
                          }) => {
-        const employee = employees[index];
+
+        if (index % 2 === 1) {
+            return (<Divider key={ key } style={ style }/>);
+        }
+
+        const employee = employees[matchedEmployees[Math.floor(index / 2)]];
         if (!employee) {
             return null;
         }
+
         return (
-            <ListItem key={ key } style={ style } role={ undefined } button>
+            <ListItem key={ key } style={ style } role={ undefined } button
+                      onClick={ onSelectItem(employee.employeeId) }>
                 <ListItemIcon>
                     <Checkbox
                         edge="start"
-                        checked={ false }
+                        checked={ selectedEmployees.some(item => employee.employeeId === item) }
                         tabIndex={ -1 }
                         disableRipple
                         inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
                     />
                 </ListItemIcon>
-                <ListItemText tabIndex={ 0 } className={ classes.listItem }
+                <ListItemText className={ classes.listItem }
                               primary={ `${ employee.firstName } ${ employee.lastName }` }
                               primaryTypographyProps={ { className: classes.listItemText } }
                               secondary={ employee.position }/>
@@ -161,6 +265,7 @@ export default function RequestViewVirtualized(props) {
                             } }
                             onChange={ handleChange }
                         />
+                        <Divider/>
                         <Loader className={ classes.loaderDiv } visible={ loading }/>
                         <div className={ classes.autoContainer }>
                             <AutoSizer>
@@ -170,8 +275,8 @@ export default function RequestViewVirtualized(props) {
                                             className={ classes.smallScrollbar }
                                             width={ width }
                                             height={ height }
-                                            rowCount={ matchedEmployees }
-                                            rowHeight={ 65 }
+                                            rowCount={ matchedEmployees.length * 2 }
+                                            rowHeight={ ({ index }) => index % 2 === 1 ? 1 : 65 }
                                             rowRenderer={ rowRenderer }
                                             overscanRowCount={ 5 }
                                         />
