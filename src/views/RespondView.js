@@ -43,7 +43,7 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const users2 = require('../data/users2');
-const requests = require('../data/requestdata');
+// const requests = require('../data/requestdata');
 const RequestList = ({ classes, status, requests }) => {
     let theme = useTheme();
     //const [requests, setRequests] = React.useState([]);
@@ -113,7 +113,8 @@ export default function RespondView(props) {
     React.useEffect(() => {
         axios.get('/api/open-requests')
             .then(({ data }) => {
-                setRequests(data.companies);
+                console.log(data);
+                setRequests(data);
             })
             .catch(err => {
                 //const error = {companyId: '-1', companyName: 'Error Fetching Companies'};
@@ -129,9 +130,9 @@ export default function RespondView(props) {
                     <h1>Pending</h1>
                     <Pending classes={ classes } requests={ requests }/>
                     <h1>Accepted</h1>
-                    <Accepted classes={ classes }/>
+                    <Accepted classes={ classes } requests={ requests }/>
                     <h1>Completed</h1>
-                    <Completed classes={classes}/>
+                    <Completed classes={classes} requests={ requests }/>
                 </Container>
             </div>
         </React.Fragment>
