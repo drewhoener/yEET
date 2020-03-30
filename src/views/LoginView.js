@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { isMobile } from '../util';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -66,7 +67,6 @@ export default function LoginView(props) {
     const classes = useStyles();
     const history = useHistory();
     const location = useLocation();
-    const isMobile = /iphone|ipod|ipad|android|blackberry|opera mini|opera mobi|skyfire|maemo|windows phone|palm|iemobile|symbian|symbianos|fennec/i.test(navigator.userAgent.toLowerCase());
     const [shouldRedirect, setShouldRedirect] = React.useState(false);
     const [error, setError] = React.useState('');
     const [employeeId, setEmployeeId] = React.useState('');
