@@ -11,7 +11,6 @@ import { AutoSizer, List } from 'react-virtualized';
 import Loader from '../components/Loader';
 import Fuse from 'fuse.js';
 import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -60,63 +59,6 @@ const useStyle = makeStyles(theme => ({
         }
     },
 }));
-
-const useDividerStyles = makeStyles(theme => ({
-    flexHolder: {
-        display: 'flex',
-        flexDirection: 'row',
-        width: '100%',
-        margin: theme.spacing(1)
-    },
-    text: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexShrink: 1,
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
-    dividerLeft: {
-        //width: '15%',
-        maxWidth: '3%',
-        flex: '1 1 auto',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
-    dividerRight: {
-        //width: '95%',
-        maxWidth: '97%',
-        flex: '1 0 auto',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
-    flexed: {
-        flexGrow: 1
-    }
-}));
-
-const TextDivider = ({ content, ...rest }) => {
-    const classes = useDividerStyles();
-    return (
-        <div { ...rest } className={ classes.flexHolder }>
-            <div className={ classes.dividerLeft }>
-                <Divider className={ classes.flexed } orientation={ 'horizontal' }/>
-            </div>
-            <div className={ classes.text }>
-                <Typography align='center' variant='h5'>{ content }</Typography>
-            </div>
-            <div className={ classes.dividerRight }>
-                <Divider className={ classes.flexed } orientation={ 'horizontal' }/>
-            </div>
-        </div>
-    );
-};
 
 const searchOptions = {
     includeScore: true,

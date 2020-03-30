@@ -244,6 +244,7 @@ export default function LoginView(props) {
             return null;
         }
         if (shouldRedirect) {
+            console.log(from);
             return (
                 <Redirect to={ '/home' } from={ from }/>
             );
