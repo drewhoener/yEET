@@ -43,36 +43,27 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const users2 = require('../data/users2');
-// const requests = require('../data/requestdata');
 const RequestList = ({ classes, status, requests }) => {
-    let theme = useTheme();
-    //const [requests, setRequests] = React.useState([]);
     return (
         <List className={ classes.list }>
             {
                 requests.map(request => {
-                    let sender;
-                    for (let user in users2.users) {
-                        if (users2.users[user].employeeID == request.senderID) {
-                            sender = users2.users[user];
-                        }
-                    }
                     return (
-                        <React.Fragment
-                            key={ `${ sender.name.toLowerCase().replace(' ', '_') }-${ sender.employeeID }` }>
+                        <React.Fragment>
+                            {/* key={ `${ sender.name.toLowerCase().replace(' ', '_') }-${ sender.employeeID }` } */}
                             <Divider/>
                             <ListItem>
-                                <ListItemText tabIndex={0} primary={sender.name}
+                                <ListItemText tabIndex={0} primary={request.firstName + ' ' + request.lastName}
                                               primaryTypographyProps={{className: classes.listItemText}}
-                                              secondary={sender.positionTitle}/>
-                                <ListItemSecondaryAction tabIndex={0}>
+                                              secondary={request.position}/>
+                                {/*<ListItemSecondaryAction tabIndex={0}>
                                     <IconButton aria-label={sender.state.name}
                                                 style={{color: sender.state.color}}><Icon>{sender.state.icon}</Icon></IconButton>
                                 </ListItemSecondaryAction>
                                 <ListItemSecondaryAction tabIndex={0}>
                                     <IconButton aria-label={sender.state.name}
                                                 style={{color: sender.state.color}}><Icon>{sender.state.icon}</Icon></IconButton>
-                                </ListItemSecondaryAction>
+                                </ListItemSecondaryAction>*/}
                             </ListItem>
                         </React.Fragment>
                     )
