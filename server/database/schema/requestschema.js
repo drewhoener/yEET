@@ -12,6 +12,8 @@ export const PendingState = {
 };
 
 const requestSchema = new Schema({
+
+    company: { type: mongoose.ObjectId, required: true, index: true },
     /**
      * The time that the request was issued
      * */

@@ -39,13 +39,15 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
     const requests = await Request.find({ company: req.tokenData.company, userReceiving: req.tokenData.id })
         .then(async requests => {
             console.log(requests);
-            if (!requests) {
+            if (!requests || !requests.length) {
+                console.log('No Requests Found');
                 return [];
             }
             const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
             return requests.map(request => {
                 const { _id, company, timeRequested, userRequesting, userReceiving } = request;
                 const employee = employees.find(e => e._id.toString() === request.userRequesting.toString());
+                console.log(employee);
                 if (!employee) {
                     // Not ideal but what exactly are you supposed to do when you can't find a user?
                     return null;
