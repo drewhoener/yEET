@@ -42,15 +42,17 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-const users2 = require('../data/users2');
 const RequestList = ({ classes, status, requests }) => {
+    let theme = useTheme();
+    // 0 = Pending, 1 = Accepted, 2 = Rejected, 3 = Completed
+    let filteredRequests = requests.filter(req => req.statusNumber == status);
     return (
         <List className={ classes.list }>
             {
-                requests.map(request => {
+                filteredRequests.map(request => {
                     return (
-                        <React.Fragment>
-                            {/* key={ `${ sender.name.toLowerCase().replace(' ', '_') }-${ sender.employeeID }` } */}
+                        <React.Fragment
+                        key={ `${ (request.firstName + ' ' + request.lastName).toLowerCase().replace(' ', '_') }-${ request._id }` }>
                             <Divider/>
                             <ListItem>
                                 <ListItemText tabIndex={0} primary={request.firstName + ' ' + request.lastName}

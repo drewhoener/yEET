@@ -22,12 +22,13 @@ connectDB(mongoAuth.username, mongoAuth.password, mongoAuth.database, mongoAuth.
                     } else {
                         time.subtract(Math.random() * 10, 'd');
                     }
+                    const status = Math.floor(Math.random() * 4);
                     const review = new Request({
                         company: requester.company,
                         timeRequested: time.toDate(),
                         userRequesting: requester._id,
                         userReceiving: responder._id,
-                        status: PendingState.PENDING,
+                        status: status,
                     });
                     await review.save();
 
