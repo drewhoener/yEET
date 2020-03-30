@@ -53,7 +53,7 @@ const RequestList = ({ classes, status, requests }) => {
                 requests.map(request => {
                     let sender;                         // Get the request sender's data
                     for (let user in users2.users) {    // There's probably a way to do this 10x less awful with the actual DB and mongoose (?)
-                        if (users2.users[user].employeeID == req.senderID) {
+                        if (users2.users[user].employeeID == request.senderID) {
                             sender = users2.users[user];
                         }
                     }
