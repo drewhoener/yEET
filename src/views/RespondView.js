@@ -42,14 +42,35 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
+// Note that at the time of this commit these buttons are just placeholders
+// We're going to need a way to conditionally render buttons
+const buttons = {
+    "accept": {
+        "name": "accept",
+        "color": "#4caf50",
+        "icon": "send"
+    },
+    "reject": {
+        "name": "reject",
+        "color": "#f44336",
+        "icon": "close"
+    },
+    "type": {
+        "name": "type",
+        "color": "#000000",
+        "icon": "message"
+    }
+};
+
 const RequestList = ({ classes, status, requests }) => {
     let theme = useTheme();
     // 0 = Pending, 1 = Accepted, 2 = Rejected, 3 = Completed
-    let filteredRequests = requests.filter(req => req.statusNumber == status);
+    // status 2 = Rejected is irrelevant for rendering purposes but necessary to be distinguished from status 3 = Completed
     return (
         <List className={ classes.list }>
             {
-                filteredRequests.map(request => {
+                requests.filter(req => req.statusNumber === status)
+                        .map(request => {
                     return (
                         <React.Fragment
                         key={ `${ (request.firstName + ' ' + request.lastName).toLowerCase().replace(' ', '_') }-${ request._id }` }>
@@ -58,14 +79,14 @@ const RequestList = ({ classes, status, requests }) => {
                                 <ListItemText tabIndex={0} primary={request.firstName + ' ' + request.lastName}
                                               primaryTypographyProps={{className: classes.listItemText}}
                                               secondary={request.position}/>
-                                {/*<ListItemSecondaryAction tabIndex={0}>
-                                    <IconButton aria-label={sender.state.name}
-                                                style={{color: sender.state.color}}><Icon>{sender.state.icon}</Icon></IconButton>
+                                <ListItemSecondaryAction tabIndex={0}>
+                                    <IconButton aria-label={request.firstName}
+                                                style={{color: buttons.accept.color}}><Icon>{buttons.accept.icon}</Icon></IconButton>
                                 </ListItemSecondaryAction>
                                 <ListItemSecondaryAction tabIndex={0}>
-                                    <IconButton aria-label={sender.state.name}
-                                                style={{color: sender.state.color}}><Icon>{sender.state.icon}</Icon></IconButton>
-                                </ListItemSecondaryAction>*/}
+                                    <IconButton aria-label={request.firstName}
+                                                style={{color: buttons.reject.color}}><Icon>{buttons.reject.icon}</Icon></IconButton>
+                                </ListItemSecondaryAction>
                             </ListItem>
                         </React.Fragment>
                     )
