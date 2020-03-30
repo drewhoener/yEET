@@ -2,6 +2,7 @@ import { Router } from 'express';
 import authRouter from '../middleware/authrouter';
 import Company from '../database/schema/companyschema';
 import { authMiddleware } from '../middleware/authtoken';
+import { ObjectId } from 'mongodb';
 import Request from '../database/schema/requestschema';
 import Employee from '../database/schema/employeeschema';
 
@@ -37,12 +38,13 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
     console.log('Requests');
     const requests = await Request.find({ company: req.tokenData.company, userReceiving: req.tokenData.id })
         .then(async requests => {
+            console.log(requests);
             if (!requests) {
                 return [];
             }
-            const employees = await Employee.find({ company: req.tokenData.company });
+            const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
             return requests.map(request => {
-                const employee = employees.find(e => e._id === request.userRequesting);
+                const employee = employees.find(e => e._id.toString() === request.userRequesting.toString());
                 if (!employee) {
                     // Not ideal but what exactly are you supposed to do when you can't find a user?
                     return null;
