@@ -3,6 +3,8 @@ import authRouter from '../middleware/authrouter';
 import Company from '../database/schema/companyschema';
 import { authMiddleware } from '../middleware/authtoken';
 import Request from '../database/schema/requestschema';
+import Employee from '../database/schema/employeeschema';
+
 
 const apiRouter = Router();
 
@@ -33,7 +35,27 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
     }
     console.log(req.tokenData);
     console.log('Requests');
-    const requests = await Request.find({ company: req.tokenData.company, userReceiving: req.tokenData.id });
+    const requests = await Request.find({ company: req.tokenData.company, userReceiving: req.tokenData.id })
+        .then(async requests => {
+            if (!requests) {
+                return [];
+            }
+            const employees = await Employee.find({ company: req.tokenData.company });
+            return requests.map(request => {
+                const employee = employees.find(e => e._id === request.userRequesting);
+                if (!employee) {
+                    // Not ideal but what exactly are you supposed to do when you can't find a user?
+                    return null;
+                }
+                return {
+                    ...request,
+                    firstName: employee.firstName,
+                    lastName: employee.lastName,
+                    email: employee.email,
+                    position: employee.position,
+                };
+            }).filter(o => !!o);
+        });
     // Get employee for each requester in requests, etc
     // Map to data structure
     console.log(requests);
