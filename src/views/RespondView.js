@@ -51,8 +51,8 @@ const RequestList = ({ classes, status, requests }) => {
         <List className={ classes.list }>
             {
                 requests.map(request => {
-                    let sender;                         // Get the request sender's data
-                    for (let user in users2.users) {    // There's probably a way to do this 10x less awful with the actual DB and mongoose (?)
+                    let sender;
+                    for (let user in users2.users) {
                         if (users2.users[user].employeeID == request.senderID) {
                             sender = users2.users[user];
                         }
@@ -83,38 +83,13 @@ const RequestList = ({ classes, status, requests }) => {
     );
 };
 
-const Pending = ({ classes, requests }) => {
-    return (
-        <Paper className={ classes.paper }>
-            <RequestList status={ 0 } classes={ classes } requests={ requests }/>
-        </Paper>
-    );
-};
-
-const Accepted = ({ classes, requests }) => {
-    return (
-        <Paper className={ classes.paper }>
-            <RequestList status={ 1 } classes={ classes } requests={ requests }/>
-        </Paper>
-    );
-};
-
-const Completed = ({ classes, requests }) => {
-    return (
-        <Paper className={ classes.paper }>
-            <RequestList status={ 2 } classes={ classes } requests={ requests }/>
-        </Paper>
-    );
-};
-
 export default function RespondView(props) {
     const classes = useStyle();
     const [requests, setRequests] = React.useState([]);
     React.useEffect(() => {
         axios.get('/api/open-requests')
             .then(({ data }) => {
-                console.log(data);
-                setRequests(data);
+                setRequests(data.requests);
             })
             .catch(err => {
                 //const error = {companyId: '-1', companyName: 'Error Fetching Companies'};
@@ -122,17 +97,24 @@ export default function RespondView(props) {
                 //setSelectedCompany(error);
             });
     }, []);
+    const newRequests = [...requests];
     return (
         <React.Fragment>
             <div className={ classes.toolbar }/>
             <div className={ classes.root }>
                 <Container maxWidth='xl'>
                     <h1>Pending</h1>
-                    <Pending classes={ classes } requests={ requests }/>
+                    <Paper className={ classes.paper }>
+                        <RequestList status={ 0 } classes={ classes } requests={ newRequests }/>
+                    </Paper>
                     <h1>Accepted</h1>
-                    <Accepted classes={ classes } requests={ requests }/>
+                    <Paper className={ classes.paper }>
+                        <RequestList status={ 1 } classes={ classes } requests={ newRequests }/>
+                    </Paper>
                     <h1>Completed</h1>
-                    <Completed classes={classes} requests={ requests }/>
+                    <Paper className={ classes.paper }>
+                        <RequestList status={ 2 } classes={ classes } requests={ newRequests }/>
+                    </Paper>
                 </Container>
             </div>
         </React.Fragment>
