@@ -3,11 +3,7 @@ import mongoAuth from '../exempt/mongo_auth';
 import { ObjectId } from 'mongodb';
 import Employee from '../server/database/schema/employeeschema';
 import moment from 'moment';
-import Request from '../server/database/schema/requestschema';
-
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-}
+import Request, { PendingState } from '../server/database/schema/requestschema';
 
 connectDB(mongoAuth.username, mongoAuth.password, mongoAuth.database, mongoAuth.authDatabase)
     .then(async () => {
@@ -30,7 +26,8 @@ connectDB(mongoAuth.username, mongoAuth.password, mongoAuth.database, mongoAuth.
                         company: requester.company,
                         timeRequested: time.toDate(),
                         userRequesting: requester._id,
-                        userReceiving: responder._id
+                        userReceiving: responder._id,
+                        status: PendingState.PENDING,
                     });
                     await review.save();
 

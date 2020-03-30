@@ -3,7 +3,7 @@ import authRouter from '../middleware/authrouter';
 import Company from '../database/schema/companyschema';
 import { authMiddleware } from '../middleware/authtoken';
 import { ObjectId } from 'mongodb';
-import Request from '../database/schema/requestschema';
+import Request, { PendingState } from '../database/schema/requestschema';
 import Employee from '../database/schema/employeeschema';
 
 
@@ -56,6 +56,8 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
                     timeRequested,
                     userRequesting,
                     userReceiving,
+                    statusNumber: request.status,
+                    statusName: PendingState[request.status],
                     firstName: employee.firstName,
                     lastName: employee.lastName,
                     email: employee.email,
