@@ -7,38 +7,6 @@ import { ListItemSecondaryAction, ListItemText, useTheme } from '@material-ui/co
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 
-const useStyle = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-        padding: theme.spacing(3)
-    },
-    toolbar: theme.mixins.toolbar,
-    paper: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        padding: 8,
-        width: '100%'
-    },
-    margin: {
-        margin: theme.spacing(1)
-    },
-    list: {
-        width: '100%'
-    },
-    listItem: {
-        [theme.breakpoints.down('sm')]: {
-            width: '69.69%',
-        },
-        [theme.breakpoints.up('md')]: {
-            maxWidth: '30%'
-        }
-    },
-    listItemText: {
-        fontWeight: 'bold'
-    }
-}));
-
 // Note that at the time of this commit these buttons are just placeholders
 // We're going to need a way to conditionally render buttons
 const buttons = {
