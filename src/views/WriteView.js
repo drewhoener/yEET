@@ -37,7 +37,7 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-export default function RespondView(props) {
+export default function WriteView(props) {
     const classes = useStyle();
     const [requests, setRequests] = React.useState([]);
     // Fetch requests on load: this should be virtualized

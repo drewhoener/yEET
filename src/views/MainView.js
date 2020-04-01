@@ -5,7 +5,7 @@ import {Redirect, Route, Switch} from 'react-router-dom';
 import {makeStyles} from "@material-ui/core/styles";
 import ReadReviewView from "./ReadReviewView";
 import RequestView from "./RequestView";
-import RespondView from "./RespondView";
+import WriteView from "./WriteView";
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -39,7 +39,7 @@ export default function MainView(props) {
                         <RequestView/>
                     </Route>
                     <Route path='/write'>
-                        <RespondView/>
+                        <WriteView/>
                     </Route>
                 </Switch>
             </main>
