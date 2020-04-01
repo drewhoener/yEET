@@ -40,6 +40,7 @@ const useStyle = makeStyles(theme => ({
 export default function RespondView(props) {
     const classes = useStyle();
     const [requests, setRequests] = React.useState([]);
+    // Fetch requests on load: this should be virtualized
     React.useEffect(() => {
         axios.get('/api/open-requests')
             .then(({ data }) => {
@@ -51,6 +52,7 @@ export default function RespondView(props) {
                 //setSelectedCompany(error);
             });
     }, []);
+    // requests on it's own is a state variable and immutable, using the rest operator allows us to make a copy
     const newRequests = [...requests];
     return (
         <React.Fragment>

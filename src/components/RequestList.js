@@ -27,18 +27,21 @@ const buttons = {
     }
 };
 
+// classes is style
+// status is 0 = Pending, 1 = Accepted, 2 = Rejected, 3 = Completed
+// requests is the requests fetched in RespondView.js
 export default function RequestList({ classes, status, requests }) {
     let theme = useTheme();
-    // 0 = Pending, 1 = Accepted, 2 = Rejected, 3 = Completed
-    // status 2 = Rejected is irrelevant for rendering purposes but necessary to be distinguished from status 3 = Completed
     return (
         <List className={ classes.list }>
             {
+                // Only fetch requests with the appropriate status
                 requests.filter(req => req.statusNumber === status)
                         .map(request => {
                     return (
+                        // React.fragment is a sort of hack to return multiple JSX elements
                         <React.Fragment
-                        key={ `${ (request.firstName + ' ' + request.lastName).toLowerCase().replace(' ', '_') }-${ request._id }` }>
+                            key={ `${ (request.firstName + ' ' + request.lastName).toLowerCase().replace(' ', '_') }-${ request._id }` }>
                             <Divider/>
                             <ListItem>
                                 <ListItemText tabIndex={0} primary={request.firstName + ' ' + request.lastName}
