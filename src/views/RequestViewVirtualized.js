@@ -1,16 +1,16 @@
 import React from 'react';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
-import { Checkbox, ListItemIcon, ListItemText, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { Search } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
-import ListItem from '@material-ui/core/ListItem';
-import { AutoSizer, List } from 'react-virtualized';
+import { AutoSizer } from 'react-virtualized';
 import Loader from '../components/Loader';
 import Fuse from 'fuse.js';
 import Divider from '@material-ui/core/Divider';
+import EmployeeList from '../components/EmployeeList';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -145,48 +145,6 @@ export default function RequestViewVirtualized(props) {
             });
     }, []);
 
-    const rowRenderer = ({
-                             // Unique key within array of rows
-                             key,
-                             // Index of row within collection
-                             index,
-                             // The List is currently being scrolled
-                             isScrolling,
-                             // This row is visible within the List (eg it is not an overscanned row)
-                             isVisible,
-                             // Style object to be applied to row (to position it)
-                             style,
-                         }) => {
-
-        if (index % 2 === 1) {
-            return (<Divider key={ key } style={ style }/>);
-        }
-
-        const employee = employees[matchedEmployees[Math.floor(index / 2)]];
-        if (!employee) {
-            return null;
-        }
-
-        return (
-            <ListItem key={ key } style={ style } role={ undefined } button
-                      onClick={ onSelectItem(employee.employeeId) }>
-                <ListItemIcon>
-                    <Checkbox
-                        edge="start"
-                        checked={ selectedEmployees.some(item => employee.employeeId === item) }
-                        tabIndex={ -1 }
-                        disableRipple
-                        inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
-                    />
-                </ListItemIcon>
-                <ListItemText className={ classes.listItem }
-                              primary={ `${ employee.firstName } ${ employee.lastName }` }
-                              primaryTypographyProps={ { className: classes.listItemText } }
-                              secondary={ employee.position }/>
-            </ListItem>
-        );
-    };
-
     return (
         <React.Fragment>
             <div className={ classes.toolbar }/>
@@ -213,15 +171,7 @@ export default function RequestViewVirtualized(props) {
                             <AutoSizer>
                                 {
                                     ({ height, width }) => (
-                                        <List
-                                            className={ classes.smallScrollbar }
-                                            width={ width }
-                                            height={ height }
-                                            rowCount={ matchedEmployees.length * 2 }
-                                            rowHeight={ ({ index }) => index % 2 === 1 ? 1 : 65 }
-                                            rowRenderer={ rowRenderer }
-                                            overscanRowCount={ 5 }
-                                        />
+                                        <EmployeeList height={ height } width={ width }/>
                                     )
                                 }
                             </AutoSizer>

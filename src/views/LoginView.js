@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { isMobile } from '../util';
+import { connect } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -63,7 +64,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function LoginView(props) {
+function LoginView(props) {
     const classes = useStyles();
     const history = useHistory();
     const location = useLocation();
@@ -254,3 +255,12 @@ export default function LoginView(props) {
 
     return chooseRender();
 }
+
+const mapStateToProps = state => ({});
+
+const mapDispatchToProps = dispatch => ({});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(LoginView);
