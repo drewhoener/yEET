@@ -47,14 +47,8 @@ export default function RequestList({ classes, status, requests }) {
                                 <ListItemText tabIndex={0} primary={request.firstName + ' ' + request.lastName}
                                               primaryTypographyProps={{className: classes.listItemText}}
                                               secondary={request.position}/>
-                                <ListItemSecondaryAction tabIndex={0}>
-                                    <IconButton aria-label={request.firstName}
-                                                style={{color: buttons.accept.color}}><Icon>{buttons.accept.icon}</Icon></IconButton>
-                                </ListItemSecondaryAction>
-                                <ListItemSecondaryAction tabIndex={0}>
-                                    <IconButton aria-label={request.firstName}
-                                                style={{color: buttons.reject.color}}><Icon>{buttons.reject.icon}</Icon></IconButton>
-                                </ListItemSecondaryAction>
+                                    <IconButton aria-label={request.firstName} style={{color: buttons.accept.color}}><Icon>{buttons.accept.icon}</Icon></IconButton>
+                                    <IconButton aria-label={request.firstName} style={{color: buttons.reject.color}}><Icon>{buttons.reject.icon}</Icon></IconButton>
                             </ListItem>
                         </React.Fragment>
                     )
