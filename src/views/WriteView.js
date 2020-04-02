@@ -47,12 +47,11 @@ export default function WriteView(props) {
                 setRequests(data.requests);
             })
             .catch(err => {
-                //const error = {companyId: '-1', companyName: 'Error Fetching Companies'};
-                //setCompanies([error]);
-                //setSelectedCompany(error);
+                //const error = {};
+                //setRequests([error]);
             });
     }, []);
-    // requests on it's own is a state variable and immutable, using the rest operator allows us to make a copy
+    // requests on its own is a state variable and immutable, using the rest operator allows us to make a copy
     const newRequests = [...requests];
     return (
         <React.Fragment>
