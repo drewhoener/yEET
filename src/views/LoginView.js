@@ -10,6 +10,7 @@ import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { isMobile } from '../util';
 import { connect } from 'react-redux';
+import { beginFetchCompanies, setEmployeeId, setPassword } from '../state/selector/LoginSelector';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -64,7 +65,15 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function LoginView(props) {
+function LoginView(
+    {
+        errorText,
+        companies,
+        selectedCompany,
+        employeeId,
+        password,
+        fetchCompanies,
+    }) {
     const classes = useStyles();
     const history = useHistory();
     const location = useLocation();
@@ -78,6 +87,10 @@ function LoginView(props) {
     const [selectedCompany, setSelectedCompany] = React.useState(companies[0]);
 
     const { from } = location.state || { from: { pathname: '/' } };
+
+    React.useEffect(() => {
+        fetchCompanies();
+    }, []);
 
     React.useEffect(() => {
         console.log('We think login view mounted');
@@ -144,50 +157,51 @@ function LoginView(props) {
             id="mobile-native-company-select"
             select
             label="Company"
-            value={selectedCompany.companyId}
-            onChange={event => onChange((val) => setSelectedCompany(companies.find(elem => elem.companyId === val)), event)}
-            SelectProps={{
+            value={ selectedCompany.companyId }
+            onChange={ event => onChange((val) => setSelectedCompany(companies.find(elem => elem.companyId === val)), event) }
+            SelectProps={ {
                 native: true,
-            }}
+            } }
             variant="outlined"
         >
-            {companies.map(elem => (
-                <option key={elem.companyId} value={elem.companyId}>
-                    {elem.companyName}
+            { companies.map(elem => (
+                <option key={ elem.companyId } value={ elem.companyId }>
+                    { elem.companyName }
                 </option>
-            ))}
+            )) }
         </TextField>
     ) : (
         <Autocomplete
-            {...selectOptions}
-            className={classes.companyAC}
-            disabled={loading}
+            { ...selectOptions }
+            className={ classes.companyAC }
+            disabled={ loading }
             id="company-select"
-            value={selectedCompany}
-            onChange={(event, newValue) => {
+            value={ selectedCompany }
+            onChange={ (event, newValue) => {
                 setSelectedCompany(newValue);
-            }}
-            renderInput={params => {
+            } }
+            renderInput={ params => {
                 return (
                     <TextField { ...params } fullWidth variant='outlined' label="Company"
                                margin="normal"/>
                 );
-            }}
+            } }
         />
     );
 
     const form = (
-        <div className={classes.root}>
+        <div className={ classes.root }>
             <CssBaseline/>
             <Container height='100%'>
-                <Paper variant='outlined' elevation={16}>
+                <Paper variant='outlined' elevation={ 16 }>
                     <Typography color='secondary' fontWeight='fontWeightBold' align='center'
                                 variant='h1'>yEET</Typography>
                     <Typography align='center' variant='subtitle1'>Your Employee Evaluation Tool</Typography>
-                    <form className={classes.form} onSubmit={onSubmitForm} aria-label='Login Form' data-lpignore="true">
-                        <div className={classes.employeeCompanyHolder}>
-                            {select}
-                            <div className={classes.employeeId}>
+                    <form className={ classes.form } onSubmit={ onSubmitForm } aria-label='Login Form'
+                          data-lpignore="true">
+                        <div className={ classes.employeeCompanyHolder }>
+                            { select }
+                            <div className={ classes.employeeId }>
                                 <TextField
                                     id="login-username"
                                     label="Employee ID"
@@ -256,9 +270,19 @@ function LoginView(props) {
     return chooseRender();
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+    errorText: state.login.loginErrorStr,
+    companies: state.login.companies,
+    selectedCompany: state.login.selectedCompany,
+    employeeId: state.login.employeeId,
+    password: state.login.password,
+});
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+    setEmployeeId: id => dispatch(setEmployeeId(id)),
+    setPassword: password => dispatch(setPassword(password)),
+    fetchCompanies: dispatch(beginFetchCompanies()),
+});
 
 export default connect(
     mapStateToProps,

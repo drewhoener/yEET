@@ -6,7 +6,10 @@ const modNormalField = (state, fieldName, value) => {
         return state;
     }
 
-    return Object.assign({}, state, { [fieldName]: value });
+    return {
+        ...state,
+        [fieldName]: value
+    };
 };
 
 export default function loginReducer(state = InitialLoginState, action) {
