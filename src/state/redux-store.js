@@ -1,14 +1,17 @@
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import loginReducer from './reducer/LoginReducer';
+import requestReducer from './reducer/RequestReducer';
+import Fuse from 'fuse.js';
 
 export const InitialLoginState = {
     needsRedirect: false,
-    checkingLogin: false,
+    checkingLogin: true,
+    loading: false,
     loginErrorStr: '',
     selectedCompany: { companyId: '-1', companyName: '---' },
     companies: [{ companyId: '-1', companyName: '---' }],
-    employeeId: -1,
+    employeeId: '',
     password: '',
 };
 
@@ -17,6 +20,7 @@ export const InitialRequestState = {
     employees: [],
     filteredEmployees: [],
     selectedEmployees: [],
+    fuzzyMatcher: new Fuse([]),
     loading: true
 };
 
@@ -25,7 +29,13 @@ export const InitialState = {
     requests: InitialRequestState
 };
 
+// Needed for dev tools
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 export const store = createStore(combineReducers({
-    login: loginReducer
-}), InitialState, applyMiddleware(thunk));
+    login: loginReducer,
+    requests: requestReducer
+}), InitialState, composeEnhancers(
+    applyMiddleware(thunk)
+));
 

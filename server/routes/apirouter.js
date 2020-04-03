@@ -46,7 +46,8 @@ apiRouter.get('/employees', authMiddleware, (req, res) => {
                     firstName,
                     lastName,
                     startDate,
-                    position
+                    position,
+                    fullName: `${ firstName } ${ lastName }`
                 }))
             });
         })

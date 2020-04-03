@@ -10,7 +10,17 @@ import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { isMobile } from '../util';
 import { connect } from 'react-redux';
-import { beginFetchCompanies, setEmployeeId, setPassword } from '../state/selector/LoginSelector';
+import {
+    beginFetchCompanies,
+    resetLoginState,
+    setCheckingLogin,
+    setEmployeeId,
+    setErrorText,
+    setLoadingLogin,
+    setNeedsRedirect,
+    setPassword,
+    setSelectedCompany
+} from '../state/selector/LoginSelector';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -68,50 +78,43 @@ const useStyles = makeStyles(theme => ({
 function LoginView(
     {
         errorText,
+        setErrorText,
         companies,
-        selectedCompany,
-        employeeId,
-        password,
         fetchCompanies,
+        selectedCompany,
+        setSelectedCompany,
+        employeeId,
+        setEmployeeId,
+        password,
+        setPassword,
+        checkingLogin,
+        setCheckingLogin,
+        loading,
+        setLoading,
+        needsRedirect,
+        setNeedsRedirect,
+        resetLoginState
     }) {
     const classes = useStyles();
     const history = useHistory();
     const location = useLocation();
-    const [shouldRedirect, setShouldRedirect] = React.useState(false);
-    const [error, setError] = React.useState('');
-    const [employeeId, setEmployeeId] = React.useState('');
-    const [password, setPassword] = React.useState('');
-    const [checking, setChecking] = React.useState(true);
-    const [loading, setLoading] = React.useState(false);
-    const [companies, setCompanies] = React.useState([{ companyId: '-1', companyName: '---' }]);
-    const [selectedCompany, setSelectedCompany] = React.useState(companies[0]);
 
     const { from } = location.state || { from: { pathname: '/' } };
 
     React.useEffect(() => {
-        fetchCompanies();
-    }, []);
-
-    React.useEffect(() => {
         console.log('We think login view mounted');
-        axios.get('/api/companies')
-            .then(({ data }) => {
-                setCompanies(c => [...c, ...data.companies]);
-            })
-            .catch(err => {
-                const error = { companyId: '-1', companyName: 'Error Fetching Companies' };
-                setCompanies([error]);
-                setSelectedCompany(error);
-            });
+        fetchCompanies();
+
         axios.get('/api/auth/validate')
             .then(response => {
-                setShouldRedirect(true);
-                setChecking(false);
+                setNeedsRedirect(true);
+                setCheckingLogin(false);
             })
             .catch(err => {
-                setChecking(false);
+                setCheckingLogin(false);
             });
-    }, []);
+
+    }, [fetchCompanies, setNeedsRedirect, setCheckingLogin]);
 
     const onChange = (f, event) => {
         f(event.target.value);
@@ -119,7 +122,7 @@ function LoginView(
 
     const onSubmitForm = (event) => {
         event.preventDefault();
-        setError('');
+        setErrorText('');
         setLoading(true);
         axios.post('/api/auth/login', {
             companyId: selectedCompany.companyId,
@@ -129,15 +132,16 @@ function LoginView(
             .then(result => {
                 setLoading(false);
                 history.replace(from);
+                resetLoginState();
             })
             .catch(err => {
                 const { response } = err;
                 setLoading(false);
                 if (response.status === 500) {
-                    setError('Internal Error, please try again');
+                    setErrorText('Internal Error, please try again');
                     return;
                 }
-                setError('Invalid Username or Password');
+                setErrorText('Invalid Username or Password');
             });
     };
 
@@ -247,7 +251,7 @@ function LoginView(
                             Login
                         </Button>
                         <Typography className={ classes.errorText } variant='subtitle1' color='error'
-                                    hidden={ !error.length }>{ error }</Typography>
+                                    hidden={ !errorText.length }>{ errorText }</Typography>
                     </form>
                 </Paper>
             </Container>
@@ -255,11 +259,12 @@ function LoginView(
     );
 
     const chooseRender = () => {
-        if (checking) {
+        if (checkingLogin) {
             return null;
         }
-        if (shouldRedirect) {
+        if (needsRedirect) {
             console.log(from);
+            resetLoginState();
             return (
                 <Redirect to={ '/home' } from={ from }/>
             );
@@ -276,12 +281,21 @@ const mapStateToProps = state => ({
     selectedCompany: state.login.selectedCompany,
     employeeId: state.login.employeeId,
     password: state.login.password,
+    checkingLogin: state.login.checkingLogin,
+    loading: state.login.loading,
+    needsRedirect: state.login.needsRedirect,
 });
 
 const mapDispatchToProps = dispatch => ({
+    setErrorText: text => dispatch(setErrorText(text)),
+    fetchCompanies: () => dispatch(beginFetchCompanies()),
+    setSelectedCompany: company => dispatch(setSelectedCompany(company)),
     setEmployeeId: id => dispatch(setEmployeeId(id)),
     setPassword: password => dispatch(setPassword(password)),
-    fetchCompanies: dispatch(beginFetchCompanies()),
+    setCheckingLogin: state => dispatch(setCheckingLogin(state)),
+    setLoading: state => dispatch(setLoadingLogin(state)),
+    setNeedsRedirect: state => dispatch(setNeedsRedirect(state)),
+    resetLoginState: () => dispatch(resetLoginState()),
 });
 
 export default connect(

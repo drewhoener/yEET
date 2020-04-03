@@ -22,7 +22,7 @@ import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-const drawerWidth = 240;
+const drawerWidth = 250;
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex'

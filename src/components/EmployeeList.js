@@ -3,8 +3,39 @@ import React from 'react';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import { Checkbox, ListItemIcon, ListItemText } from '@material-ui/core';
+import { connect } from 'react-redux';
+import { makeStyles } from '@material-ui/core/styles';
+import { selectEmployee } from '../state/selector/RequestSelector';
 
-export default function EmployeeList({ employees, height, width, ...rest }) {
+const useStyle = makeStyles(theme => ({
+    smallScrollbar: {
+        '&::-webkit-scrollbar': {
+            width: '0.8em',
+            height: '0.6em'
+        },
+        '&::-webkit-scrollbar-track': {
+            boxShadow: 'inset 0 0 10px rgba(0,0,0,0.00)',
+            webkitBoxShadow: 'inset 0 0 10px rgba(0,0,0,0.00)'
+        },
+        '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(0,0,0,.1)',
+            outline: '2px solid slategrey'
+        }
+    },
+}));
+
+function EmployeeList(
+    {
+        width,
+        height,
+        employees,
+        filteredEmployees,
+        selectedEmployees,
+        selectEmployee,
+        ...rest
+    }) {
+
+    const classes = useStyle();
 
     const rowRenderer = ({
                              // Unique key within array of rows
@@ -23,14 +54,14 @@ export default function EmployeeList({ employees, height, width, ...rest }) {
             return (<Divider key={ key } style={ style }/>);
         }
 
-        const employee = employees[matchedEmployees[Math.floor(index / 2)]];
+        const employee = employees[filteredEmployees[Math.floor(index / 2)]];
         if (!employee) {
             return null;
         }
 
         return (
             <ListItem key={ key } style={ style } role={ undefined } button
-                      onClick={ onSelectItem(employee.employeeId) }>
+                      onClick={ () => selectEmployee(employee.employeeId) }>
                 <ListItemIcon>
                     <Checkbox
                         edge="start"
@@ -40,10 +71,10 @@ export default function EmployeeList({ employees, height, width, ...rest }) {
                         inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
                     />
                 </ListItemIcon>
-                <ListItemText className={ classes.listItem }
-                              primary={ `${ employee.firstName } ${ employee.lastName }` }
-                              primaryTypographyProps={ { className: classes.listItemText } }
-                              secondary={ employee.position }/>
+                <ListItemText // className={ classes.listItem }
+                    primary={ `${ employee.firstName } ${ employee.lastName }` }
+                    // primaryTypographyProps={ { className: classes.listItemText } }
+                    secondary={ employee.position }/>
             </ListItem>
         );
     };
@@ -54,10 +85,26 @@ export default function EmployeeList({ employees, height, width, ...rest }) {
             className={ classes.smallScrollbar }
             width={ width }
             height={ height }
-            rowCount={ matchedEmployees.length * 2 }
+            rowCount={ filteredEmployees.length * 2 }
             rowHeight={ ({ index }) => index % 2 === 1 ? 1 : 65 }
             rowRenderer={ rowRenderer }
             overscanRowCount={ 5 }
+            { ...rest }
         />
     );
 }
+
+const mapStateToProps = state => ({
+    employees: state.requests.employees,
+    filteredEmployees: state.requests.filteredEmployees,
+    selectedEmployees: state.requests.selectedEmployees,
+});
+
+const mapDispatchToProps = (dispatch, getState) => ({
+    selectEmployee: idx => dispatch(selectEmployee(idx)),
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(EmployeeList);
