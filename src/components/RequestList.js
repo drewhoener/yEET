@@ -27,6 +27,18 @@ const buttons = {
     }
 };
 
+const handleAccept = () => {
+    console.log('accepted');
+}
+
+const handleReject = () => {
+    console.log('rejected');
+}
+
+const handleType = () => {
+    console.log('type');
+}
+
 // classes is style
 // status is 0 = Pending, 1 = Accepted, 2 = Rejected, 3 = Completed
 // requests is the requests fetched in RespondView.js
@@ -50,15 +62,15 @@ export default function RequestList({ classes, status, requests }) {
                                     {
                                         status === 0 &&
                                         <>
-                                        <IconButton aria-label={request.firstName} style={{color: buttons.accept.color}}><Icon>{buttons.accept.icon}</Icon></IconButton>
-                                        <IconButton aria-label={request.firstName} style={{color: buttons.reject.color}}><Icon>{buttons.reject.icon}</Icon></IconButton>
+                                        <IconButton aria-label={request.firstName} style={{color: buttons.accept.color}} onClick={handleAccept}><Icon>{buttons.accept.icon}</Icon></IconButton>
+                                        <IconButton aria-label={request.firstName} style={{color: buttons.reject.color}} onClick={handleReject}><Icon>{buttons.reject.icon}</Icon></IconButton>
                                         </>
                                     }
                                     {
                                         status === 1 &&
                                         <>
-                                        <IconButton aria-label={request.firstName} style={{color: buttons.type.color}}><Icon>{buttons.type.icon}</Icon></IconButton>
-                                        <IconButton aria-label={request.firstName} style={{color: buttons.reject.color}}><Icon>{buttons.reject.icon}</Icon></IconButton>
+                                        <IconButton aria-label={request.firstName} style={{color: buttons.type.color}} onClick={handleType}><Icon>{buttons.type.icon}</Icon></IconButton>
+                                        <IconButton aria-label={request.firstName} style={{color: buttons.reject.color}} onClick={handleReject}><Icon>{buttons.reject.icon}</Icon></IconButton>
                                         </>
                                     }
                             </ListItem>
