@@ -72,7 +72,7 @@ function EmployeeList(
                     />
                 </ListItemIcon>
                 <ListItemText // className={ classes.listItem }
-                    primary={ `${ employee.firstName } ${ employee.lastName }` }
+                    primary={ employee.fullName }
                     // primaryTypographyProps={ { className: classes.listItemText } }
                     secondary={ employee.position }/>
             </ListItem>
