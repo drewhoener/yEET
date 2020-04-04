@@ -28,7 +28,6 @@ const buttons = {
 
 const handleAccept = (request) => {
     console.log('accepted');
-    console.log(request);
     axios.post('/api/accept-request', request)
         .then(() => {
             console.log('nice');
@@ -40,7 +39,13 @@ const handleAccept = (request) => {
 
 const handleReject = (request) => {
     console.log('rejected');
-    console.log(request);
+    axios.post('/api/delete-request', request)
+        .then(() => {
+            console.log('nice nice');
+        })
+        .catch(err => {
+            console.log(err);
+        });
 }
 
 const handleType = (request) => {

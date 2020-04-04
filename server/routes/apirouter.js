@@ -82,7 +82,21 @@ apiRouter.post('/accept-request', authMiddleware, async (req, res) => {
     }
     console.log(req.tokenData);
     console.log('Request');
-    const request = await Request.findOneAndUpdate({ _id: req.body._id }, {status: PendingState.ACCEPTED});
+    const request = await Request.findOneAndUpdate({ _id: req.body._id, userReceiving: req.tokenData.id}, {status: PendingState.ACCEPTED});
+    if (!request) console.log('Request not found');
+    console.log(request);
+    res.status(200).end();
+});
+
+apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+    console.log(req.tokenData);
+    console.log('Request');
+    console.log(req);
+    const request = await Request.findOneAndDelete({ _id: req.body._id, userReceiving: req.tokenData.id});
     if (!request) console.log('Request not found');
     console.log(request);
     res.status(200).end();
