@@ -6,6 +6,8 @@ import { Checkbox, ListItemIcon, ListItemText } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { selectEmployee } from '../state/selector/RequestSelector';
+import Button from '@material-ui/core/Button';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 
 const useStyle = makeStyles(theme => ({
     smallScrollbar: {
@@ -36,6 +38,8 @@ function EmployeeList(
     }) {
 
     const classes = useStyle();
+    const SecondaryActionWrapper = ({ ...props }) => <ListItemSecondaryAction { ...props }/>;
+    SecondaryActionWrapper.muiName = ListItemSecondaryAction.muiName;
 
     const rowRenderer = ({
                              // Unique key within array of rows
@@ -60,22 +64,29 @@ function EmployeeList(
         }
 
         return (
-            <ListItem key={ key } style={ style } button
-                      onClick={ () => selectEmployee(employee.employeeId) }>
-                <ListItemIcon>
-                    <Checkbox
-                        edge="start"
-                        checked={ selectedEmployees.some(item => employee.employeeId === item) }
-                        tabIndex={ -1 }
-                        disableRipple
-                        inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
+            <div key={ key } style={ style }>
+                <ListItem ContainerComponent='div' role={ undefined } disableRipple button
+                          onClick={ selectEmployee(employee.employeeId) }>
+                    <ListItemIcon>
+                        <Checkbox
+                            edge="start"
+                            checked={ selectedEmployees.some(item => employee.employeeId === item) }
+                            tabIndex={ -1 }
+                            disableRipple
+                            inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
+                            color='primary'
+                        />
+                    </ListItemIcon>
+                    <ListItemText primary={ employee.fullName }
+                                  secondary={ employee.position }
                     />
-                </ListItemIcon>
-                <ListItemText // className={ classes.listItem }
-                    primary={ employee.fullName }
-                    // primaryTypographyProps={ { className: classes.listItemText } }
-                    secondary={ employee.position }/>
-            </ListItem>
+                    <SecondaryActionWrapper>
+                        <Button edge='end' color='primary' variant='outlined' onClick={ () => console.log('Test') }>
+                            Request
+                        </Button>
+                    </SecondaryActionWrapper>
+                </ListItem>
+            </div>
         );
     };
 
@@ -101,7 +112,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = (dispatch, getState) => ({
-    selectEmployee: idx => dispatch(selectEmployee(idx)),
+    selectEmployee: idx => () => dispatch(selectEmployee(idx)),
 });
 
 export default connect(

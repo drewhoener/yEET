@@ -2,11 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { makeStyles, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import { setSelectedEmployees } from '../state/selector/RequestSelector';
-import { green, red } from '@material-ui/core/colors';
 import Grow from '@material-ui/core/Grow';
 import Hidden from '@material-ui/core/Hidden';
+import { useMediaQuery } from '@material-ui/core';
+import { colorButtonTheme } from '../util';
 
 const useStyle = makeStyles(theme => ({
     infoBlockHolder: {
@@ -32,17 +33,6 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-const colorButtonTheme = createMuiTheme({
-    palette: {
-        primary: {
-            main: green[600]
-        },
-        secondary: {
-            main: red[600]
-        },
-    },
-});
-
 function RequestInfoData(
     {
         selectedEmployees,
@@ -50,13 +40,15 @@ function RequestInfoData(
     }) {
 
     const classes = useStyle();
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
     const showOptionButtons = () => {
         return !!(selectedEmployees && selectedEmployees.length);
     };
 
     return (
         <ThemeProvider theme={ colorButtonTheme }>
-            <Grow in={ showOptionButtons() } unmountOnExit>
+            <Grow in={ showOptionButtons() } unmountOnExit timeout={ 450 }>
                 <div className={ classes.infoBlockHolder }>
                     <Button className={ classes.deselectButton } variant='contained'
                             color='secondary'
@@ -67,12 +59,16 @@ function RequestInfoData(
                     <Hidden xsDown>
                         <div className={ classes.otherSpace }/>
                         <Typography noWrap>Remaining: 0</Typography>
-                        <div className={ classes.otherSpace }/>
                     </Hidden>
+                    <div className={ classes.otherSpace }/>
                     <Button className={ classes.submitButton } variant='contained'
                             color='primary' disableElevation
                             disableFocusRipple>
-                        Submit Requests
+                        {
+                            isSmallScreen ?
+                                'Request All' :
+                                'Submit Requests'
+                        }
                     </Button>
                 </div>
             </Grow>
