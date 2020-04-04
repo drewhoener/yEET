@@ -4,10 +4,11 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import { Checkbox, ListItemIcon, ListItemText } from '@material-ui/core';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import { selectEmployee } from '../state/selector/RequestSelector';
 import Button from '@material-ui/core/Button';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import { colorButtonTheme } from '../util';
 
 const useStyle = makeStyles(theme => ({
     smallScrollbar: {
@@ -80,11 +81,11 @@ function EmployeeList(
                     <ListItemText primary={ employee.fullName }
                                   secondary={ employee.position }
                     />
-                    <SecondaryActionWrapper>
+                    <ListItemSecondaryAction>
                         <Button edge='end' color='primary' variant='outlined' onClick={ () => console.log('Test') }>
                             Request
                         </Button>
-                    </SecondaryActionWrapper>
+                    </ListItemSecondaryAction>
                 </ListItem>
             </div>
         );
@@ -92,16 +93,18 @@ function EmployeeList(
 
 
     return (
-        <List
-            className={ classes.smallScrollbar }
-            width={ width }
-            height={ height }
-            rowCount={ filteredEmployees.length * 2 }
-            rowHeight={ ({ index }) => index % 2 === 1 ? 1 : 65 }
-            rowRenderer={ rowRenderer }
-            overscanRowCount={ 5 }
-            { ...rest }
-        />
+        <ThemeProvider theme={ colorButtonTheme }>
+            <List
+                className={ classes.smallScrollbar }
+                width={ width }
+                height={ height }
+                rowCount={ filteredEmployees.length * 2 }
+                rowHeight={ ({ index }) => index % 2 === 1 ? 1 : 65 }
+                rowRenderer={ rowRenderer }
+                overscanRowCount={ 5 }
+                { ...rest }
+            />
+        </ThemeProvider>
     );
 }
 
