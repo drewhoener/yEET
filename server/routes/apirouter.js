@@ -75,22 +75,16 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
     });
 });
 
-apiRouter.put('/accept-request', authMiddleware, async (req, res) => {
+apiRouter.post('/accept-request', authMiddleware, async (req, res) => {
     if (!req.tokenData) {
         res.status(401).send('Unauthorized');
         return;
     }
     console.log(req.tokenData);
     console.log('Request');
-    const requests = await Request.find({ _id: req.body._id });
-    if (requests.length != 1) {
-        console.log('Request not found')
-    } else {
-        let request = requests[0];
-        request.status = 1;
-        console.log(request);
-        await request.save();
-    }
+    const request = await Request.findOneAndUpdate({ _id: req.body._id }, {status: PendingState.ACCEPTED});
+    if (!request) console.log('Request not found');
+    console.log(request);
     res.status(200).end();
 });
 

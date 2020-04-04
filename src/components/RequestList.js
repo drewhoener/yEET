@@ -29,13 +29,12 @@ const buttons = {
 const handleAccept = (request) => {
     console.log('accepted');
     console.log(request);
-    axios.put('/api/accept-request', request)
+    axios.post('/api/accept-request', request)
         .then(() => {
-            //setRequests(data.requests);
+            console.log('nice');
         })
         .catch(err => {
-            //const error = {};
-            //setRequests([error]);
+            console.log(err);
         });
 }
 
