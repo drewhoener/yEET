@@ -137,10 +137,14 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
     console.log(req.tokenData);
     console.log('Request');
     console.log(req);
-    const request = await Request.findOneAndDelete({ _id: req.body._id, userReceiving: req.tokenData.id });
-    if (!request) console.log('Request not found');
-    console.log(request);
-    res.status(200).end();
+    let request = undefind;
+    try {
+        request = await Request.findOneAndDelete({ _id: req.body._id, userReceiving: req.tokenData.id });
+        console.log(request);
+        res.status(200).end();
+    } catch {
+        res.status(500).end();
+    }
 });
 
 export default apiRouter;
