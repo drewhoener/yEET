@@ -82,10 +82,51 @@ apiRouter.post('/accept-request', authMiddleware, async (req, res) => {
     }
     console.log(req.tokenData);
     console.log('Request');
-    const request = await Request.findOneAndUpdate({ _id: req.body._id, userReceiving: req.tokenData.id}, {status: PendingState.ACCEPTED});
-    if (!request) console.log('Request not found');
-    console.log(request);
-    res.status(200).end();
+    // const request = await Request.findOneAndUpdate({ _id: req.body._id, userReceiving: req.tokenData.id}, {status: PendingState.ACCEPTED});
+    const finalRequest = await Request.findOne({ _id: req.body._id, userReceiving: req.tokenData.id })
+        .then(request => {
+            if (!request) {
+                return undefined;
+            }
+            request.status = PendingState.ACCEPTED;
+            return request.save();
+        })
+        .catch(err => {
+            console.error(err);
+            return undefined;
+        });
+
+    console.log('Final Request');
+    console.log(finalRequest);
+    if (!finalRequest) {
+        res.status(200).json({
+            request: finalRequest
+        });
+        return;
+    }
+    const employee = await Employee.findOne({ _id: finalRequest.userRequesting });
+    if (!employee) {
+        res.status(200).json({
+            request: undefined
+        });
+        return;
+    }
+
+    const returnObj = {
+        _id: finalRequest._id,
+        company: finalRequest.company,
+        timeRequested: finalRequest.timeRequested,
+        userRequesting: finalRequest.userRequesting,
+        userReceiving: finalRequest.userReceiving,
+        statusNumber: finalRequest.status,
+        statusName: PendingState[finalRequest.status],
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        position: employee.position,
+    };
+    console.log(returnObj);
+    res.status(200).json({ request: returnObj });
 });
 
 apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
@@ -96,7 +137,7 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
     console.log(req.tokenData);
     console.log('Request');
     console.log(req);
-    const request = await Request.findOneAndDelete({ _id: req.body._id, userReceiving: req.tokenData.id});
+    const request = await Request.findOneAndDelete({ _id: req.body._id, userReceiving: req.tokenData.id });
     if (!request) console.log('Request not found');
     console.log(request);
     res.status(200).end();
