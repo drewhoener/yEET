@@ -51,8 +51,6 @@ export default function WriteView(props) {
                 //setRequests([error]);
             });
     }, []);
-    // requests on its own is a state variable and immutable, using the rest operator allows us to make a copy
-    const newRequests = [...requests];
     return (
         <React.Fragment>
             <div className={ classes.toolbar }/>
@@ -60,15 +58,15 @@ export default function WriteView(props) {
                 <Container maxWidth='xl'>
                     <h1>Pending</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 0 } classes={ classes } requests={ newRequests }/>
+                        <RequestList status={ 0 } classes={ classes } requests={ requests } setRequests={ setRequests }/>
                     </Paper>
                     <h1>Accepted</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 1 } classes={ classes } requests={ newRequests }/>
+                        <RequestList status={ 1 } classes={ classes } requests={ requests } setRequests={ setRequests }/>
                     </Paper>
                     <h1>Completed</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 2 } classes={ classes } requests={ newRequests }/>
+                        <RequestList status={ 2 } classes={ classes } requests={ requests } setRequests={ setRequests }/>
                     </Paper>
                 </Container>
             </div>

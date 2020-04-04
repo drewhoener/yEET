@@ -26,38 +26,40 @@ const buttons = {
     }
 };
 
-const handleAccept = (request) => {
-    console.log('accepted');
-    axios.post('/api/accept-request', request)
-        .then(() => {
-            console.log('nice');
-        })
-        .catch(err => {
-            console.log(err);
-        });
-}
-
-const handleReject = (request) => {
-    console.log('rejected');
-    axios.post('/api/delete-request', request)
-        .then(() => {
-            console.log('nice nice');
-        })
-        .catch(err => {
-            console.log(err);
-        });
-}
-
-const handleType = (request) => {
-    console.log('type');
-    console.log(request);
-}
-
 // classes is style
 // status is 0 = Pending, 1 = Accepted, 2 = Rejected, 3 = Completed
 // requests is the requests fetched in RespondView.js
-export default function RequestList({ classes, status, requests }) {
+export default function RequestList({ classes, status, requests, setRequests }) {
+    
     let theme = useTheme();
+
+    const handleAccept = (request) => {
+        console.log('accepted');
+        axios.post('/api/accept-request', request)
+            .then(() => {
+                console.log('nice');
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+    
+    const handleReject = (request) => {
+        console.log('rejected');
+        axios.post('/api/delete-request', request)
+            .then(() => {
+                console.log('nice nice');
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+    
+    const handleType = (request) => {
+        console.log('type');
+        console.log(request);
+    }
+
     return (
         <List className={ classes.list }>
             {
