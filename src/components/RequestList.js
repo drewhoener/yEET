@@ -6,6 +6,7 @@ import ListItem from '@material-ui/core/ListItem';
 import { ListItemSecondaryAction, ListItemText, useTheme } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
+import axios from 'axios';
 
 const buttons = {
     "accept": {
@@ -28,6 +29,14 @@ const buttons = {
 const handleAccept = (request) => {
     console.log('accepted');
     console.log(request);
+    axios.put('/api/accept-request', request)
+        .then(() => {
+            //setRequests(data.requests);
+        })
+        .catch(err => {
+            //const error = {};
+            //setRequests([error]);
+        });
 }
 
 const handleReject = (request) => {
