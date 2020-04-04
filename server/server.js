@@ -27,7 +27,7 @@ const useProductionPaths = () => {
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use('/api', apiRouter);
-useProductionPaths();
+// useProductionPaths();
 
 app.listen(3001, () => {
     console.log('Backend Express Server is running on port 3001');
