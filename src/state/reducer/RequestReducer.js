@@ -5,7 +5,7 @@ import Fuse from 'fuse.js';
 
 const employeeSearchOptions = {
     includeScore: true,
-    threshold: 0.4,
+    threshold: 0.3,
     location: 0,
     distance: 95,
     minMatchCharLength: 1,
@@ -28,7 +28,7 @@ const employeeSearchOptions = {
         },
         {
             name: 'employeeId',
-            weight: 0.1
+            weight: 0.8
         },
     ]
 };

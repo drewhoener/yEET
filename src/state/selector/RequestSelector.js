@@ -40,7 +40,7 @@ function filterEmployees(filter, searcher, employees) {
     return action;
 }
 
-function setSelectedEmployees(selectedEmployees) {
+export function setSelectedEmployees(selectedEmployees) {
     return {
         type: RequestAction.SET_SELECTED_EMPLOYEES,
         field: 'selectedEmployees',

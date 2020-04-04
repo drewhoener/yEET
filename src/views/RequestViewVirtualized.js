@@ -11,15 +11,26 @@ import Divider from '@material-ui/core/Divider';
 import EmployeeList from '../components/EmployeeList';
 import { connect } from 'react-redux';
 import { fetchOrUpdateEmployees, setAndRefreshFilter } from '../state/selector/RequestSelector';
+import RequestInfoData from '../components/RequestInfoData';
 
 const useStyle = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexGrow: '1',
-        padding: theme.spacing(3)
+        [theme.breakpoints.down('sm')]: {
+            paddingTop: theme.spacing(1.5),
+            paddingBottom: theme.spacing(1.5),
+        },
+        [theme.breakpoints.up('md')]: {
+            padding: theme.spacing(3)
+        }
     },
     paperContainer: {
         display: 'flex',
+        [theme.breakpoints.down('sm')]: {
+            paddingLeft: theme.spacing(2),
+            paddingRight: theme.spacing(2),
+        }
     },
     toolbar: theme.mixins.toolbar,
     paper: {
@@ -31,8 +42,12 @@ const useStyle = makeStyles(theme => ({
         padding: 8,
         // width: '100%'
     },
-    margin: {
-        margin: theme.spacing(1)
+    requestOrganization: {
+        margin: theme.spacing(1.125),
+        display: 'flex',
+        // flex: '1 0 auto'
+        flexDirection: 'column',
+        justifyContent: 'center',
     },
     autoContainer: {
         flexGrow: 1,
@@ -70,21 +85,23 @@ function RequestViewVirtualized(
             <div className={ classes.root }>
                 <Container className={ classes.paperContainer } maxWidth='xl'>
                     <Paper className={ classes.paper }>
-                        <TextField
-                            className={ classes.margin }
-                            id="search-users"
-                            label="Search Users"
-                            variant='outlined'
-                            value={ searchFilter }
-                            InputProps={ {
-                                endAdornment: (
-                                    <IconButton position='end' aria-label='Search'>
-                                        <Search/>
-                                    </IconButton>
-                                ),
-                            } }
-                            onChange={ e => setSearchFilter(e.target.value) }
-                        />
+                        <div className={ classes.requestOrganization }>
+                            <TextField
+                                id="search-users"
+                                label="Search Users"
+                                variant='outlined'
+                                value={ searchFilter }
+                                InputProps={ {
+                                    endAdornment: (
+                                        <IconButton position='end' aria-label='Search'>
+                                            <Search/>
+                                        </IconButton>
+                                    ),
+                                } }
+                                onChange={ e => setSearchFilter(e.target.value) }
+                            />
+                            <RequestInfoData/>
+                        </div>
                         <Divider/>
                         <Loader className={ classes.loaderDiv } visible={ loading }/>
                         <div className={ classes.autoContainer }>

@@ -60,7 +60,7 @@ function EmployeeList(
         }
 
         return (
-            <ListItem key={ key } style={ style } role={ undefined } button
+            <ListItem key={ key } style={ style } button
                       onClick={ () => selectEmployee(employee.employeeId) }>
                 <ListItemIcon>
                     <Checkbox
