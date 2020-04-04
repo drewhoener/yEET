@@ -7,8 +7,6 @@ import { ListItemSecondaryAction, ListItemText, useTheme } from '@material-ui/co
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 
-// Note that at the time of this commit these buttons are just placeholders
-// We're going to need a way to conditionally render buttons
 const buttons = {
     "accept": {
         "name": "accept",
@@ -27,16 +25,19 @@ const buttons = {
     }
 };
 
-const handleAccept = () => {
+const handleAccept = (request) => {
     console.log('accepted');
+    console.log(request);
 }
 
-const handleReject = () => {
+const handleReject = (request) => {
     console.log('rejected');
+    console.log(request);
 }
 
-const handleType = () => {
+const handleType = (request) => {
     console.log('type');
+    console.log(request);
 }
 
 // classes is style
@@ -62,15 +63,23 @@ export default function RequestList({ classes, status, requests }) {
                                     {
                                         status === 0 &&
                                         <>
-                                        <IconButton aria-label={request.firstName} style={{color: buttons.accept.color}} onClick={handleAccept}><Icon>{buttons.accept.icon}</Icon></IconButton>
-                                        <IconButton aria-label={request.firstName} style={{color: buttons.reject.color}} onClick={handleReject}><Icon>{buttons.reject.icon}</Icon></IconButton>
+                                        <IconButton aria-label={request.firstName} style={{color: buttons.accept.color}} onClick={() => handleAccept(request)}>
+                                            <Icon>{buttons.accept.icon}</Icon>
+                                        </IconButton>
+                                        <IconButton aria-label={request.firstName} style={{color: buttons.reject.color}} onClick={() => handleReject(request)}>
+                                            <Icon>{buttons.reject.icon}</Icon>
+                                        </IconButton>
                                         </>
                                     }
                                     {
                                         status === 1 &&
                                         <>
-                                        <IconButton aria-label={request.firstName} style={{color: buttons.type.color}} onClick={handleType}><Icon>{buttons.type.icon}</Icon></IconButton>
-                                        <IconButton aria-label={request.firstName} style={{color: buttons.reject.color}} onClick={handleReject}><Icon>{buttons.reject.icon}</Icon></IconButton>
+                                        <IconButton aria-label={request.firstName} style={{color: buttons.type.color}} onClick={() => handleType(request)}>
+                                            <Icon>{buttons.type.icon}</Icon>
+                                        </IconButton>
+                                        <IconButton aria-label={request.firstName} style={{color: buttons.reject.color}} onClick={() => handleReject(request)}>
+                                            <Icon>{buttons.reject.icon}</Icon>
+                                        </IconButton>
                                         </>
                                     }
                             </ListItem>
