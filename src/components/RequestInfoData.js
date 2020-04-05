@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { makeStyles, ThemeProvider, useTheme } from '@material-ui/core/styles';
-import { setSelectedEmployees } from '../state/selector/RequestSelector';
+import { sendSelectedRequests, unselectEmployees } from '../state/selector/RequestSelector';
 import Grow from '@material-ui/core/Grow';
 import Hidden from '@material-ui/core/Hidden';
 import { useMediaQuery } from '@material-ui/core';
@@ -36,7 +36,8 @@ const useStyle = makeStyles(theme => ({
 function RequestInfoData(
     {
         selectedEmployees,
-        resetSelected
+        resetSelected,
+        sendSelectedRequests,
     }) {
 
     const classes = useStyle();
@@ -53,7 +54,8 @@ function RequestInfoData(
                     <Button className={ classes.deselectButton } variant='contained'
                             color='secondary'
                             onClick={ resetSelected } disableElevation
-                            disableFocusRipple>
+                            disableFocusRipple
+                    >
                         Deselect All
                     </Button>
                     <Hidden xsDown>
@@ -62,8 +64,10 @@ function RequestInfoData(
                     </Hidden>
                     <div className={ classes.otherSpace }/>
                     <Button className={ classes.submitButton } variant='contained'
-                            color='primary' disableElevation
-                            disableFocusRipple>
+                            color='primary'
+                            onClick={ () => sendSelectedRequests() } disableElevation
+                            disableFocusRipple
+                    >
                         {
                             isSmallScreen ?
                                 'Request All' :
@@ -81,7 +85,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    resetSelected: () => dispatch(setSelectedEmployees([])),
+    resetSelected: (employees) => dispatch(unselectEmployees(employees)),
+    sendSelectedRequests: () => dispatch(sendSelectedRequests()),
 });
 
 export default connect(

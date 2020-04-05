@@ -1,11 +1,14 @@
 export const FilterAction = {
-    SET_FILTER: 'SET_REQUEST_FILTER',
-    CLEAR_FILTER: 'CLEAR_REQUEST_FILTER'
+    UPDATE_FILTER: 'requests/filter/update',
+    CLEAR_FILTER: 'requests/filter/clear'
 };
 
 export const RequestAction = {
-    SET_REQUESTS_LOADING: 'SET_REQUESTS_LOADING',
-    SET_EMPLOYEES: 'SET_EMPLOYEES',
-    SET_SELECTED_EMPLOYEES: 'SET_SELECTED_EMPLOYEES',
-    SET_FILTERED_EMPLOYEES: 'SET_FILTERED_EMPLOYEES',
+    SET_REQUESTS_LOADING: 'requests/setLoading',
+    SET_EMPLOYEES: 'requests/setEmployees',
+    TOGGLE_EMPLOYEE_SELECT: 'requests/selectedEmployees/toggle',
+    UNSELECT_EMPLOYEES: 'requests/selectedEmployees/unselectMultiple',
+    PUSH_ERROR_MESSAGE: 'requests/errors/push',
+    POP_ERROR_MESSAGE: 'requests/errors/pop',
+    CLOSE_TOP_ERROR_MESSAGE: 'requests/errors/closeTop'
 };

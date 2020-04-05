@@ -1,74 +1,47 @@
 import { FilterAction, RequestAction } from '../action/RequestActions';
 import axios from 'axios';
+import { batch } from 'react-redux';
 
 export function setAndRefreshFilter(filter) {
     return (dispatch, getState) => {
-        dispatch(setSearchFilter(filter));
-        const { filter: newFilter, employees, fuzzyMatcher } = getState().requests;
-        dispatch(filterEmployees(newFilter, fuzzyMatcher, employees));
+        const state = getState();
+        dispatch(setSearchFilter(filter, state.requests.employees, state.requests.fuzzyMatcher));
     };
 }
 
-function setSearchFilter(filter) {
+function setSearchFilter(filter, employees, searcher) {
     return {
-        type: FilterAction.SET_FILTER,
-        field: 'filter',
-        value: filter,
+        type: FilterAction.UPDATE_FILTER,
+        payload: {
+            filter,
+            employees,
+            searcher
+        },
     };
 }
 
-function filterEmployees(filter, searcher, employees) {
-    const action = {
-        type: RequestAction.SET_FILTERED_EMPLOYEES,
-        field: 'filteredEmployees',
-    };
-
-    if (!filter || !filter.length) {
-        action.value = employees.map((val, idx) => idx);
-        return action;
-    }
-
-    const results = searcher.search(filter);
-    action.value = results.sort((o1, o2) => {
-        const compareScore = o1.score - o2.score;
-        if (compareScore !== 0) {
-            return compareScore;
-        }
-        return o1.item.lastName.localeCompare(o2.item.lastName);
-    }).map(item => item.refIndex);
-
-    return action;
-}
-
-export function setSelectedEmployees(selectedEmployees) {
+export function unselectEmployees(employees) {
     return {
-        type: RequestAction.SET_SELECTED_EMPLOYEES,
-        field: 'selectedEmployees',
-        value: selectedEmployees
+        type: RequestAction.UNSELECT_EMPLOYEES,
+        payload: {
+            employees
+        }
     };
 }
 
-export function selectEmployee(idx) {
-    return (dispatch, getState) => {
-        const selectedEmployees = [
-            ...getState().requests.selectedEmployees
-        ];
-        const index = selectedEmployees.indexOf(idx);
-        if (index === -1) {
-            selectedEmployees.push(idx);
-        } else {
-            selectedEmployees.splice(index, 1);
+export function toggleEmployeeSelect(userObjectId) {
+    return {
+        type: RequestAction.TOGGLE_EMPLOYEE_SELECT,
+        payload: {
+            user: userObjectId
         }
-
-        dispatch(setSelectedEmployees(selectedEmployees));
     };
 }
 
 function setRequestsLoading(loading) {
     return {
         type: RequestAction.SET_REQUESTS_LOADING,
-        field: 'loading',
-        value: loading
+        loading
     };
 }
 
@@ -79,12 +52,36 @@ function setEmployees(employees) {
     };
 }
 
+export function closeTopErrorMessage() {
+    return {
+        type: RequestAction.CLOSE_TOP_ERROR_MESSAGE,
+    };
+}
+
+export function popErrorMessage() {
+    return {
+        type: RequestAction.POP_ERROR_MESSAGE,
+    };
+}
+
+function pushErrorMessage(severity, message) {
+    return {
+        type: RequestAction.PUSH_ERROR_MESSAGE,
+        severity,
+        content: message
+    };
+
+}
+
 function receiveEmployees(employees) {
     return (dispatch, getState) => {
+        const filter = getState().requests.filter;
         setTimeout(() => {
-            dispatch(setEmployees(employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName))));
-            dispatch(setAndRefreshFilter(getState().requests.filter));
-            dispatch(setRequestsLoading(false));
+            batch(() => {
+                dispatch(setEmployees(employees));
+                dispatch(setAndRefreshFilter(filter));
+                dispatch(setRequestsLoading(false));
+            });
         }, 750);
     };
 }
@@ -140,5 +137,26 @@ export function fetchOrUpdateEmployees() {
             return;
         }
         dispatch(updateEmployees());
+    };
+}
+
+export function sendRequests(requestIds) {
+    return (dispatch) => {
+        axios.post('/api/request/request-users', {
+            users: requestIds
+        })
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(err => {
+                console.log(err.response);
+                dispatch(pushErrorMessage('error', err.response.data.message));
+            });
+    };
+}
+
+export function sendSelectedRequests() {
+    return (dispatch, getState) => {
+        dispatch(sendRequests(getState().requests.selectedEmployees));
     };
 }

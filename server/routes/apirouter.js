@@ -4,11 +4,15 @@ import Company from '../database/schema/companyschema';
 import { authMiddleware } from '../middleware/authtoken';
 import Employee from '../database/schema/employeeschema';
 import { ObjectId } from 'mongodb';
+import { requestRouter } from './requestrouter';
 
 const apiRouter = Router();
 
 // noinspection JSUnresolvedFunction
 apiRouter.use('/auth', authRouter);
+// noinspection JSUnresolvedFunction
+apiRouter.use('/request', requestRouter);
+
 // noinspection JSUnresolvedFunction
 apiRouter.get('/companies', (req, res) => {
     Company.find({})

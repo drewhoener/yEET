@@ -5,7 +5,7 @@ import ListItem from '@material-ui/core/ListItem';
 import { Checkbox, ListItemIcon, ListItemText } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { selectEmployee } from '../state/selector/RequestSelector';
+import { sendRequests, toggleEmployeeSelect } from '../state/selector/RequestSelector';
 import Button from '@material-ui/core/Button';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import { colorButtonTheme } from '../util';
@@ -35,10 +35,12 @@ function EmployeeList(
         filteredEmployees,
         selectedEmployees,
         selectEmployee,
+        sendSingleRequest,
         ...rest
     }) {
 
     const classes = useStyle();
+
     const SecondaryActionWrapper = ({ ...props }) => <ListItemSecondaryAction { ...props }/>;
     SecondaryActionWrapper.muiName = ListItemSecondaryAction.muiName;
 
@@ -67,11 +69,11 @@ function EmployeeList(
         return (
             <div key={ key } style={ style }>
                 <ListItem ContainerComponent='div' role={ undefined } disableRipple button
-                          onClick={ selectEmployee(employee.employeeId) }>
+                          onClick={ selectEmployee(employee._id.toString()) }>
                     <ListItemIcon>
                         <Checkbox
                             edge="start"
-                            checked={ selectedEmployees.some(item => employee.employeeId === item) }
+                            checked={ selectedEmployees.some(item => employee._id.toString() === item) }
                             tabIndex={ -1 }
                             disableRipple
                             inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
@@ -82,7 +84,8 @@ function EmployeeList(
                                   secondary={ employee.position }
                     />
                     <ListItemSecondaryAction>
-                        <Button edge='end' color='primary' variant='outlined' onClick={ () => console.log('Test') }>
+                        <Button edge='end' color='primary' variant='outlined'
+                                onClick={ sendSingleRequest(employee._id.toString()) }>
                             Request
                         </Button>
                     </ListItemSecondaryAction>
@@ -99,7 +102,7 @@ function EmployeeList(
                 width={ width }
                 height={ height }
                 rowCount={ filteredEmployees.length * 2 }
-                rowHeight={ ({ index }) => index % 2 === 1 ? 1 : 65 }
+                rowHeight={ ({ index }) => index % 2 === 1 ? 1 : 72 }
                 rowRenderer={ rowRenderer }
                 overscanRowCount={ 5 }
                 { ...rest }
@@ -115,7 +118,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = (dispatch, getState) => ({
-    selectEmployee: idx => () => dispatch(selectEmployee(idx)),
+    selectEmployee: idx => () => dispatch(toggleEmployeeSelect(idx)),
+    sendSingleRequest: requestId => () => dispatch(sendRequests([requestId])),
 });
 
 export default connect(

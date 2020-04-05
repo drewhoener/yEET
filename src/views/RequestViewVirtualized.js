@@ -1,7 +1,7 @@
 import React from 'react';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
-import { TextField } from '@material-ui/core';
+import { Snackbar, TextField } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { Search } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,8 +10,15 @@ import Loader from '../components/Loader';
 import Divider from '@material-ui/core/Divider';
 import EmployeeList from '../components/EmployeeList';
 import { connect } from 'react-redux';
-import { fetchOrUpdateEmployees, setAndRefreshFilter } from '../state/selector/RequestSelector';
+import {
+    closeTopErrorMessage,
+    fetchOrUpdateEmployees,
+    popErrorMessage,
+    setAndRefreshFilter
+} from '../state/selector/RequestSelector';
 import RequestInfoData from '../components/RequestInfoData';
+import Slide from '@material-ui/core/Slide';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -61,15 +68,21 @@ const useStyle = makeStyles(theme => ({
     },
 }));
 
+function SlideTransition(props) {
+    return <Slide { ...props } direction="up"/>;
+}
+
 function RequestViewVirtualized(
     {
         searchFilter,
         loading,
+        errorMessages,
         setSearchFilter,
-        fetchOrUpdateEmployees
+        fetchOrUpdateEmployees,
+        popErrorMessage,
+        closeTopErrorMessage
     }) {
     const classes = useStyle();
-
     // On load fetch or update employees if needed
     // On unload uncache the search filter
     React.useEffect(() => {
@@ -115,6 +128,33 @@ function RequestViewVirtualized(
                         </div>
                     </Paper>
                 </Container>
+                {/* Holder for snackbar messages */ }
+                <div>
+                    {
+
+                        errorMessages.filter((val, idx) => idx === 0)
+                            .map(message => {
+                                return (
+                                    <Snackbar
+                                        key={ `error-message-${ message.key }` }
+                                        open={ message.open }
+                                        autoHideDuration={ 5000 }
+                                        TransitionComponent={ SlideTransition }
+                                        onClose={ () => closeTopErrorMessage() }
+                                        TransitionProps={ {
+                                            onExited: () => popErrorMessage()
+                                        } }
+                                        disableWindowBlurListener
+                                    >
+                                        <Alert action={ undefined } severity={ message.severity }>
+                                            { message.content }
+                                        </Alert>
+                                    </Snackbar>
+                                );
+                            })
+
+                    }
+                </div>
             </div>
         </React.Fragment>
     );
@@ -123,11 +163,14 @@ function RequestViewVirtualized(
 const mapStateToProps = state => ({
     searchFilter: state.requests.filter,
     loading: state.requests.loading,
+    errorMessages: state.requests.errorMessages,
 });
 
 const mapDispatchToProps = dispatch => ({
     setSearchFilter: filter => dispatch(setAndRefreshFilter(filter)),
     fetchOrUpdateEmployees: () => dispatch(fetchOrUpdateEmployees()),
+    popErrorMessage: () => dispatch(popErrorMessage()),
+    closeTopErrorMessage: () => dispatch(closeTopErrorMessage()),
 });
 
 export default connect(

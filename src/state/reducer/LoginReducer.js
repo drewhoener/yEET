@@ -1,6 +1,6 @@
-import { InitialLoginState } from '../redux-store';
 import LoginAction from '../action/LoginActions';
 import { modNormalField } from './reducerutil';
+import { InitialLoginState } from '../defaultstate';
 
 export default function loginReducer(state = InitialLoginState, action) {
     switch (action.type) {
