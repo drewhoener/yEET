@@ -1,5 +1,4 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import MUIRichTextEditor from 'mui-rte';
 import { makeStyles } from '@material-ui/core/styles';
@@ -19,15 +18,10 @@ const useStyle = makeStyles(theme => ({
     toolbar: theme.mixins.toolbar,
 }));
 
-// I stole this from React Router.
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-}
-
-function ReviewTextEditor() {
+function ReviewTextEditor(props) {
     const classes = useStyle();
-    const query = useQuery();
-    const requestId = query.get('requestId');
+
+    const { requestId } = props.match.params;
     console.log(requestId);
 
     return (
