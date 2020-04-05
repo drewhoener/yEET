@@ -3,26 +3,26 @@ import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { ListItemText } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
+import { Close, Message, Send } from '@material-ui/icons';
 
 const buttons = {
     'accept': {
         'name': 'accept',
         'color': '#4caf50',
-        'icon': 'send'
+        'icon': <Send/>
     },
     'reject': {
         'name': 'reject',
         'color': '#f44336',
-        'icon': 'close'
+        'icon': <Close/>
     },
     'type': {
         'name': 'type',
         'color': '#000000',
-        'icon': 'message'
+        'icon': <Message/>
     }
 };
 
@@ -107,12 +107,12 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                             <IconButton aria-label={ request.firstName }
                                                         style={ { color: buttons.accept.color } }
                                                         onClick={ () => handleAccept(request) }>
-                                                <Icon>{ buttons.accept.icon }</Icon>
+                                                { React.cloneElement(buttons.accept.icon) }
                                             </IconButton>
                                             <IconButton aria-label={ request.firstName }
                                                         style={ { color: buttons.reject.color } }
                                                         onClick={ () => handleReject(request) }>
-                                                <Icon>{ buttons.reject.icon }</Icon>
+                                                { React.cloneElement(buttons.reject.icon) }
                                             </IconButton>
                                         </>
                                     }
@@ -122,7 +122,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                             <IconButton aria-label={ request.firstName }
                                                         style={ { color: buttons.type.color } }
                                                         onClick={ () => handleType(request) }>
-                                                <Icon>{ buttons.type.icon }</Icon>
+                                                { React.cloneElement(buttons.type.icon) }
                                             </IconButton>
                                             <Modal open={ open }
                                                    onClose={ handleClose }>
@@ -136,7 +136,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                             <IconButton aria-label={ request.firstName }
                                                         style={ { color: buttons.reject.color } }
                                                         onClick={ () => handleReject(request) }>
-                                                <Icon>{ buttons.reject.icon }</Icon>
+                                                { React.cloneElement(buttons.reject.icon) }
                                             </IconButton>
                                         </>
                                     }
