@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
 import { Close, Message, Send } from '@material-ui/icons';
+import MUIRichTextEditor from 'mui-rte'
 
 const buttons = {
     'accept': {
