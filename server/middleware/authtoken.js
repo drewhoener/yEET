@@ -48,6 +48,7 @@ const authMiddleware = (req, res, next) => {
     }
     validateToken(token)
         .then(decoded => {
+            //console.log(decoded);
             if (!decoded) {
                 res.status(500).send('Internal Server Error');
                 return;
