@@ -129,7 +129,6 @@ function receiveEmployees(employees) {
 }
 
 function fetchEmployees() {
-    console.log('Fresh Fetching Employees');
     return dispatch => {
         axios.get('/api/employees')
             .then(({ data }) => {
@@ -173,7 +172,6 @@ function updateEmployees() {
 export function fetchOrUpdateEmployees() {
     return (dispatch, getState) => {
         const { employees } = getState().requests;
-        console.log(`Employees: ${ !!employees }, Employees Length: ${ !!employees.length }`);
         if (!employees || !employees.length) {
             batch(() => {
                 dispatch(fetchEmployees());

@@ -95,9 +95,6 @@ function EmployeeList(
         );
     };
 
-    console.log(requestStates);
-
-
     return (
         <ThemeProvider theme={ colorButtonTheme }>
             <List

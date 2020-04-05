@@ -44,7 +44,6 @@ const filterReducer = createReducer(InitialRequestState.filter, {
 
 const employeesReducer = createReducer([...InitialRequestState.employees], {
     [RequestAction.SET_EMPLOYEES]: (state, action) => {
-        console.log('Setting employees');
         return action.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName));
     }
 });
@@ -137,7 +136,6 @@ const selectedEmployeesReducer = createReducer([...InitialRequestState.selectedE
 
 const matcherReducer = createReducer(InitialRequestState.fuzzyMatcher, {
     [RequestAction.SET_EMPLOYEES]: (state, action) => {
-        console.log('Setting new searcher');
         return new Fuse(action.employees, employeeSearchOptions);
     }
 });

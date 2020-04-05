@@ -5,7 +5,6 @@ import CompletedStatusButton from './CompletedStatusButton';
 
 export default function ThemedStatusButton({ type, ...rest }) {
 
-    console.log(type);
     const ButtonComponent = type === 'Pending' ?
         PendingStatusButton : type === 'Completed' ?
             CompletedStatusButton : RequestStatusButton;
