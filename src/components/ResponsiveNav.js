@@ -21,6 +21,8 @@ import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { resetRequestState } from '../state/selector/RequestSelector';
 
 const drawerWidth = 250;
 const useStyles = makeStyles(theme => ({
@@ -75,9 +77,8 @@ ElevationScroll.propTypes = {
     window: PropTypes.func
 };
 
-function ResponsiveNav(props) {
+function ResponsiveNav({ container, resetRequestState, ...rest }) {
     const history = useHistory();
-    const { container } = props;
     const classes = useStyles();
     const theme = useTheme();
     const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -94,7 +95,10 @@ function ResponsiveNav(props) {
 
     const onLogout = () => {
         axios.post('/api/auth/logout')
-            .then().catch().then(() => history.push({ pathname: '/login' }));
+            .then().catch().then(() => {
+            history.push({ pathname: '/login' });
+            resetRequestState();
+        });
     };
 
     const drawerItems = {
@@ -124,7 +128,7 @@ function ResponsiveNav(props) {
     const drawer = (
         <div>
             {/* <div className={classes.toolbar} />*/ }
-            <div className={classes.toolbar}/>
+            <div className={ classes.toolbar }/>
             <Divider/>
             <List>
                 {
@@ -140,7 +144,7 @@ function ResponsiveNav(props) {
                     ))
                 }
                 <Hidden smUp>
-                    <ListItem button onClick={onLogout}>
+                    <ListItem button onClick={ onLogout }>
                         <ListItemIcon><ExitToApp/></ListItemIcon>
                         <ListItemText primary="Logout"/>
                     </ListItem>
@@ -152,8 +156,8 @@ function ResponsiveNav(props) {
     return (
         <React.Fragment>
             <CssBaseline/>
-            <ElevationScroll {...props}>
-                <AppBar className={classes.appBar}>
+            <ElevationScroll { ...rest }>
+                <AppBar className={ classes.appBar }>
                     <Toolbar>
                         <IconButton
                             color="inherit"
@@ -173,8 +177,8 @@ function ResponsiveNav(props) {
                                 variant='outlined'
                                 color='default'
                                 aria-label='Logout'
-                                endIcon={<ExitToApp/>}
-                                onClick={onLogout}
+                                endIcon={ <ExitToApp/> }
+                                onClick={ onLogout }
                             >
                                 Logout
                             </Button>
@@ -182,7 +186,7 @@ function ResponsiveNav(props) {
                     </Toolbar>
                 </AppBar>
             </ElevationScroll>
-            <nav className={classes.drawer} aria-label="review navigation menu">
+            <nav className={ classes.drawer } aria-label="review navigation menu">
                 {/* This drawer will not exist on screens greater than xs*/ }
                 <Hidden smUp implementation='css'>
                     <Drawer
@@ -223,4 +227,13 @@ function ResponsiveNav(props) {
     );
 }
 
-export default ResponsiveNav;
+const mapStateToProps = state => ({});
+
+const mapDispatchToProps = dispatch => ({
+    resetRequestState: () => dispatch(resetRequestState()),
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ResponsiveNav);

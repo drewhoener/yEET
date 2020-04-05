@@ -1,13 +1,13 @@
 import React from 'react';
 import RequestStatusButton from './RequestStatusButton';
 import PendingStatusButton from './PendingStatusButton';
-import CompletedStatusButton from './CompletedStatusButton';
+import AcceptedStatusButton from './AcceptedStatusButton';
 
 export default function ThemedStatusButton({ type, ...rest }) {
 
     const ButtonComponent = type === 'Pending' ?
-        PendingStatusButton : type === 'Completed' ?
-            CompletedStatusButton : RequestStatusButton;
+        PendingStatusButton : type === 'Accepted' ?
+            AcceptedStatusButton : RequestStatusButton;
 
     return (
         <ButtonComponent { ...rest } />

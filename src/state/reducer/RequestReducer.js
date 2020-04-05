@@ -35,7 +35,10 @@ const employeeSearchOptions = {
 
 const filterReducer = createReducer(InitialRequestState.filter, {
     [FilterAction.UPDATE_FILTER]: (state, action) => {
-        return action.payload.filter || state;
+        if (action.payload.filter == null) {
+            return state;
+        }
+        return action.payload.filter;
     },
     [FilterAction.CLEAR_FILTER]: () => {
         return '';
@@ -189,6 +192,13 @@ const errorMessageReducer = createReducer([...InitialRequestState.errorMessages]
 });
 
 export default function requestReducer(state = InitialRequestState, action) {
+
+    if (action.type === RequestAction.RESET_STATE) {
+        return {
+            ...InitialRequestState
+        };
+    }
+
     return {
         filter: filterReducer(state.filter, action),
         employees: employeesReducer(state.employees, action),

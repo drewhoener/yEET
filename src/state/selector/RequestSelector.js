@@ -2,6 +2,12 @@ import { FilterAction, RequestAction } from '../action/RequestActions';
 import axios from 'axios';
 import { batch } from 'react-redux';
 
+export function resetRequestState() {
+    return {
+        type: RequestAction.RESET_STATE
+    };
+}
+
 export function setAndRefreshFilter(filter) {
     return (dispatch, getState) => {
         const state = getState();
@@ -10,6 +16,7 @@ export function setAndRefreshFilter(filter) {
 }
 
 function setSearchFilter(filter, employees, searcher) {
+    console.log(filter);
     return {
         type: FilterAction.UPDATE_FILTER,
         payload: {

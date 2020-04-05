@@ -4,6 +4,7 @@ export const FilterAction = {
 };
 
 export const RequestAction = {
+    RESET_STATE: 'requests/reset',
     SET_REQUESTS_LOADING: 'requests/setLoading',
     SET_EMPLOYEES: 'requests/setEmployees',
     TOGGLE_EMPLOYEE_SELECT: 'requests/selectedEmployees/toggle',
