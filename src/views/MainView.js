@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ReadReviewView from './ReadReviewView';
 import RequestViewVirtualized from './RequestViewVirtualized';
 import WriteView from './WriteView';
+import ReviewTextEditor from '../components/ReviewTextEditor';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -42,9 +43,10 @@ export default function MainView(props) {
                     <Route path='/request'>
                         <RequestViewVirtualized/>
                     </Route>
-                    <Route path='/write'>
+                    <Route exact path='/write/'>
                         <WriteView/>
                     </Route>
+                    <Route path='/write/:requestId' component={ ReviewTextEditor }/>
                 </Switch>
             </main>
         </div>

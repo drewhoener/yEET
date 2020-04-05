@@ -6,8 +6,9 @@ import { ListItemText } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
+import { useHistory } from 'react-router-dom';
 import { Close, Message, Send } from '@material-ui/icons';
-import MUIRichTextEditor from 'mui-rte'
+import MUIRichTextEditor from 'mui-rte';
 
 const buttons = {
     'accept': {
@@ -74,9 +75,12 @@ export default function RequestList({ classes, status, requests, setRequests }) 
             });
     };
 
-
+    const history = useHistory();
     const [modalStyle] = React.useState(getModalStyle);
     const [open, setOpen] = React.useState(false);
+    const redirectToEditor = (reviewId) => {
+        history.push(`/write/${ reviewId }`);
+    };
     const handleType = (request) => {
         console.log('type');
         console.log(request);
@@ -122,7 +126,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                         <>
                                             <IconButton aria-label={ request.firstName }
                                                         style={ { color: buttons.type.color } }
-                                                        onClick={ () => handleType(request) }>
+                                                        onClick={ () => redirectToEditor(request._id) }>
                                                 { React.cloneElement(buttons.type.icon) }
                                             </IconButton>
                                             <Modal open={ open }
@@ -131,7 +135,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                                      style={ modalStyle }
                                                      aria-labelledby="text-box"
                                                      aria-describedby="write-your-review-here">
-                                                    <MUIRichTextEditor label="Start typing..." /> 
+                                                    <MUIRichTextEditor label="Start typing..."/>
                                                 </div>
                                             </Modal>
                                             <IconButton aria-label={ request.firstName }
