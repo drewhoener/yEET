@@ -131,7 +131,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                                      style={ modalStyle }
                                                      aria-labelledby="text-box"
                                                      aria-describedby="write-your-review-here">
-                                                    <h1>Hello there</h1>
+                                                    <MUIRichTextEditor label="Start typing..." /> 
                                                 </div>
                                             </Modal>
                                             <IconButton aria-label={ request.firstName }

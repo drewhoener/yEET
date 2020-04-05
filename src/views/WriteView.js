@@ -18,13 +18,10 @@ const useStyle = makeStyles(theme => ({
         padding: 8,
         width: '100%'
     },
-    modalContainer: {
-        top: '50%',
-        left: '50%'
-    },
     modalPaper: {
         position: 'absolute',
-        width: 400,
+        height: '75vh',
+        width: '75vw',
         backgroundColor: theme.palette.background.paper,
         border: '2px solid #000',
         boxShadow: theme.shadows[5],
