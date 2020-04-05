@@ -1,0 +1,109 @@
+[
+  {
+    "firstName": "Temma",
+    "lastName": "Eventov",
+    "companyId": 4,
+    "password": "eventovte",
+    "positionTitle": "CEO",
+    "companyName": "yEET",
+    "employeeId": 1,
+    "email": "Temma_Eventov@yeet.us",
+    "startDate": "2020-01-20"
+  },
+  {
+    "firstName": "Drew",
+    "lastName": "Hoener",
+    "companyId": 4,
+    "password": "hoenerdr",
+    "positionTitle": "Software Engineer I",
+    "companyName": "yEET",
+    "employeeId": 2,
+    "managerId": 1,
+    "email": "Drew_Hoener@yeet.us",
+    "startDate": "2020-01-20"
+  },
+  {
+    "firstName": "Aidan",
+    "lastName": "Greenslade",
+    "companyId": 4,
+    "password": "greensladeai",
+    "positionTitle": "Software Engineer II",
+    "companyName": "yEET",
+    "employeeId": 3,
+    "managerId": 1,
+    "email": "Aidan_Greenslade@yeet.us",
+    "startDate": "2020-01-20"
+  },
+  {
+    "firstName": "Anthony",
+    "lastName": "Nguy",
+    "companyId": 4,
+    "password": "nguyan",
+    "positionTitle": "Software Engineer I",
+    "companyName": "yEET",
+    "employeeId": 4,
+    "managerId": 1,
+    "email": "Anthony_Nguy@yeet.us",
+    "startDate": "2020-01-20"
+  },
+  {
+    "firstName": "Charlie",
+    "lastName": "Bouhanna",
+    "companyId": 4,
+    "password": "bouhannach",
+    "positionTitle": "Software Engineer I",
+    "companyName": "yEET",
+    "employeeId": 5,
+    "managerId": 1,
+    "email": "Charlie_Bouhanna@yeet.us",
+    "startDate": "2020-01-20"
+  },
+  {
+    "firstName": "Eli",
+    "lastName": "Bildman",
+    "companyId": 4,
+    "password": "bildmanel",
+    "positionTitle": "Software Engineer I",
+    "companyName": "yEET",
+    "employeeId": 6,
+    "managerId": 1,
+    "email": "Eli_Bildman@yeet.us",
+    "startDate": "2020-01-20"
+  },
+  {
+    "firstName": "Nebiyou",
+    "lastName": "Kebede",
+    "companyId": 4,
+    "password": "kebedene",
+    "positionTitle": "Software Engineer II",
+    "companyName": "yEET",
+    "employeeId": 7,
+    "managerId": 1,
+    "email": "Nebiyou_Kebede@yeet.us",
+    "startDate": "2020-01-20"
+  },
+  {
+    "firstName": "John",
+    "lastName": "Deflumeri",
+    "companyId": 4,
+    "password": "deflumerijo",
+    "positionTitle": "Software Engineer II",
+    "companyName": "yEET",
+    "employeeId": 8,
+    "managerId": 1,
+    "email": "John_Deflumeri@yeet.us",
+    "startDate": "2020-01-20"
+  },
+  {
+    "firstName": "Samuel",
+    "lastName": "Jayachandran",
+    "companyId": 4,
+    "password": "jayachandransa",
+    "positionTitle": "Software Engineer I",
+    "companyName": "yEET",
+    "employeeId": 9,
+    "managerId": 1,
+    "email": "Samuel_Jayachandran@yeet.us",
+    "startDate": "2020-01-20"
+  }
+]

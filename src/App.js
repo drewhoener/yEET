@@ -1,11 +1,13 @@
 import React from 'react';
 import './App.css';
-import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
+import 'react-virtualized/styles.css';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import purple from '@material-ui/core/colors/purple';
 import green from '@material-ui/core/colors/green';
-import {BrowserRouter, Route, Switch} from "react-router-dom";
-import MainView from "./views/MainView";
-import LoginView from "./views/LoginView";
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import MainView from './views/MainView';
+import LoginView from './views/LoginView';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const theme = createMuiTheme({
     palette: {
@@ -16,7 +18,7 @@ const theme = createMuiTheme({
         danger: 'orange',
     },
     background: {
-        default: "#282c34"
+        default: '#282c34'
     }
 });
 
@@ -26,12 +28,10 @@ function App() {
         <BrowserRouter>
             <ThemeProvider theme={theme}>
                 <Switch>
-                    <Route path="/login">
-                        <LoginView/>
-                    </Route>
-                    <Route>
+                    <Route path="/login" component={LoginView}/>
+                    <ProtectedRoute>
                         <MainView/>
-                    </Route>
+                    </ProtectedRoute>
                 </Switch>
             </ThemeProvider>
         </BrowserRouter>

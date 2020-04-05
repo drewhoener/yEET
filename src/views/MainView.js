@@ -1,11 +1,10 @@
-import ResponsiveNav from "../components/ResponsiveNav";
-import DummyView from "./DummyView";
-import React from "react";
-import {Redirect, Switch} from 'react-router-dom';
-import {makeStyles} from "@material-ui/core/styles";
-import LoginProtectedRoute from "../components/LoginProtectedRoute";
-import ReadReviewView from "./ReadReviewView";
-import RequestView from "./RequestView";
+import ResponsiveNav from '../components/ResponsiveNav';
+import DummyView from './DummyView';
+import React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+import ReadReviewView from './ReadReviewView';
+import RequestViewVirtualized from './RequestViewVirtualized';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -16,6 +15,10 @@ const useStyle = makeStyles(theme => ({
     },
     content: {
         flexGrow: 1,
+        height: '100vh',
+        minHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     }
 }));
 
@@ -26,18 +29,18 @@ export default function MainView(props) {
             <ResponsiveNav/>
             <main className={classes.content}>
                 <Switch>
-                    {/*Redirect the '/' path to the home view*/}
+                    {/* Redirect the '/' path to the home view*/ }
                     <Redirect exact from='/' to='/home'/>
-                    <LoginProtectedRoute path='/home'>
+                    <Route path='/home'>
                         <div className={classes.toolbar}/>
                         <DummyView/>
-                    </LoginProtectedRoute>
-                    <LoginProtectedRoute path='/my-reviews'>
+                    </Route>
+                    <Route path='/my-reviews'>
                         <ReadReviewView/>
-                    </LoginProtectedRoute>
-                    <LoginProtectedRoute path='/request'>
-                        <RequestView/>
-                    </LoginProtectedRoute>
+                    </Route>
+                    <Route path='/request'>
+                        <RequestViewVirtualized/>
+                    </Route>
                 </Switch>
             </main>
         </div>

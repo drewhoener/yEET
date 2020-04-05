@@ -1,16 +1,17 @@
 import React from 'react';
-import {makeStyles} from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Divider from "@material-ui/core/Divider";
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Divider from '@material-ui/core/Divider';
 
 const useStyle = makeStyles(theme => ({
     root: {
         flex: '0 1 auto',
         position: 'sticky',
-        top: 0
-        //position: '-webkit-sticky'
+        top: 0,
+        zIndex: 100,
+        // position: '-webkit-sticky'
     },
     toolbar: theme.mixins.toolbar,
     wideTab: {
@@ -34,7 +35,7 @@ const useStyle = makeStyles(theme => ({
 
 export default function TabbedReviewBar(props) {
     const classes = useStyle();
-    const {children, ...rest} = props;
+    const { children, ...rest } = props;
     const [tabValue, setTabValue] = React.useState(0);
 
     const handleTabChange = (event, newVal) => {
