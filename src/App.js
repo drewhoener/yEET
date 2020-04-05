@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import 'react-virtualized/styles.css';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import purple from '@material-ui/core/colors/purple';
 import green from '@material-ui/core/colors/green';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import MainView from './views/MainView';
@@ -26,9 +25,9 @@ function App() {
 
     return (
         <BrowserRouter>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={ theme }>
                 <Switch>
-                    <Route path="/login" component={LoginView}/>
+                    <Route path="/login" component={ LoginView }/>
                     <ProtectedRoute>
                         <MainView/>
                     </ProtectedRoute>

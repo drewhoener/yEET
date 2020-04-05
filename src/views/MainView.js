@@ -26,14 +26,14 @@ const useStyle = makeStyles(theme => ({
 export default function MainView(props) {
     const classes = useStyle();
     return (
-        <div className={classes.root}>
+        <div className={ classes.root }>
             <ResponsiveNav/>
-            <main className={classes.content}>
+            <main className={ classes.content }>
                 <Switch>
                     {/* Redirect the '/' path to the home view*/ }
                     <Redirect exact from='/' to='/home'/>
                     <Route path='/home'>
-                        <div className={classes.toolbar}/>
+                        <div className={ classes.toolbar }/>
                         <DummyView/>
                     </Route>
                     <Route path='/my-reviews'>

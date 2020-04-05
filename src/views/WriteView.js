@@ -59,8 +59,8 @@ export default function WriteView(props) {
                 setRequests(data.requests);
             })
             .catch(err => {
-                //const error = {};
-                //setRequests([error]);
+                // const error = {};
+                // setRequests([error]);
             });
     }, []);
     return (
@@ -70,15 +70,18 @@ export default function WriteView(props) {
                 <Container maxWidth='xl'>
                     <h1>Pending</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 0 } classes={ classes } requests={ requests } setRequests={ setRequests }/>
+                        <RequestList status={ 0 } classes={ classes } requests={ requests }
+                                     setRequests={ setRequests }/>
                     </Paper>
                     <h1>Accepted</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 1 } classes={ classes } requests={ requests } setRequests={ setRequests }/>
+                        <RequestList status={ 1 } classes={ classes } requests={ requests }
+                                     setRequests={ setRequests }/>
                     </Paper>
                     <h1>Completed</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 2 } classes={ classes } requests={ requests } setRequests={ setRequests }/>
+                        <RequestList status={ 2 } classes={ classes } requests={ requests }
+                                     setRequests={ setRequests }/>
                     </Paper>
                 </Container>
             </div>

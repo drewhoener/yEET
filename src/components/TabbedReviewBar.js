@@ -44,24 +44,24 @@ export default function TabbedReviewBar(props) {
 
     return (
         <React.Fragment>
-            <div className={classes.root}>
-                <div className={classes.toolbar}/>
+            <div className={ classes.root }>
+                <div className={ classes.toolbar }/>
                 <Paper square variant='outlined'>
                     <Tabs
-                        value={tabValue}
-                        onChange={handleTabChange}
+                        value={ tabValue }
+                        onChange={ handleTabChange }
                         indicatorColor='secondary'
                         textColor='inherit'
                         centered
                     >
-                        <Tab className={classes.wideTab} label='My Reviews'/>
-                        <Tab className={classes.wideTab} label='Employee Reviews'/>
+                        <Tab className={ classes.wideTab } label='My Reviews'/>
+                        <Tab className={ classes.wideTab } label='Employee Reviews'/>
                     </Tabs>
                 </Paper>
             </div>
-            <Paper square variant='outlined' className={classes.constrained}>
+            <Paper square variant='outlined' className={ classes.constrained }>
                 <Divider flexItem orientation='horizontal'/>
-                {children}
+                { children }
             </Paper>
         </React.Fragment>
     );

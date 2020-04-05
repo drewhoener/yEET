@@ -25,16 +25,17 @@ function RoutedListItem(props) {
     const renderLink = React.useMemo(
         () =>
             React.forwardRef((linkProps, ref) => (
-                <Link ref={ref} to={to} {...linkProps} />
+                <Link ref={ ref } to={ to } { ...linkProps } />
             )),
         [to],
     );
 
     return (
         <li>
-            <ListItem button component={renderLink} onClick={onClick} selected={location.pathname.toLowerCase() === to}>
-                <ListItemIcon>{icon}</ListItemIcon>
-                <ListItemText primary={primary}/>
+            <ListItem button component={ renderLink } onClick={ onClick }
+                      selected={ location.pathname.toLowerCase() === to }>
+                <ListItemIcon>{ icon }</ListItemIcon>
+                <ListItemText primary={ primary }/>
                 {
                     notify > 0 ?
                         (

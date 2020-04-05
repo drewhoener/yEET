@@ -30,9 +30,9 @@ function getModalStyle() {
     const top = 50;
     const left = 50;
     return {
-        top: `${top}%`,
-        left: `${left}%`,
-        transform: `translate(-${top}%, -${left}%)`,
+        top: `${ top }%`,
+        left: `${ left }%`,
+        transform: `translate(-${ top }%, -${ left }%)`,
     };
 }
 
@@ -84,7 +84,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
 
     const handleClose = () => {
         setOpen(false);
-    }
+    };
 
     return (
         <List className={ classes.list }>
@@ -124,12 +124,12 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                                         onClick={ () => handleType(request) }>
                                                 <Icon>{ buttons.type.icon }</Icon>
                                             </IconButton>
-                                            <Modal  open={open}
-                                                    onClose={handleClose}>
-                                                <div className={classes.modalPaper}
-                                                    style={modalStyle}
-                                                    aria-labelledby="text-box"
-                                                    aria-describedby="write-your-review-here">
+                                            <Modal open={ open }
+                                                   onClose={ handleClose }>
+                                                <div className={ classes.modalPaper }
+                                                     style={ modalStyle }
+                                                     aria-labelledby="text-box"
+                                                     aria-describedby="write-your-review-here">
                                                     <h1>Hello there</h1>
                                                 </div>
                                             </Modal>
@@ -142,7 +142,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                     }
                                 </ListItem>
                             </React.Fragment>
-                        )
+                        );
                     })
             }
             <Divider/>

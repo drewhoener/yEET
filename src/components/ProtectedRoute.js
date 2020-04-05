@@ -46,8 +46,8 @@ export default function ProtectedRoute({ children, ...rest }) {
         }
         // console.log(`Showing Actual Render`);
         return (
-            <Route {...rest}>
-                {children}
+            <Route { ...rest }>
+                { children }
             </Route>
         );
     };
