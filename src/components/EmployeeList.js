@@ -5,10 +5,10 @@ import ListItem from '@material-ui/core/ListItem';
 import { Checkbox, ListItemIcon, ListItemText } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { sendRequests, toggleEmployeeSelect } from '../state/selector/RequestSelector';
-import Button from '@material-ui/core/Button';
+import { toggleEmployeeSelect } from '../state/selector/RequestSelector';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import { colorButtonTheme } from '../util';
+import ThemedStatusButton from './requestbutton/ThemedStatusButton';
 
 const useStyle = makeStyles(theme => ({
     smallScrollbar: {
@@ -34,8 +34,8 @@ function EmployeeList(
         employees,
         filteredEmployees,
         selectedEmployees,
+        requestStates,
         selectEmployee,
-        sendSingleRequest,
         ...rest
     }) {
 
@@ -65,15 +65,18 @@ function EmployeeList(
         if (!employee) {
             return null;
         }
+        const requestState = requestStates[employee._id.toString()];
+        const hasRequest = !!requestState;
 
         return (
             <div key={ key } style={ style }>
-                <ListItem ContainerComponent='div' role={ undefined } disableRipple button
+                <ListItem disabled={ hasRequest } ContainerComponent='div' role={ undefined } disableRipple button
                           onClick={ selectEmployee(employee._id.toString()) }>
                     <ListItemIcon>
                         <Checkbox
                             edge="start"
-                            checked={ selectedEmployees.some(item => employee._id.toString() === item) }
+                            checked={ selectedEmployees.some(item => employee._id.toString() === item) && !hasRequest }
+                            disabled={ hasRequest }
                             tabIndex={ -1 }
                             disableRipple
                             inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
@@ -84,15 +87,15 @@ function EmployeeList(
                                   secondary={ employee.position }
                     />
                     <ListItemSecondaryAction>
-                        <Button edge='end' color='primary' variant='outlined'
-                                onClick={ sendSingleRequest(employee._id.toString()) }>
-                            Request
-                        </Button>
+                        <ThemedStatusButton type={ hasRequest ? requestState.statusName : '' }
+                                            employeeObjId={ employee._id }/>
                     </ListItemSecondaryAction>
                 </ListItem>
             </div>
         );
     };
+
+    console.log(requestStates);
 
 
     return (
@@ -115,11 +118,11 @@ const mapStateToProps = state => ({
     employees: state.requests.employees,
     filteredEmployees: state.requests.filteredEmployees,
     selectedEmployees: state.requests.selectedEmployees,
+    requestStates: state.requests.requestStates.byKey,
 });
 
 const mapDispatchToProps = (dispatch, getState) => ({
     selectEmployee: idx => () => dispatch(toggleEmployeeSelect(idx)),
-    sendSingleRequest: requestId => () => dispatch(sendRequests([requestId])),
 });
 
 export default connect(

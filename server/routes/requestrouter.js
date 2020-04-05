@@ -87,12 +87,18 @@ requestRouter.post('/request-users', authMiddleware, async (req, res) => {
     }
 
     const successIds = [];
+    const requestStates = [];
     for (const [employeeObjId, request] of newRequests) {
         try {
             await request.save();
             console.log(`Processing new request for employee ${ employeeObjId }`);
             console.log(request);
             successIds.push(employeeObjId);
+            requestStates.push({
+                userObjId: request.userReceiving,
+                status: request.status,
+                statusName: PendingState[request.status]
+            });
         } catch (err) {
             console.error(err);
         }
@@ -101,12 +107,72 @@ requestRouter.post('/request-users', authMiddleware, async (req, res) => {
     if (successIds.length !== newRequests.length) {
         res.status(500).json({
             savedRequests: successIds,
+            requestStates,
             message: 'Unable to process all requests, please try again with the remaining users in a moment'
         });
         return;
     }
     res.status(201).json({
         savedRequests: successIds,
+        requestStates,
         message: `Sent requests to ${ successIds.length } other user(s)`
     });
+});
+
+requestRouter.get('/request-states', authMiddleware, (req, res) => {
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    Request.find({
+        company: new ObjectId(req.tokenData.company),
+        userRequesting: new ObjectId(req.tokenData.id),
+        status: { '$in': [PendingState.PENDING, PendingState.ACCEPTED] }
+    }).then(result => {
+        if (!result) {
+            result = [];
+        }
+
+        console.log(result);
+
+        res.status(200).json({
+            requestStates: result.map(request => ({
+                userObjId: request.userReceiving,
+                status: request.status,
+                statusName: PendingState[request.status]
+            }))
+        });
+    }).catch(err => {
+        console.error(err);
+        res.status(500).send('Internal Error');
+    });
+});
+
+requestRouter.post('/cancel', authMiddleware, (req, res) => {
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    const { requestedEmployee } = req.body;
+
+    if (!requestedEmployee) {
+        res.status(400).send('Invalid body');
+        return;
+    }
+
+    Request.findOneAndDelete({
+        company: req.tokenData.company,
+        userRequesting: req.tokenData.id,
+        userReceiving: new ObjectId(requestedEmployee)
+    })
+        .then(result => {
+            res.status(200).send('OK');
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).end();
+        });
+
 });

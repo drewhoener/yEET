@@ -14,6 +14,10 @@ export const InitialLoginState = {
 export const InitialRequestState = {
     filter: '',
     employees: [],
+    requestStates: {
+        keys: [],
+        byKey: {}
+    },
     filteredEmployees: [],
     selectedEmployees: [],
     fuzzyMatcher: new Fuse([]),

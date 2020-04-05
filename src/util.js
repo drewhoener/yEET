@@ -1,5 +1,5 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import { green, red } from '@material-ui/core/colors';
+import { amber, green, indigo, red } from '@material-ui/core/colors';
 
 export const isMobile = /iphone|ipod|ipad|android|blackberry|opera mini|opera mobi|skyfire|maemo|windows phone|palm|iemobile|symbian|symbianos|fennec/i.test(navigator.userAgent.toLowerCase());
 
@@ -12,6 +12,11 @@ export const colorButtonTheme = createMuiTheme({
             main: red[600]
         },
     },
+    status: {
+        warning: amber[800],
+        danger: red[800],
+        success: indigo[600]
+    }
 });
 
 export function createReducer(initialState, handlers) {

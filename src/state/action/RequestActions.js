@@ -10,5 +10,7 @@ export const RequestAction = {
     UNSELECT_EMPLOYEES: 'requests/selectedEmployees/unselectMultiple',
     PUSH_ERROR_MESSAGE: 'requests/errors/push',
     POP_ERROR_MESSAGE: 'requests/errors/pop',
-    CLOSE_TOP_ERROR_MESSAGE: 'requests/errors/closeTop'
+    CLOSE_TOP_ERROR_MESSAGE: 'requests/errors/closeTop',
+    UPDATE_REQUEST_STATES: 'requests/pendingStates/update',
+    REMOVE_REQUEST_STATE: 'requests/pendingStates/remove'
 };

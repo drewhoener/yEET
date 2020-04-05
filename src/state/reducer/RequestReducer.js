@@ -42,14 +42,48 @@ const filterReducer = createReducer(InitialRequestState.filter, {
     },
 });
 
-const employeesReducer = createReducer(InitialRequestState.employees, {
+const employeesReducer = createReducer([...InitialRequestState.employees], {
     [RequestAction.SET_EMPLOYEES]: (state, action) => {
         console.log('Setting employees');
         return action.employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName));
     }
 });
 
-const filteredEmployeesReducer = createReducer(InitialRequestState.filteredEmployees, {
+const requestStateReducer = createReducer({ ...InitialRequestState.requestStates }, {
+    [RequestAction.UPDATE_REQUEST_STATES]: (state, action) => {
+        if (!action.payload || !action.payload.requestStates) {
+            return state;
+        }
+        const { requestStates } = action.payload;
+        const newState = {
+            keys: [],
+            byKey: {}
+        };
+        requestStates.filter(o => !!o && !!o.userObjId && !!o.statusName)
+            .forEach(state => {
+                newState.keys.push(state.userObjId);
+                newState.byKey[state.userObjId] = {
+                    status: state.status,
+                    statusName: state.statusName,
+                };
+            });
+        return newState;
+    },
+    [RequestAction.REMOVE_REQUEST_STATE]: (state, action) => {
+        const { employee } = action.payload;
+        if (!employee) {
+            return { ...state };
+        }
+        const entries = { ...state.byKey };
+        delete entries[employee];
+        return {
+            keys: state.keys.filter(o => o.toString() !== employee.toString()),
+            byKey: entries
+        };
+    },
+});
+
+const filteredEmployeesReducer = createReducer([...InitialRequestState.filteredEmployees], {
     [FilterAction.UPDATE_FILTER]: (state, action) => {
         if (!action.payload) {
             return state;
@@ -75,7 +109,7 @@ const filteredEmployeesReducer = createReducer(InitialRequestState.filteredEmplo
     }
 });
 
-const selectedEmployeesReducer = createReducer(InitialRequestState.selectedEmployees, {
+const selectedEmployeesReducer = createReducer([...InitialRequestState.selectedEmployees], {
     [RequestAction.TOGGLE_EMPLOYEE_SELECT]: (state, action) => {
         if (!Object.prototype.hasOwnProperty.call(action.payload, 'user')) {
             return state;
@@ -114,7 +148,7 @@ const loadingReducer = createReducer(InitialRequestState.loading, {
     }
 });
 
-const errorMessageReducer = createReducer(InitialRequestState.errorMessages, {
+const errorMessageReducer = createReducer([...InitialRequestState.errorMessages], {
     [RequestAction.PUSH_ERROR_MESSAGE]: (messages, action) => {
         if (!action.severity || !action.content || !action.content.length) {
             return [
@@ -160,7 +194,8 @@ export default function requestReducer(state = InitialRequestState, action) {
     return {
         filter: filterReducer(state.filter, action),
         employees: employeesReducer(state.employees, action),
-        filteredEmployees: filteredEmployeesReducer(state.filteredEmployees, action, state.fuzzyMatcher),
+        requestStates: requestStateReducer(state.requestStates, action),
+        filteredEmployees: filteredEmployeesReducer(state.filteredEmployees, action),
         selectedEmployees: selectedEmployeesReducer(state.selectedEmployees, action),
         fuzzyMatcher: matcherReducer(state.fuzzyMatcher, action),
         loading: loadingReducer(state.loading, action),

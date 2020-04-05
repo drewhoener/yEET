@@ -73,6 +73,48 @@ function pushErrorMessage(severity, message) {
 
 }
 
+function removeRequestState(employeeObjId) {
+    return {
+        type: RequestAction.REMOVE_REQUEST_STATE,
+        payload: {
+            employee: employeeObjId
+        }
+    };
+}
+
+export function deleteRequest(employeeObjId) {
+    return dispatch => {
+        axios.post('/api/request/cancel', { requestedEmployee: employeeObjId.toString() })
+            .then(response => {
+                dispatch(removeRequestState(employeeObjId));
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    };
+}
+
+function updateRequestStates(requestStates) {
+    return {
+        type: RequestAction.UPDATE_REQUEST_STATES,
+        payload: {
+            requestStates
+        }
+    };
+}
+
+function fetchRequestStates() {
+    return dispatch => {
+        axios.get('/api/request/request-states')
+            .then(({ data }) => {
+                dispatch(updateRequestStates(data.requestStates));
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    };
+}
+
 function receiveEmployees(employees) {
     return (dispatch, getState) => {
         const filter = getState().requests.filter;
@@ -82,7 +124,7 @@ function receiveEmployees(employees) {
                 dispatch(setAndRefreshFilter(filter));
                 dispatch(setRequestsLoading(false));
             });
-        }, 750);
+        }, 650);
     };
 }
 
@@ -133,10 +175,16 @@ export function fetchOrUpdateEmployees() {
         const { employees } = getState().requests;
         console.log(`Employees: ${ !!employees }, Employees Length: ${ !!employees.length }`);
         if (!employees || !employees.length) {
-            dispatch(fetchEmployees());
+            batch(() => {
+                dispatch(fetchEmployees());
+                dispatch(fetchRequestStates());
+            });
             return;
         }
-        dispatch(updateEmployees());
+        batch(() => {
+            dispatch(updateEmployees());
+            dispatch(fetchRequestStates());
+        });
     };
 }
 
@@ -147,6 +195,13 @@ export function sendRequests(requestIds) {
         })
             .then(response => {
                 console.log(response.data);
+                batch(() => {
+                    dispatch(unselectEmployees(requestIds));
+                    dispatch(fetchRequestStates());
+                    if (response.data.message) {
+                        dispatch(pushErrorMessage('success', response.data.message));
+                    }
+                });
             })
             .catch(err => {
                 console.log(err.response);

@@ -53,7 +53,7 @@ function RequestInfoData(
                 <div className={ classes.infoBlockHolder }>
                     <Button className={ classes.deselectButton } variant='contained'
                             color='secondary'
-                            onClick={ resetSelected } disableElevation
+                            onClick={ resetSelected(selectedEmployees) } disableElevation
                             disableFocusRipple
                     >
                         Deselect All
@@ -85,7 +85,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    resetSelected: (employees) => dispatch(unselectEmployees(employees)),
+    resetSelected: (employees) => () => dispatch(unselectEmployees(employees)),
     sendSelectedRequests: () => dispatch(sendSelectedRequests()),
 });
 

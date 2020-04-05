@@ -138,7 +138,7 @@ function RequestViewVirtualized(
                                     <Snackbar
                                         key={ `error-message-${ message.key }` }
                                         open={ message.open }
-                                        autoHideDuration={ 5000 }
+                                        autoHideDuration={ 3500 }
                                         TransitionComponent={ SlideTransition }
                                         onClose={ () => closeTopErrorMessage() }
                                         TransitionProps={ {
