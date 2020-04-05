@@ -18,6 +18,18 @@ const useStyle = makeStyles(theme => ({
         padding: 8,
         width: '100%'
     },
+    modalContainer: {
+        top: '50%',
+        left: '50%'
+    },
+    modalPaper: {
+        position: 'absolute',
+        width: 400,
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+    },
     margin: {
         margin: theme.spacing(1)
     },
