@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import MUIRichTextEditor from 'mui-rte';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -16,7 +16,41 @@ const useStyle = makeStyles(theme => ({
         }
     },
     toolbar: theme.mixins.toolbar,
+    editorBase: {
+        flexGrow: 1,
+        color: 'green'
+    }
 }));
+
+const editorThemeOptions = theme => {
+    console.log(theme);
+    return {
+        overrides: {
+            MUIRichTextEditor: {
+                root: {
+                    flexGrow: 1,
+                    display: 'flex'
+                },
+                container: {
+                    display: 'flex',
+                    flexGrow: 1,
+                    flexDirection: 'column',
+                    backgroundColor: theme.palette.background.paper,
+                    color: theme.palette.text.primary,
+                    transition: theme.transitions.create('box-shadow'),
+                    border: `1px solid ${ theme.palette.divider }`
+                },
+                editor: {
+                    display: 'flex',
+                    flexGrow: 1,
+                },
+                editorContainer: {
+                    flexGrow: 1
+                }
+            }
+        }
+    };
+};
 
 function ReviewTextEditor(props) {
     const classes = useStyle();
@@ -24,11 +58,26 @@ function ReviewTextEditor(props) {
     const { requestId } = props.match.params;
     console.log(requestId);
 
+    const onSave = (data) => {
+        console.log(data);
+    };
+
+    const onChange = (state) => {
+        console.log(state);
+    };
+
     return (
         <>
             <div className={ classes.toolbar }/>
             <div className={ classes.root }>
-                <MUIRichTextEditor label="Start typing..."/>
+                <ThemeProvider theme={ theme => ({ ...theme, ...editorThemeOptions(theme) }) }>
+                    <MUIRichTextEditor
+                        classes={ { container: classes.editor } }
+                        onSave={ onSave }
+                        onChange={ onChange }
+                        label="Start typing..."
+                    />
+                </ThemeProvider>
             </div>
         </>
     );
