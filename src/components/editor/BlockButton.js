@@ -85,6 +85,7 @@ export function BlockButton({ format, className = '', IconComponent, iconProps =
             size='small'
             value={ format }
             selected={ isBlockActive(editor, format) }
+            onMouseDown={ (e) => e.preventDefault() }
             onClick={ () => {
                 toggleBlock(editor, format);
                 if (onClick) {

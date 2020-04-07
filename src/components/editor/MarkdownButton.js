@@ -41,12 +41,14 @@ export function MarkdownButton({ format, className = '', IconComponent, iconProp
                 ])
             }
             size='small'
-            value={ format } selected={ isMarkdownActive(editor, format) } onClick={ () => {
-            toggleMarkdown(editor, format);
-            if (onClick) {
-                onClick();
-            }
-        } }>
+            value={ format } selected={ isMarkdownActive(editor, format) }
+            onMouseDown={ (e) => e.preventDefault() }
+            onClick={ () => {
+                toggleMarkdown(editor, format);
+                if (onClick) {
+                    onClick();
+                }
+            } }>
             <IconComponent { ...iconProps } />
         </ToggleButton>
     );
