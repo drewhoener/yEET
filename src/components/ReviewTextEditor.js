@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
-import MUIRichTextEditor from 'mui-rte';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
+import { withHistory } from 'slate-history';
+import { Editable, Slate, withReact } from 'slate-react';
+import { createEditor } from 'slate';
+import { MarkdownButton } from './editor/MarkdownButton';
+import {
+    Code,
+    FormatBold,
+    FormatItalic,
+    FormatListBulleted,
+    FormatListNumbered,
+    FormatQuote,
+    FormatUnderlined,
+    Save,
+    Send
+} from '@material-ui/icons';
+import FormattingType from './editor/FormattingType';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import Toolbar from '@material-ui/core/Toolbar';
+import Paper from '@material-ui/core/Paper';
+import { BlockButton, BlockTextButton } from './editor/BlockButton';
+import Button from '@material-ui/core/Button';
+import axios from 'axios';
 
 const useStyle = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexGrow: '1',
+        flexDirection: 'column',
         [theme.breakpoints.down('sm')]: {
             paddingTop: theme.spacing(1.5),
             paddingBottom: theme.spacing(1.5),
@@ -16,68 +38,198 @@ const useStyle = makeStyles(theme => ({
         }
     },
     toolbar: theme.mixins.toolbar,
+    editorToolbar: {
+        paddingLeft: theme.spacing(0.75),
+        display: 'flex',
+        flexWrap: 'wrap'
+    },
+    spacedButtonGroup: {
+        paddingLeft: theme.spacing(0.75),
+        paddingRight: theme.spacing(0.75),
+        [theme.breakpoints.down('sm')]: {
+            paddingTop: theme.spacing(0.5),
+            paddingBottom: theme.spacing(0.5),
+        }
+    },
+    codeFormatIcon: {
+        paddingLeft: theme.spacing(0.125),
+        paddingRight: theme.spacing(0.125),
+    },
+    paddedEditor: {
+        paddingLeft: theme.spacing(1.5)
+    },
     editorBase: {
         flexGrow: 1,
         color: 'green'
+    },
+    quote: {
+        borderLeft: '2px solid #ddd',
+        marginLeft: 0,
+        marginRight: 0,
+        paddingLeft: '10px',
+        color: '#aaa',
+        fontStyle: 'italic',
+    },
+    code: {
+        fontFamily: 'monospace',
+        fontSize: '1.25rem',
+        backgroundColor: ' #eee',
+        padding: theme.spacing(0.25),
+    },
+    saveButton: {
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(1)
     }
 }));
 
-const editorThemeOptions = theme => {
-    console.log(theme);
-    return {
-        overrides: {
-            MUIRichTextEditor: {
-                root: {
-                    flexGrow: 1,
-                    display: 'flex'
-                },
-                container: {
-                    display: 'flex',
-                    flexGrow: 1,
-                    flexDirection: 'column',
-                    backgroundColor: theme.palette.background.paper,
-                    color: theme.palette.text.primary,
-                    transition: theme.transitions.create('box-shadow'),
-                    border: `1px solid ${ theme.palette.divider }`
-                },
-                editor: {
-                    display: 'flex',
-                    flexGrow: 1,
-                },
-                editorContainer: {
-                    flexGrow: 1
-                }
-            }
-        }
-    };
-};
+const initialEditorState = (person, reviewer) => [
+    {
+        type: FormattingType.H1,
+        children: [
+            { text: `Review for: ${ person }` }
+        ]
+    },
+    {
+        type: FormattingType.H2,
+        children: [
+            { text: `Reviewer: ${ reviewer }` }
+        ]
+    },
+    {
+        type: 'paragraph',
+        children: [
+            { text: '*Write your review here*' }
+        ]
+    }
+
+];
 
 function ReviewTextEditor(props) {
     const classes = useStyle();
+    const [stateData, setStateData] = useState({});
+    const [editorState, setEditorState] = useState([]);
+    const renderElement = useCallback(props => <Element { ...props } />, []);
+    const renderLeaf = useCallback(props => <Leaf { ...props } />, []);
+    const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
     const { requestId } = props.match.params;
-    console.log(requestId);
-
-    const onSave = (data) => {
-        console.log(data);
-    };
+    React.useEffect(() => {
+        axios.get('/api/editor-data',
+            {
+                params: {
+                    requestId
+                }
+            })
+            .then(({ data }) => {
+                if (!data.userData || !data.requestingData || !data.request) {
+                    return;
+                }
+                console.log(data);
+                setEditorState(initialEditorState(
+                    `${ data.requestingData.firstName } ${ data.requestingData.lastName }`,
+                    `${ data.userData.firstName } ${ data.userData.lastName }`)
+                );
+                setStateData({ ...data });
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }, [requestId]);
 
     const onChange = (state) => {
         console.log(state);
+        setEditorState(state);
+    };
+
+    const Element = ({ attributes, children, element }) => {
+        console.log(element);
+        switch (element.type) {
+            case FormattingType.BLOCK_QUOTE:
+                return <blockquote className={ classes.quote } { ...attributes }>{ children }</blockquote>;
+            case FormattingType.H1:
+                return <h1 { ...attributes }>{ children }</h1>;
+            case FormattingType.H2:
+                return <h2 { ...attributes }>{ children }</h2>;
+            case FormattingType.LIST_ITEM:
+                return <li { ...attributes }>{ children }</li>;
+            case FormattingType.BULLETED_LIST:
+                return <ul { ...attributes }>{ children }</ul>;
+            case FormattingType.NUMBERED_LIST:
+                return <ol { ...attributes }>{ children }</ol>;
+            default:
+                return <p { ...attributes }>{ children }</p>;
+        }
+    };
+
+    const Leaf = ({ attributes, children, leaf }) => {
+        console.log(leaf);
+        if (leaf.bold) {
+            children = <strong>{ children }</strong>;
+        }
+
+        if (leaf.code) {
+            children = <code className={ classes.code }>{ children }</code>;
+        }
+
+        if (leaf.italic) {
+            children = <em>{ children }</em>;
+        }
+
+        if (leaf.underline) {
+            children = <u>{ children }</u>;
+        }
+
+        return <span { ...attributes }>{ children }</span>;
     };
 
     return (
         <>
             <div className={ classes.toolbar }/>
             <div className={ classes.root }>
-                <ThemeProvider theme={ theme => ({ ...theme, ...editorThemeOptions(theme) }) }>
-                    <MUIRichTextEditor
-                        classes={ { container: classes.editor } }
-                        onSave={ onSave }
-                        onChange={ onChange }
-                        label="Start typing..."
-                    />
-                </ThemeProvider>
+                <Slate editor={ editor } value={ editorState } onChange={ newState => onChange(newState) }>
+                    <Paper square>
+                        <Toolbar className={ classes.editorToolbar }>
+                            <ToggleButtonGroup className={ classes.spacedButtonGroup }>
+                                <MarkdownButton format={ FormattingType.BOLD } IconComponent={ FormatBold }/>
+                                <MarkdownButton format={ FormattingType.ITALIC } IconComponent={ FormatItalic }/>
+                                <MarkdownButton format={ FormattingType.UNDERLINE } IconComponent={ FormatUnderlined }/>
+                            </ToggleButtonGroup>
+                            <ToggleButtonGroup className={ classes.spacedButtonGroup }>
+                                <MarkdownButton iconProps={ { className: classes.codeFormatIcon } }
+                                                format={ FormattingType.CODE } IconComponent={ Code }/>
+                                <BlockButton format={ FormattingType.BLOCK_QUOTE } IconComponent={ FormatQuote }/>
+                            </ToggleButtonGroup>
+                            <ToggleButtonGroup className={ classes.spacedButtonGroup }>
+                                <BlockTextButton format={ FormattingType.H1 } text={ 'H1' }/>
+                                <BlockTextButton format={ FormattingType.H2 } text={ 'H2' }/>
+                            </ToggleButtonGroup>
+                            <ToggleButtonGroup className={ classes.spacedButtonGroup }>
+                                <BlockButton format={ FormattingType.NUMBERED_LIST }
+                                             IconComponent={ FormatListNumbered }/>
+                                <BlockButton format={ FormattingType.BULLETED_LIST }
+                                             IconComponent={ FormatListBulleted }/>
+                            </ToggleButtonGroup>
+                            <div className={ classes.spacedButtonGroup }>
+                                <Button size='small' className={ classes.saveButton } variant='outlined'
+                                        startIcon={ <Save/> }>
+                                    Save Draft
+                                </Button>
+                            </div>
+                            <div className={ classes.spacedButtonGroup }>
+                                <Button size='small' className={ classes.saveButton } variant='outlined'
+                                        startIcon={ <Send/> }>
+                                    Submit Review
+                                </Button>
+                            </div>
+                        </Toolbar>
+                    </Paper>
+                    <Paper square className={ classes.paddedEditor }>
+                        <Editable
+                            renderElement={ renderElement }
+                            renderLeaf={ renderLeaf }
+                        />
+                    </Paper>
+                </Slate>
             </div>
         </>
     );

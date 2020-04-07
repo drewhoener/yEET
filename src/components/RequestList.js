@@ -8,7 +8,6 @@ import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
 import { useHistory } from 'react-router-dom';
 import { Close, Message, Send } from '@material-ui/icons';
-import MUIRichTextEditor from 'mui-rte';
 
 const buttons = {
     'accept': {
@@ -64,10 +63,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
         console.log('rejected');
         axios.post('/api/delete-request', request)
             .then(() => {
-                console.log('nice');
                 const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
-                console.log(requests);
-                console.log(newRequests);
                 setRequests(newRequests);
             })
             .catch(err => {
@@ -135,7 +131,6 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                                      style={ modalStyle }
                                                      aria-labelledby="text-box"
                                                      aria-describedby="write-your-review-here">
-                                                    <MUIRichTextEditor label="Start typing..."/>
                                                 </div>
                                             </Modal>
                                             <IconButton aria-label={ request.firstName }

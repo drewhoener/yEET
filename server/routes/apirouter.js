@@ -31,6 +31,56 @@ apiRouter.get('/companies', (req, res) => {
         });
 });
 
+apiRouter.get('/editor-data', authMiddleware, async (req, res) => {
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    const { requestId } = req.query;
+    if (!requestId) {
+        res.status(400).send('Invalid Id Supplied');
+        return;
+    }
+
+    const loggedIn = await Employee.findOne({
+        company: new ObjectId(req.tokenData.company),
+        _id: new ObjectId(req.tokenData.id)
+    });
+
+    const requestObj = await Request.findOne({
+        company: new ObjectId(req.tokenData.company),
+        _id: new ObjectId(requestId)
+    });
+
+    if (!loggedIn) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    if (!requestObj) {
+        res.status(404).send('Not Found');
+        return;
+    }
+    console.log(loggedIn);
+    console.log(requestObj);
+    const userRequesting = await Employee.findOne({
+        company: new ObjectId(req.tokenData.company),
+        _id: new ObjectId(requestObj.userRequesting.toString())
+    });
+
+    if (!userRequesting) {
+        res.status(404).send('Not Found');
+        return;
+    }
+
+    res.status(200).json({
+        userData: loggedIn,
+        requestingData: userRequesting,
+        request: requestObj
+    });
+});
+
 // noinspection JSUnresolvedFunction
 apiRouter.get('/employees', authMiddleware, (req, res) => {
     if (!req.tokenData) {

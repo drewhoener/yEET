@@ -18,6 +18,8 @@ const useStyle = makeStyles(theme => ({
     },
 }));
 
+const showNotify = false;
+
 function RoutedListItem(props) {
     const { icon, primary, to, location, notify, onClick } = props;
     const classes = useStyle();
@@ -37,6 +39,7 @@ function RoutedListItem(props) {
                 <ListItemIcon>{ icon }</ListItemIcon>
                 <ListItemText primary={ primary }/>
                 {
+                    showNotify &&
                     notify > 0 ?
                         (
                             <ListItemAvatar>

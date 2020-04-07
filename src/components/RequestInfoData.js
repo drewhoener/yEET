@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { makeStyles, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import { sendSelectedRequests, unselectEmployees } from '../state/selector/RequestSelector';
@@ -60,7 +59,7 @@ function RequestInfoData(
                     </Button>
                     <Hidden xsDown>
                         <div className={ classes.otherSpace }/>
-                        <Typography noWrap>Remaining: 0</Typography>
+                        {/*<Typography noWrap>Remaining: 0</Typography>*/ }
                     </Hidden>
                     <div className={ classes.otherSpace }/>
                     <Button className={ classes.submitButton } variant='contained'

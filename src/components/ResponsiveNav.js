@@ -4,7 +4,6 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import { CssBaseline } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -23,6 +22,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { resetRequestState } from '../state/selector/RequestSelector';
+import logo from '../img/logo.png';
 
 const drawerWidth = 250;
 const useStyles = makeStyles(theme => ({
@@ -43,11 +43,30 @@ const useStyles = makeStyles(theme => ({
             zIndex: theme.zIndex.drawer + 1
         }
     },
-    title: {
-        flexGrow: 1
+    spacer: {
+        flexGrow: 1,
+        flex: '1 0 auto',
+        [theme.breakpoints.down('xs')]: {
+            width: '14vw',
+        },
+    },
+    hiddenSpacer: {
+        flex: '1 1 auto',
+        [theme.breakpoints.up('sm')]: {
+            display: 'none',
+        },
+    },
+    logo: {
+        display: 'flex',
+        minWidth: 0
+    },
+    logoImage: {
+        maxWidth: '56px',
     },
     menuButton: {
         marginRight: theme.spacing(2),
+        color: theme.status.logout,
+        borderColor: theme.status.logout,
         // Don't display the menu button if we're not actually allowing the drawer to be collapsed
         [theme.breakpoints.up('sm')]: {
             display: 'none',
@@ -56,6 +75,10 @@ const useStyles = makeStyles(theme => ({
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
         width: drawerWidth,
+    },
+    whiteButton: {
+        color: theme.status.logout,
+        borderColor: theme.status.logout
     }
 }));
 
@@ -168,12 +191,17 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
                         >
                             <MenuIcon/>
                         </IconButton>
-                        <Typography variant={ 'h4' } className={ classes.title }>yEET</Typography>
+                        <div className={ classes.hiddenSpacer }/>
+                        <div className={ classes.logo }>
+                            <img className={ classes.logoImage } src={ logo } alt='Yeet Logo'/>
+                        </div>
                         {
                             // TODO Make this integrate better with the whole UI}
                         }
+                        <div className={ classes.spacer }/>
                         <Hidden xsDown>
                             <Button
+                                className={ classes.whiteButton }
                                 variant='outlined'
                                 color='default'
                                 aria-label='Logout'

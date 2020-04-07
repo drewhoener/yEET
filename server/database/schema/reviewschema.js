@@ -10,17 +10,13 @@ const reviewSchema = new Schema({
      */
     dateWritten: { type: Date, required: true },
     /**
-     * ID number for the specific review
-     */
-    reviewID: { type: Integer, required: true },
-    /**
      * ID number for the specific request
      */
-    requestID: { type: Integer, required: true },
+    requestID: { type: mongoose.ObjectId, required: true, index: true },
     /**
      * Status on the completetion of the review
      */
-    completed: { type: Boolean, required: true }
+    completed: { type: Boolean, required: true, index: true }
 });
 
 const Review = mongoose.model('Review', reviewSchema);
