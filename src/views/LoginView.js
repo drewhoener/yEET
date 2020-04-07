@@ -198,7 +198,7 @@ function LoginView(
             <CssBaseline/>
             <Container height='100%'>
                 <Paper variant='outlined' elevation={ 16 }>
-                    <Typography color='secondary' fontWeight='fontWeightBold' align='center'
+                    <Typography color='primary' fontWeight='fontWeightBold' align='center'
                                 variant='h1'>yEET</Typography>
                     <Typography align='center' variant='subtitle1'>Your Employee Evaluation Tool</Typography>
                     <form className={ classes.form } onSubmit={ onSubmitForm } aria-label='Login Form'
@@ -239,7 +239,7 @@ function LoginView(
                         <Button
                             className={ classes.loginButton }
                             variant='contained'
-                            color='secondary'
+                            color='primary'
                             size='large'
                             type='submit'
                             aria-label="Login"

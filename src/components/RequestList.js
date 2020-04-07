@@ -7,13 +7,13 @@ import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
 import { useHistory } from 'react-router-dom';
-import { Close, Message, Send } from '@material-ui/icons';
+import { Check, Close, Create } from '@material-ui/icons';
 
 const buttons = {
     'accept': {
         'name': 'accept',
         'color': '#4caf50',
-        'icon': <Send/>
+        'icon': <Check/>
     },
     'reject': {
         'name': 'reject',
@@ -23,7 +23,7 @@ const buttons = {
     'type': {
         'name': 'type',
         'color': '#000000',
-        'icon': <Message/>
+        'icon': <Create/>
     }
 };
 
