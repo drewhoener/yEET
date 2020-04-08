@@ -166,7 +166,8 @@ requestRouter.post('/cancel', authMiddleware, (req, res) => {
     Request.findOneAndDelete({
         company: req.tokenData.company,
         userRequesting: req.tokenData.id,
-        userReceiving: new ObjectId(requestedEmployee)
+        userReceiving: new ObjectId(requestedEmployee),
+        status: { '$in': [PendingState.PENDING, PendingState.ACCEPTED] }
     })
         .then(result => {
             res.status(200).send('OK');
