@@ -42,6 +42,7 @@ requestRouter.post('/request-users', authMiddleware, async (req, res) => {
         {
             userRequesting: new ObjectId(req.tokenData.id),
             userReceiving: { '$in': foundEmployees.map(o => o._id) },
+            status: { '$in': [PendingState.PENDING, PendingState.ACCEPTED] }
         }
     ).then(response => {
         if (!response) {
