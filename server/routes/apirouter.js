@@ -62,12 +62,14 @@ apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
     let review = await Review.findOne({ requestID: new ObjectId(requestId) });
     if (!review) {
         review = new Review({
-            contents: content,
-            dateWritten: moment().toDate(),
             requestID: requestId,
-            completed: true
         });
     }
+
+    review.contents = content;
+    review.dateWritten = moment().toDate();
+    review.completed = true;
+
     request.status = PendingState.COMPLETED;
     await request.save();
     await review.save();
