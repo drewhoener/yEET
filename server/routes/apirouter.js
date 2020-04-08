@@ -6,6 +6,8 @@ import Employee from '../database/schema/employeeschema';
 import Request, { PendingState } from '../database/schema/requestschema';
 import { ObjectId } from 'mongodb';
 import { requestRouter } from './requestrouter';
+import Review from '../database/schema/reviewschema';
+import moment from 'moment';
 
 const apiRouter = Router();
 
@@ -29,6 +31,53 @@ apiRouter.get('/companies', (req, res) => {
         .catch(err => {
             res.status(500).send('Internal Server Error');
         });
+});
+
+
+apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    const { requestId, content } = req.body;
+    if (!requestId || !content) {
+        res.status(400).send('Request missing fields');
+        return;
+    }
+
+    const request = await Request.findOne({
+        _id: new ObjectId(requestId),
+        company: new ObjectId(req.tokenData.company),
+        userReceiving: new ObjectId(req.tokenData.id)
+    });
+
+    console.log(request);
+
+    if (!request) {
+        res.status(404).send('Requested Resource not found');
+        return;
+    }
+
+    let review = await Review.findOne({ requestID: new ObjectId(requestId) });
+    if (!review) {
+        review = new Review({
+            contents: content,
+            dateWritten: moment().toDate(),
+            requestID: requestId,
+            completed: true
+        });
+    }
+    request.status = PendingState.COMPLETED;
+    await request.save();
+    await review.save();
+
+    console.log(review);
+
+    res.status(201).json({
+        reviewId: review._id,
+        requestId: requestId
+    });
 });
 
 apiRouter.get('/editor-data', authMiddleware, async (req, res) => {

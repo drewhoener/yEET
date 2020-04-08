@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { withHistory } from 'slate-history';
 import { Editable, Slate, withReact } from 'slate-react';
 import { createEditor } from 'slate';
+import { useHistory } from 'react-router-dom';
 import { MarkdownButton } from './editor/MarkdownButton';
 import {
     Code,
@@ -23,6 +24,9 @@ import Paper from '@material-ui/core/Paper';
 import { BlockButton, BlockTextButton } from './editor/BlockButton';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
+import { Dialog, DialogContent, DialogTitle } from '@material-ui/core';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -106,8 +110,11 @@ const initialEditorState = (person, reviewer) => [
 
 function ReviewTextEditor(props) {
     const classes = useStyle();
+    const history = useHistory();
     const [stateData, setStateData] = useState({});
     const [editorState, setEditorState] = useState([]);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogState, setDialogState] = useState('success');
     const renderElement = useCallback(props => <Element { ...props } />, []);
     const renderLeaf = useCallback(props => <Leaf { ...props } />, []);
     const editor = useMemo(() => withHistory(withReact(createEditor())), []);
@@ -136,9 +143,30 @@ function ReviewTextEditor(props) {
             });
     }, [requestId]);
 
+    const closeAndRedirect = () => {
+        setDialogOpen(false);
+        if (dialogState === 'success') {
+            history.replace('/write');
+        }
+    };
+
     const onChange = (state) => {
         console.log(state);
         setEditorState(state);
+    };
+
+    const submitReview = () => {
+        axios.post('/api/submit-review', {
+            requestId,
+            content: JSON.stringify(editorState)
+        }).then(response => {
+            console.log(response);
+        }).catch(err => {
+            console.error(err);
+            setDialogState('failure');
+        }).then(() => {
+            setDialogOpen(true);
+        });
     };
 
     const Element = ({ attributes, children, element }) => {
@@ -184,6 +212,27 @@ function ReviewTextEditor(props) {
 
     return (
         <>
+            <Dialog open={ dialogOpen } onClose={ closeAndRedirect }>
+                <DialogTitle>
+                    { dialogState === 'success' ?
+                        'Your request has been submitted' :
+                        'Failed to submit your request!'
+                    }
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        { dialogState === 'success' ?
+                            'Close this dialog to be redirected to the write review page' :
+                            'Try again or save a draft and come back later'
+                        }
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={ closeAndRedirect } color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <div className={ classes.toolbar }/>
             <div className={ classes.root }>
                 <Slate editor={ editor } value={ editorState } onChange={ newState => onChange(newState) }>
@@ -217,6 +266,7 @@ function ReviewTextEditor(props) {
                             </div>
                             <div className={ classes.spacedButtonGroup }>
                                 <Button size='small' className={ classes.saveButton } variant='outlined'
+                                        onClick={ () => submitReview() }
                                         startIcon={ <Send/> }>
                                     Submit Review
                                 </Button>

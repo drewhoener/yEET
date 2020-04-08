@@ -16,7 +16,6 @@ export function setAndRefreshFilter(filter) {
 }
 
 function setSearchFilter(filter, employees, searcher) {
-    console.log(filter);
     return {
         type: FilterAction.UPDATE_FILTER,
         payload: {

@@ -16,7 +16,7 @@ const reviewSchema = new Schema({
     /**
      * Status on the completetion of the review
      */
-    completed: { type: Boolean, required: true, index: true }
+    completed: { type: Boolean, default: false, index: true }
 });
 
 const Review = mongoose.model('Review', reviewSchema);

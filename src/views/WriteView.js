@@ -77,7 +77,7 @@ export default function WriteView(props) {
                     </Paper>
                     <h1>Completed</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 2 } classes={ classes } requests={ requests }
+                        <RequestList status={ 3 } classes={ classes } requests={ requests }
                                      setRequests={ setRequests }/>
                     </Paper>
                 </Container>
