@@ -77,11 +77,6 @@ export default function RequestList({ classes, status, requests, setRequests }) 
     const redirectToEditor = (reviewId) => {
         history.push(`/write/${ reviewId }`);
     };
-    const handleType = (request) => {
-        console.log('type');
-        console.log(request);
-        setOpen(true);
-    };
 
     const handleClose = () => {
         setOpen(false);
