@@ -33,6 +33,18 @@ apiRouter.get('/companies', (req, res) => {
         });
 });
 
+const truncateEmployee = ({ _id, employeeId, firstName, lastName, startDate, position }) => {
+    return {
+        _id,
+        employeeId,
+        firstName,
+        lastName,
+        startDate,
+        position,
+        fullName: `${ firstName } ${ lastName }`
+    };
+};
+
 
 apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
     if (!req.tokenData) {
@@ -126,8 +138,8 @@ apiRouter.get('/editor-data', authMiddleware, async (req, res) => {
     }
 
     res.status(200).json({
-        userData: loggedIn,
-        requestingData: userRequesting,
+        userData: truncateEmployee(loggedIn),
+        requestingData: truncateEmployee(userRequesting),
         request: requestObj
     });
 });
@@ -146,15 +158,7 @@ apiRouter.get('/employees', authMiddleware, (req, res) => {
                 result = [];
             }
             res.status(200).json({
-                employees: result.map(({ _id, employeeId, firstName, lastName, startDate, position }) => ({
-                    _id,
-                    employeeId,
-                    firstName,
-                    lastName,
-                    startDate,
-                    position,
-                    fullName: `${ firstName } ${ lastName }`
-                }))
+                employees: result.map(employee => truncateEmployee(employee))
             });
         })
         .catch(err => {
@@ -287,47 +291,66 @@ apiRouter.get('/reviews', authMiddleware, async (req, res) => {
         res.status(401).send('Unauthorized');
         return;
     }
-    let reviews = [];
-    await Request.find({ status: PendingState.COMPLETED, company: req.tokenData.company, userRequesting: req.tokenData.id })
+
+    const reviews = await Request.find({ status: PendingState.COMPLETED, company: new ObjectId(req.tokenData.company), userRequesting: new ObjectId(req.tokenData.id) })
         .then(async requests => {
             const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
             if (!requests || !requests.length) {
                 console.log('No Completed Requests Found');
                 return [];
             }
-            // console.log(requests);
-            
 
-            for(let i = 0; i < requests.length; ++i) {
-                
-            }
+            // console.log(requests);/
 
-            requests.forEach((request) => {
+
+            const reviews = await Review.find({ requestID: {'$in': requests.map(r => r._id)} });
+
+            // console.log(reviews);
+
+            return reviews.map(review => {
+                // console.log(review);
+                const request = requests.find((_req) => _req._id.toString() === review.requestID.toString());
+                // console.log(request);
                 const employee = employees.find(e => e._id.toString() === request.userReceiving.toString());
-                await Review.find({requestID: request.id}).then(async (reviewsWithId) => {
-                    if(!reviewsWithId || reviewsWithId.length != 1) {
-                        //error idk
-                        return [];
-                    }
-                    let review = reviewsWithId[0];
-                    console.log(review);
-                    reviews.push({
-                        id: request.id,
-                        contents: review.contents,
-                        dateWritten: review.dateWritten,
-                        isCompleted: review.completed,
-                        firstName: employee.firstName,
-                        lastName: employee.lastName,
-                        email: employee.email,
-                        position: employee.position,
-                    });
-                });
+                return {
+                    id: request._id,
+                    contents: review.contents,
+                    dateWritten: review.dateWritten,
+                    isCompleted: review.completed,
+                    firstName: employee.firstName,
+                    lastName: employee.lastName,
+                    email: employee.email,
+                    position: employee.position,
+                }
             });
+
+
+            // for(const request of requests) {
+            //     const employee = employees.find(e => e._id.toString() === request.userReceiving.toString());
+            //     await Review.findByIdAndUpdate({requestID: request.id}).then((reviewsWithId) => {
+            //         if(!reviewsWithId || reviewsWithId.length != 1) {
+            //             //error idk
+            //             return [];
+            //         }
+            //         let review = reviewsWithId[0];
+            //         console.log(review);
+            //         reviews.push({
+            //             id: request.id,
+            //             contents: review.contents,
+            //             dateWritten: review.dateWritten,
+            //             isCompleted: review.completed,
+            //             firstName: employee.firstName,
+            //             lastName: employee.lastName,
+            //             email: employee.email,
+            //             position: employee.position,
+            //         });
+            //     });
+            // }
             
         });
 
     // const reviews = await Review.find({ requestID:  });
-    
+
     // Get employee for each requester in requests, etc
     // Map to data structure
 

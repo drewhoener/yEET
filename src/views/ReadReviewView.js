@@ -35,21 +35,19 @@ const useStyle = makeStyles(theme => ({
 
 
 const ReviewList = ({ classes }) => {
-    // const reviews = require('../data/reviews.json');
-    const {reviews, setReviews} = React.useState([]);
-    axios.get('/api/reviews')
+    const [reviews, setReviews] = React.useState([]);
+    React.useEffect(() => {
+        axios.get('/api/reviews')
             .then(({ data }) => {
                 console.log(data);
-                setReviews(data.requests);
+                setReviews(data.reviews);
             })
             .catch(err => {
                 // const error = {};
                 // setReviews([error]);
             });
-    const [open, setOpen] = React.useState(false);
-    if(!reviews || !reviews.length) {
-        return <div>nothing from this year</div>;
-    }
+    }, []);
+    // const [open, setOpen] = React.useState(false);
     return (
     <List className={ classes.list }>
     {
@@ -60,7 +58,7 @@ const ReviewList = ({ classes }) => {
                     <ListItem>
                         <ListItemText tabIndex={ 0 } primary={ `${review.firstName + ' ' + review.lastName}` }
                                       primaryTypographyProps={ { className: classes.listItemText } }
-                                      secondary={ `${ review.dateWritten }` }/>
+                                      secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
                         {/* <ListItemSecondaryAction tabIndex={ 0 }>
                             <IconButton aria-label={ val.state.name }
                                         style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
