@@ -1,0 +1,22 @@
+[
+    {
+        "id": 10,
+        "contents": "great employee :)",
+        "dateWritten": "04/16/20",
+        "isCompleted": true,
+        "firstName": "Temma",
+        "lastName": "Eventov",
+        "email": "Temma_Eventov@yeet.us",
+        "position": "CEO"
+    },
+    {
+        "id": 11,
+        "contents": "reall great to work with :)",
+        "dateWritten": "04/16/20",
+        "isCompleted": true,
+        "firstName": "Andrew",
+        "lastName": "Hoener",
+        "email": "bigmanoncampus@yeet.us",
+        "position": "Software Engineer II"
+    }
+]

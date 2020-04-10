@@ -5,9 +5,9 @@
     "requestedBefore": true,
     "lastRequested": 1582909932000,
     "state": {
-      "name": "pending",
+      "name": "pageview",
       "color": "#ffc107",
-      "icon": "morehoriz"
+      "icon": "view"
     }
   },
   "Charlie Bouhanna": {

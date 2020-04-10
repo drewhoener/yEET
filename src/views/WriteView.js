@@ -45,7 +45,6 @@ const useStyle = makeStyles(theme => ({
         fontWeight: 'bold'
     }
 }));
-
 export default function WriteView(props) {
     const classes = useStyle();
     const [requests, setRequests] = React.useState([]);
