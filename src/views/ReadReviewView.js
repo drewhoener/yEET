@@ -12,6 +12,8 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
+import RequestList from '../components/RequestList'
+import axios from 'axios';
 
 const useStyle = makeStyles(theme => ({
     inlineFlex: {
@@ -31,39 +33,49 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-const data = require('../data/users');
-const UserList = ({ classes }) => {
-    const theme = useTheme();
+
+const ReviewList = ({ classes }) => {
+    const reviews = require('../data/reviews.json');
+    // const {reviews, setReviews} = React.useState([]);
+    // axios.get('../data/reviews.json')
+    //         .then(({ data }) => {
+    //             console.log(data);
+    //             setReviews(data.requests);
+    //         })
+    //         .catch(err => {
+    //             // const error = {};
+    //             // setReviews([error]);
+    //         });
+    const [open, setOpen] = React.useState(false);
+    if(!reviews || !reviews.length) {
+        return <div>nothing from this year</div>;
+    }
     return (
-        <List className={ classes.list }>
-            {
-                Object.entries(data).map(([key, val]) => {
-                    const { requestedBefore, lastRequested } = val;
-                    const time = requestedBefore ? moment(lastRequested) : null;
-                    return (
-                        <React.Fragment key={ `${ key.toLowerCase().replace(' ', '_') }-${ val.employeeID }` }>
-                            <Divider/>
-                            <ListItem>
-                                <ListItemText tabIndex={ 0 } primary={ key }
-                                              primaryTypographyProps={ { className: classes.listItemText } }
-                                              secondary={ `Employee ID: ${ val.employeeID }` }/>
-                                <ListItemSecondaryAction tabIndex={ 0 }>
-                                    <IconButton aria-label={ val.state.name }
-                                                style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
-                                </ListItemSecondaryAction>
-                                <ListItemSecondaryAction tabIndex={ 0 }>
-                                    <IconButton aria-label={ val.state.name }
-                                                style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        </React.Fragment>
-                    );
-                })
-            }
-            <Divider/>
-        </List>
-    );
-};
+    <List className={ classes.list }>
+    {
+        reviews.map(review => {
+            return (
+                <React.Fragment key={ `${ (`${review.firstName + ' ' + review.lastName}`).toLowerCase().replace(' ', '_') }-${ review.id }` }>
+                    <Divider/>
+                    <ListItem>
+                        <ListItemText tabIndex={ 0 } primary={ `${review.firstName + ' ' + review.lastName}` }
+                                      primaryTypographyProps={ { className: classes.listItemText } }
+                                      secondary={ `${ review.dateWritten }` }/>
+                        {/* <ListItemSecondaryAction tabIndex={ 0 }>
+                            <IconButton aria-label={ val.state.name }
+                                        style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
+                        </ListItemSecondaryAction> */}
+                        
+                    </ListItem>
+                </React.Fragment>
+            );
+        })
+    }
+    <Divider/>
+    </List>
+    )
+}
+
 
 function YearlyExpansionPanel(props) {
     const { children, classes, expandedPanel, onChange, year, ...rest } = props;
@@ -96,14 +108,11 @@ export default function ReadReviewView(props) {
                 <div className={ classes.panelEnclosed }>
                     <YearlyExpansionPanel classes={ classes } onChange={ handleChange } year={ '2020' }
                                           expandedPanel={ expandedPanel }>
-                        <UserList classes={ classes }/>
+                        <ReviewList classes={ classes }/>
                     </YearlyExpansionPanel>
                     <YearlyExpansionPanel classes={ classes } onChange={ handleChange } year={ '2019' }
                                           expandedPanel={ expandedPanel }>
-                        <Typography>
-                            Nulla facilisi. Phasellus sollicitudin nulla et quam mattis feugiat. Aliquam eget
-                            maximus est, id dignissim quam.
-                        </Typography>
+                        <ReviewList classes={ classes }/>
                     </YearlyExpansionPanel>
                 </div>
             </TabbedReviewBar>
