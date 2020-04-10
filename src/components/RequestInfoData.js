@@ -59,7 +59,7 @@ function RequestInfoData(
                     </Button>
                     <Hidden xsDown>
                         <div className={ classes.otherSpace }/>
-                        {/*<Typography noWrap>Remaining: 0</Typography>*/ }
+                        {/* <Typography noWrap>Remaining: 0</Typography> */ }
                     </Hidden>
                     <div className={ classes.otherSpace }/>
                     <Button className={ classes.submitButton } variant='contained'

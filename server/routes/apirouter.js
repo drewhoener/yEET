@@ -33,6 +33,18 @@ apiRouter.get('/companies', (req, res) => {
         });
 });
 
+const truncateEmployee = ({ _id, employeeId, firstName, lastName, startDate, position }) => {
+    return {
+        _id,
+        employeeId,
+        firstName,
+        lastName,
+        startDate,
+        position,
+        fullName: `${ firstName } ${ lastName }`
+    };
+};
+
 
 apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
     if (!req.tokenData) {
@@ -126,8 +138,8 @@ apiRouter.get('/editor-data', authMiddleware, async (req, res) => {
     }
 
     res.status(200).json({
-        userData: loggedIn,
-        requestingData: userRequesting,
+        userData: truncateEmployee(loggedIn),
+        requestingData: truncateEmployee(userRequesting),
         request: requestObj
     });
 });
@@ -146,15 +158,7 @@ apiRouter.get('/employees', authMiddleware, (req, res) => {
                 result = [];
             }
             res.status(200).json({
-                employees: result.map(({ _id, employeeId, firstName, lastName, startDate, position }) => ({
-                    _id,
-                    employeeId,
-                    firstName,
-                    lastName,
-                    startDate,
-                    position,
-                    fullName: `${ firstName } ${ lastName }`
-                }))
+                employees: result.map(employee => truncateEmployee(employee))
             });
         })
         .catch(err => {
@@ -311,7 +315,7 @@ apiRouter.get('/reviews', authMiddleware, async (req, res) => {
                             position: employee.position,
                         };
             });
-            
+
             // const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
             // return requests.map(request => {
             //     const { _id, company, timeRequested, userRequesting, userReceiving } = request;
@@ -338,7 +342,7 @@ apiRouter.get('/reviews', authMiddleware, async (req, res) => {
         });
 
     // const reviews = await Review.find({ requestID:  });
-    
+
     // Get employee for each requester in requests, etc
     // Map to data structure
 
