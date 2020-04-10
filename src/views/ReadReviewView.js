@@ -35,17 +35,17 @@ const useStyle = makeStyles(theme => ({
 
 
 const ReviewList = ({ classes }) => {
-    const reviews = require('../data/reviews.json');
-    // const {reviews, setReviews} = React.useState([]);
-    // axios.get('../data/reviews.json')
-    //         .then(({ data }) => {
-    //             console.log(data);
-    //             setReviews(data.requests);
-    //         })
-    //         .catch(err => {
-    //             // const error = {};
-    //             // setReviews([error]);
-    //         });
+    // const reviews = require('../data/reviews.json');
+    const {reviews, setReviews} = React.useState([]);
+    axios.get('/api/reviews')
+            .then(({ data }) => {
+                console.log(data);
+                setReviews(data.requests);
+            })
+            .catch(err => {
+                // const error = {};
+                // setReviews([error]);
+            });
     const [open, setOpen] = React.useState(false);
     if(!reviews || !reviews.length) {
         return <div>nothing from this year</div>;

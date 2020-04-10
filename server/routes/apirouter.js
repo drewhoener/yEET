@@ -287,60 +287,51 @@ apiRouter.get('/reviews', authMiddleware, async (req, res) => {
         res.status(401).send('Unauthorized');
         return;
     }
-    const reviews = await Request.find({ company: req.tokenData.company, userRequesting: req.tokenData.id })
+    let reviews = [];
+    await Request.find({ status: PendingState.COMPLETED, company: req.tokenData.company, userRequesting: req.tokenData.id })
         .then(async requests => {
             const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
-            console.log(requests.filter(r => r.status == 3));
             if (!requests || !requests.length) {
-                console.log('No Requests Found');
+                console.log('No Completed Requests Found');
                 return [];
             }
+            // console.log(requests);
+            
 
-            return requests.filter(r => r.status == 3).map((request) => {
+            for(let i = 0; i < requests.length; ++i) {
+                
+            }
+
+            requests.forEach((request) => {
                 const employee = employees.find(e => e._id.toString() === request.userReceiving.toString());
-                const {contents, dateWritten, __id, completed} = Review.find({requestID: request.id});
-
-                return {
-                            id: __id,
-                            contents: contents,
-                            dateWritten: dateWritten,
-                            isCompleted: completed,
-                            firstName: employee.firstName,
-                            lastName: employee.lastName,
-                            email: employee.email,
-                            position: employee.position,
-                        };
+                await Review.find({requestID: request.id}).then(async (reviewsWithId) => {
+                    if(!reviewsWithId || reviewsWithId.length != 1) {
+                        //error idk
+                        return [];
+                    }
+                    let review = reviewsWithId[0];
+                    console.log(review);
+                    reviews.push({
+                        id: request.id,
+                        contents: review.contents,
+                        dateWritten: review.dateWritten,
+                        isCompleted: review.completed,
+                        firstName: employee.firstName,
+                        lastName: employee.lastName,
+                        email: employee.email,
+                        position: employee.position,
+                    });
+                });
             });
             
-            // const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
-            // return requests.map(request => {
-            //     const { _id, company, timeRequested, userRequesting, userReceiving } = request;
-            //     const employee = employees.find(e => e._id.toString() === request.userRequesting.toString());
-            //     console.log(employee);
-            //     if (!employee) {
-            //         // Not ideal but what exactly are you supposed to do when you can't find a user?
-            //         return null;
-            //     }
-            //     return {
-            //         _id,
-            //         company,
-            //         timeRequested,
-            //         userRequesting,
-            //         userReceiving,
-            //         statusNumber: request.status,
-            //         statusName: PendingState[request.status],
-            //         firstName: employee.firstName,
-            //         lastName: employee.lastName,
-            //         email: employee.email,
-            //         position: employee.position,
-            //     };
-            // }).filter(o => !!o);
         });
 
     // const reviews = await Review.find({ requestID:  });
     
     // Get employee for each requester in requests, etc
     // Map to data structure
+
+    console.log(reviews);
 
     res.status(200).json({
         reviews
