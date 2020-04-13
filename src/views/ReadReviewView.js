@@ -34,7 +34,7 @@ const useStyle = makeStyles(theme => ({
 }));
 
 
-const ReviewList = ({ classes }) => {
+const ReviewList = ({ classes, time }) => {
     const [reviews, setReviews] = React.useState([]);
     React.useEffect(() => {
         axios.get('/api/reviews')
@@ -51,7 +51,7 @@ const ReviewList = ({ classes }) => {
     return (
     <List className={ classes.list }>
     {
-        reviews.map(review => {
+        reviews/*.filter(review => new Date(review.dateWritten).getFullYear() === time )*/.map(review => {
             return (
                 <React.Fragment key={ `${ (`${review.firstName + ' ' + review.lastName}`).toLowerCase().replace(' ', '_') }-${ review.id }` }>
                     <Divider/>
@@ -106,11 +106,11 @@ export default function ReadReviewView(props) {
                 <div className={ classes.panelEnclosed }>
                     <YearlyExpansionPanel classes={ classes } onChange={ handleChange } year={ '2020' }
                                           expandedPanel={ expandedPanel }>
-                        <ReviewList classes={ classes }/>
+                        <ReviewList classes={ classes } time={ '2020' } />
                     </YearlyExpansionPanel>
                     <YearlyExpansionPanel classes={ classes } onChange={ handleChange } year={ '2019' }
                                           expandedPanel={ expandedPanel }>
-                        <ReviewList classes={ classes }/>
+                        <ReviewList classes={ classes } time={ '2019' }/>
                     </YearlyExpansionPanel>
                 </div>
             </TabbedReviewBar>
