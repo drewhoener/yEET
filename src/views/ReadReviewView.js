@@ -51,7 +51,7 @@ const ReviewList = ({ classes, time }) => {
     return (
     <List className={ classes.list }>
     {
-        reviews/*.filter(review => new Date(review.dateWritten).getFullYear() === time )*/.map(review => {
+        reviews.filter(review => new Date(review.dateWritten).getFullYear() === time ).map(review => {
             return (
                 <React.Fragment key={ `${ (`${review.firstName + ' ' + review.lastName}`).toLowerCase().replace(' ', '_') }-${ review.id }` }>
                     <Divider/>
@@ -106,11 +106,11 @@ export default function ReadReviewView(props) {
                 <div className={ classes.panelEnclosed }>
                     <YearlyExpansionPanel classes={ classes } onChange={ handleChange } year={ '2020' }
                                           expandedPanel={ expandedPanel }>
-                        <ReviewList classes={ classes } time={ '2020' } />
+                        <ReviewList classes={ classes } time={ 2020 } />
                     </YearlyExpansionPanel>
                     <YearlyExpansionPanel classes={ classes } onChange={ handleChange } year={ '2019' }
                                           expandedPanel={ expandedPanel }>
-                        <ReviewList classes={ classes } time={ '2019' }/>
+                        <ReviewList classes={ classes } time={ 2019 }/>
                     </YearlyExpansionPanel>
                 </div>
             </TabbedReviewBar>
