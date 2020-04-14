@@ -33,11 +33,10 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-
-const ReviewList = ({ classes, time }) => {
+const SubordinateReviews = ({}) => {
     const [reviews, setReviews] = React.useState([]);
     React.useEffect(() => {
-        axios.get('/api/reviews')
+        axios.get(`/api/employee-reviews`)
             .then(({ data }) => {
                 console.log(data);
                 setReviews(data.reviews);
@@ -47,44 +46,79 @@ const ReviewList = ({ classes, time }) => {
                 // setReviews([error]);
             });
     }, []);
-    // const [open, setOpen] = React.useState(false);
+    
+}
+
+const MyReviews = ({classes}) => {
+    const [reviews, setReviews] = React.useState([]);
+    React.useEffect(() => {
+        axios.get(`/api/reviews`)
+            .then(({ data }) => {
+                console.log(data);
+                setReviews(data.reviews);
+            })
+            .catch(err => {
+                // const error = {};
+                // setReviews([error]);
+            });
+    }, []);
+
     return (
-    <List className={ classes.list }>
-    {
-        reviews.filter(review => new Date(review.dateWritten).getFullYear() === time ).map(review => {
-            return (
-                <React.Fragment key={ `${ (`${review.firstName + ' ' + review.lastName}`).toLowerCase().replace(' ', '_') }-${ review.id }` }>
-                    <Divider/>
-                    <ListItem>
-                        <ListItemText tabIndex={ 0 } primary={ `${review.firstName + ' ' + review.lastName}` }
-                                      primaryTypographyProps={ { className: classes.listItemText } }
-                                      secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                        {/* <ListItemSecondaryAction tabIndex={ 0 }>
-                            <IconButton aria-label={ val.state.name }
-                                        style={ { color: val.state.color } }><Icon>{ val.state.icon }</Icon></IconButton>
-                        </ListItemSecondaryAction> */}
-                        
-                    </ListItem>
-                </React.Fragment>
-            );
-        })
-    }
-    <Divider/>
-    </List>
+        <ReviewList classes = { classes } reviews = { reviews }/>
     )
 }
 
+const ReviewList = ({ classes, reviews }) => {
+    // const [open, setOpen] = React.useState(false);
+    const [expandedPanel, setExpandedPanel] = React.useState('');
 
-function YearlyExpansionPanel(props) {
-    const { children, classes, expandedPanel, onChange, year, ...rest } = props;
+    const handleChange = panel => (event, isExpanded) => {
+        setExpandedPanel(isExpanded ? panel : false);
+    };
     return (
-        <ExpansionPanel expanded={ expandedPanel === year } onChange={ onChange(year) }>
+        <TabbedReviewBar>
+            <div className={ classes.panelEnclosed }>
+                {
+                Object.keys(reviews).map((year) => {
+                    return <LabelledExpansionPanel classes={ classes } onChange={ handleChange } label={ `${year}` }
+                                                    expandedPanel={ expandedPanel }>
+                        <List className={ classes.list }>
+                        {
+                            reviews[year].map(review => {
+                                return (
+                                    <React.Fragment key={ `${ (`${review.firstName + ' ' + review.lastName}`).toLowerCase().replace(' ', '_') }-${ review.id }` }>
+                                        <Divider/>
+                                        <ListItem>
+                                            <ListItemText tabIndex={ 0 } primary={ `${review.firstName + ' ' + review.lastName}` }
+                                                        primaryTypographyProps={ { className: classes.listItemText } }
+                                                        secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
+                                        </ListItem>
+                                    </React.Fragment>
+                                );
+                            })
+                        }
+                    <Divider/>
+                    </List>
+                    </LabelledExpansionPanel>
+                })
+                }
+            </div>
+        </TabbedReviewBar>
+
+    )
+}
+//.filter(review => new Date(review.dateWritten).getFullYear() === time )
+
+function LabelledExpansionPanel(props) {
+    const { children, classes, expandedPanel, onChange, label, ...rest } = props;
+    return (
+        <ExpansionPanel expanded={ expandedPanel === label } onChange={ onChange(label) }>
             <ExpansionPanelSummary
                 expandIcon={ <ExpandMoreIcon/> }
                 aria-controls="panel1bh-content"
                 id="panel1bh-header"
             >
-                <Typography className={ classes.heading }>{ year }</Typography>
+                <Typography className={ classes.heading }>{ label }</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
                 { children }
@@ -95,25 +129,9 @@ function YearlyExpansionPanel(props) {
 
 export default function ReadReviewView(props) {
     const classes = useStyle();
-    const [expandedPanel, setExpandedPanel] = React.useState('');
-
-    const handleChange = panel => (event, isExpanded) => {
-        setExpandedPanel(isExpanded ? panel : false);
-    };
     return (
         <div className={ classes.inlineFlex }>
-            <TabbedReviewBar>
-                <div className={ classes.panelEnclosed }>
-                    <YearlyExpansionPanel classes={ classes } onChange={ handleChange } year={ '2020' }
-                                          expandedPanel={ expandedPanel }>
-                        <ReviewList classes={ classes } time={ 2020 } />
-                    </YearlyExpansionPanel>
-                    <YearlyExpansionPanel classes={ classes } onChange={ handleChange } year={ '2019' }
-                                          expandedPanel={ expandedPanel }>
-                        <ReviewList classes={ classes } time={ 2019 }/>
-                    </YearlyExpansionPanel>
-                </div>
-            </TabbedReviewBar>
+            <SubordinateReviews classes = {classes}></SubordinateReviews>
         </div>
     );
 }
