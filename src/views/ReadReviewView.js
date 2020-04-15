@@ -46,7 +46,7 @@ const SubordinateReviews = ({}) => {
                 // setReviews([error]);
             });
     }, []);
-    
+
 }
 
 const MyReviews = ({classes}) => {
@@ -76,34 +76,32 @@ const ReviewList = ({ classes, reviews }) => {
         setExpandedPanel(isExpanded ? panel : false);
     };
     return (
-        <TabbedReviewBar>
-            <div className={ classes.panelEnclosed }>
-                {
-                Object.keys(reviews).map((year) => {
-                    return <LabelledExpansionPanel classes={ classes } onChange={ handleChange } label={ `${year}` }
-                                                    expandedPanel={ expandedPanel }>
-                        <List className={ classes.list }>
-                        {
-                            reviews[year].map(review => {
-                                return (
-                                    <React.Fragment key={ `${ (`${review.firstName + ' ' + review.lastName}`).toLowerCase().replace(' ', '_') }-${ review.id }` }>
-                                        <Divider/>
-                                        <ListItem>
-                                            <ListItemText tabIndex={ 0 } primary={ `${review.firstName + ' ' + review.lastName}` }
-                                                        primaryTypographyProps={ { className: classes.listItemText } }
-                                                        secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                                        </ListItem>
-                                    </React.Fragment>
-                                );
-                            })
-                        }
-                    <Divider/>
-                    </List>
-                    </LabelledExpansionPanel>
-                })
-                }
-            </div>
-        </TabbedReviewBar>
+        <div className={ classes.panelEnclosed }>
+            {
+            Object.keys(reviews).map((year) => {
+                return <LabelledExpansionPanel classes={ classes } onChange={ handleChange } label={ `${year}` }
+                                                expandedPanel={ expandedPanel }>
+                    <List className={ classes.list }>
+                    {
+                        reviews[year].map(review => {
+                            return (
+                                <React.Fragment key={ `${ (`${review.firstName + ' ' + review.lastName}`).toLowerCase().replace(' ', '_') }-${ review.id }` }>
+                                    <Divider/>
+                                    <ListItem>
+                                        <ListItemText tabIndex={ 0 } primary={ `${review.firstName + ' ' + review.lastName}` }
+                                                    primaryTypographyProps={ { className: classes.listItemText } }
+                                                    secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
+                                    </ListItem>
+                                </React.Fragment>
+                            );
+                        })
+                    }
+                <Divider/>
+                </List>
+                </LabelledExpansionPanel>
+            })
+            }
+        </div>
 
     )
 }
@@ -131,7 +129,9 @@ export default function ReadReviewView(props) {
     const classes = useStyle();
     return (
         <div className={ classes.inlineFlex }>
-            <SubordinateReviews classes = {classes}></SubordinateReviews>
+            <TabbedReviewBar>
+                <MyReviews classes = {classes}></MyReviews>
+            </TabbedReviewBar>
         </div>
     );
 }
