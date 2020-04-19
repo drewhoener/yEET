@@ -78,14 +78,14 @@ const ReviewList = ({ classes, reviews }) => {
     return (
         <div className={ classes.panelEnclosed }>
             {
-            Object.keys(reviews).map((year) => {
-                return <LabelledExpansionPanel classes={ classes } onChange={ handleChange } label={ `${year}` }
+                Object.keys(reviews).sort((a,b)=>b.localeCompare(a)).map((year) => {
+                return <LabelledExpansionPanel key={`YEAR-${year}`} classes={ classes } onChange={ handleChange } label={ `${year}` }
                                                 expandedPanel={ expandedPanel }>
                     <List className={ classes.list }>
                     {
-                        reviews[year].map(review => {
+                        reviews[year].sort((a,b)=> new Date(a.dateWritten)-new Date(b.dateWritten)).map(review => {
                             return (
-                                <React.Fragment key={ `${ (`${review.firstName + ' ' + review.lastName}`).toLowerCase().replace(' ', '_') }-${ review.id }` }>
+                                <React.Fragment key={`${review.firstName}_${review.lastName}_${review.id}`}>
                                     <Divider/>
                                     <ListItem>
                                         <ListItemText tabIndex={ 0 } primary={ `${review.firstName + ' ' + review.lastName}` }
