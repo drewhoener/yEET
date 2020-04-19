@@ -1,10 +1,11 @@
-import React from 'react';
-import { useSlate } from 'slate-react';
-import { Transforms } from 'slate';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import { isBlockActive } from './editorutils';
-import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import clsx from 'clsx';
+import React from 'react';
+import { Transforms } from 'slate';
+import { useSlate } from 'slate-react';
+import { isBlockActive } from './editorutils';
+import FormattingType from './FormattingType';
 
 /**
  * Mostly taken from slate's docs, I'll improve this as I learn more about how slate actually works
@@ -32,7 +33,7 @@ const toggleBlock = (editor, format) => {
 
     // noinspection JSCheckFunctionSignatures
     Transforms.setNodes(editor, {
-        type: isActive ? 'paragraph' : isList ? 'list-item' : format,
+        type: isActive ? FormattingType.PARAGRAPH : isList ? FormattingType.LIST_ITEM : format,
     });
 
     if (!isActive && isList) {

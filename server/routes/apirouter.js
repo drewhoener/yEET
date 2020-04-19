@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import authRouter from '../middleware/authrouter';
+import moment from 'moment';
+import { ObjectId } from 'mongodb';
 import Company from '../database/schema/companyschema';
-import { authMiddleware } from '../middleware/authtoken';
 import Employee from '../database/schema/employeeschema';
 import Request, { PendingState } from '../database/schema/requestschema';
-import { ObjectId } from 'mongodb';
-import { requestRouter } from './requestrouter';
 import Review from '../database/schema/reviewschema';
-import moment from 'moment';
+import authRouter from '../middleware/authrouter';
+import { authMiddleware } from '../middleware/authtoken';
+import { requestRouter } from './requestrouter';
 
 const apiRouter = Router();
 
@@ -58,8 +58,7 @@ const reviewsByYear = (reviews) => {
     });
 
 
-
-    return byYear;   
+    return byYear;
 }
 
 
@@ -69,8 +68,8 @@ apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
         return;
     }
 
-    const { requestId, content } = req.body;
-    if (!requestId || !content) {
+    const { requestId, content, serialized } = req.body;
+    if (!requestId || !content || !serialized) {
         res.status(400).send('Request missing fields');
         return;
     }
@@ -96,6 +95,7 @@ apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
     }
 
     review.contents = content;
+    review.serializedData = serialized;
     review.dateWritten = moment().toDate();
     review.completed = true;
 
@@ -347,7 +347,7 @@ apiRouter.get('/reviews', authMiddleware, async (req, res) => {
                     position: employee.position,
                 }
             }));
-            
+
         });
 
 

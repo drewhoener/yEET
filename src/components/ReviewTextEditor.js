@@ -1,11 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
-import { withHistory } from 'slate-history';
-import { Editable, Slate, withReact } from 'slate-react';
-import { createEditor } from 'slate';
-import { useHistory } from 'react-router-dom';
-import { MarkdownButton } from './editor/MarkdownButton';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Paper,
+    Toolbar,
+    useMediaQuery
+} from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
     Code,
     FormatBold,
@@ -17,16 +21,19 @@ import {
     Save,
     Send
 } from '@material-ui/icons';
-import FormattingType from './editor/FormattingType';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import Toolbar from '@material-ui/core/Toolbar';
-import Paper from '@material-ui/core/Paper';
-import { BlockButton, BlockTextButton } from './editor/BlockButton';
-import Button from '@material-ui/core/Button';
 import axios from 'axios';
-import { Dialog, DialogContent, DialogTitle } from '@material-ui/core';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
+import React, { useCallback, useMemo, useState } from 'react';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { createEditor } from 'slate';
+import { withHistory } from 'slate-history';
+import { Editable, Slate, withReact } from 'slate-react';
+import { BlockButton, BlockTextButton } from './editor/BlockButton';
+import { EditorElement, EditorLeaf } from './editor/EditorRenderer';
+import { serializeNodes } from './editor/EditorSerializer';
+import FormattingType from './editor/FormattingType';
+import { MarkdownButton } from './editor/MarkdownButton';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -83,6 +90,11 @@ const useStyle = makeStyles(theme => ({
     saveButton: {
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1)
+    },
+    saveSubmitGroup: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'nowrap'
     }
 }));
 
@@ -100,7 +112,7 @@ const initialEditorState = (person, reviewer) => [
         ]
     },
     {
-        type: 'paragraph',
+        type: FormattingType.PARAGRAPH,
         children: [
             { text: '*Write your review here*' }
         ]
@@ -108,16 +120,25 @@ const initialEditorState = (person, reviewer) => [
 
 ];
 
+const serializeEditor = baseNode => {
+    return {
+        children: baseNode
+    };
+};
+
 function ReviewTextEditor(props) {
     const classes = useStyle();
     const history = useHistory();
+    const [dangerous, setDangerous] = useState('<div>');
     const [stateData, setStateData] = useState({});
     const [editorState, setEditorState] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogState, setDialogState] = useState('success');
-    const renderElement = useCallback(props => <Element { ...props } />, []);
-    const renderLeaf = useCallback(props => <Leaf { ...props } />, []);
+    const renderElement = useCallback(props => <EditorElement classes={ classes } { ...props } />, [classes]);
+    const renderLeaf = useCallback(props => <EditorLeaf classes={ classes } { ...props } />, [classes]);
     const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+    const theme = useTheme();
+    const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const { requestId } = props.match.params;
     React.useEffect(() => {
@@ -150,15 +171,22 @@ function ReviewTextEditor(props) {
         }
     };
 
+    const onSaveDraft = () => {
+        setDangerous(serializeNodes({
+            children: editorState
+        }));
+        console.log(dangerous);
+    };
+
     const onChange = (state) => {
-        console.log(state);
         setEditorState(state);
     };
 
     const submitReview = () => {
         axios.post('/api/submit-review', {
             requestId,
-            content: JSON.stringify(editorState)
+            content: JSON.stringify(editorState),
+            serialized: serializeEditor(editorState),
         }).then(response => {
             console.log(response);
         }).catch(err => {
@@ -167,47 +195,6 @@ function ReviewTextEditor(props) {
         }).then(() => {
             setDialogOpen(true);
         });
-    };
-
-    const Element = ({ attributes, children, element }) => {
-        console.log(element);
-        switch (element.type) {
-            case FormattingType.BLOCK_QUOTE:
-                return <blockquote className={ classes.quote } { ...attributes }>{ children }</blockquote>;
-            case FormattingType.H1:
-                return <h1 { ...attributes }>{ children }</h1>;
-            case FormattingType.H2:
-                return <h2 { ...attributes }>{ children }</h2>;
-            case FormattingType.LIST_ITEM:
-                return <li { ...attributes }>{ children }</li>;
-            case FormattingType.BULLETED_LIST:
-                return <ul { ...attributes }>{ children }</ul>;
-            case FormattingType.NUMBERED_LIST:
-                return <ol { ...attributes }>{ children }</ol>;
-            default:
-                return <p { ...attributes }>{ children }</p>;
-        }
-    };
-
-    const Leaf = ({ attributes, children, leaf }) => {
-        console.log(leaf);
-        if (leaf.bold) {
-            children = <strong>{ children }</strong>;
-        }
-
-        if (leaf.code) {
-            children = <code className={ classes.code }>{ children }</code>;
-        }
-
-        if (leaf.italic) {
-            children = <em>{ children }</em>;
-        }
-
-        if (leaf.underline) {
-            children = <u>{ children }</u>;
-        }
-
-        return <span { ...attributes }>{ children }</span>;
     };
 
     return (
@@ -258,18 +245,21 @@ function ReviewTextEditor(props) {
                                 <BlockButton format={ FormattingType.BULLETED_LIST }
                                              IconComponent={ FormatListBulleted }/>
                             </ToggleButtonGroup>
-                            <div className={ classes.spacedButtonGroup }>
-                                <Button size='small' className={ classes.saveButton } variant='outlined'
-                                        startIcon={ <Save/> }>
-                                    Save Draft
-                                </Button>
-                            </div>
-                            <div className={ classes.spacedButtonGroup }>
-                                <Button size='small' className={ classes.saveButton } variant='outlined'
-                                        onClick={ () => submitReview() }
-                                        startIcon={ <Send/> }>
-                                    Submit Review
-                                </Button>
+                            <div className={ classes.saveSubmitGroup }>
+                                <div className={ classes.spacedButtonGroup }>
+                                    <Button size='small' className={ classes.saveButton } variant='outlined'
+                                            onClick={ () => onSaveDraft() }
+                                            startIcon={ <Save/> }>
+                                        Save Draft
+                                    </Button>
+                                </div>
+                                <div className={ classes.spacedButtonGroup }>
+                                    <Button size='small' className={ classes.saveButton } variant='outlined'
+                                            onClick={ () => submitReview() }
+                                            startIcon={ <Send/> }>
+                                        { `Submit${ smallScreen ? '' : ' Review' }` }
+                                    </Button>
+                                </div>
                             </div>
                         </Toolbar>
                     </Paper>
@@ -280,6 +270,7 @@ function ReviewTextEditor(props) {
                         />
                     </Paper>
                 </Slate>
+                <div dangerouslySetInnerHTML={ { __html: dangerous } }/>
             </div>
         </>
     );
