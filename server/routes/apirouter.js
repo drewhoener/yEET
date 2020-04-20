@@ -307,7 +307,44 @@ apiRouter.get('/employee-reviews', authMiddleware, async (req, res) => {
 
     const employees = await Employee.find({ company: new ObjectId(req.tokenData.company), manager: req.tokenData.id });
 
-    console.log(employees);
+    let reviews = {};
+
+    for(var employee of employees) {
+        console.log(employee.firstName);
+        reviews[`${employee.firstName} ${employee.lastName}`] = await Request.find({ status: PendingState.COMPLETED, company: new ObjectId(req.tokenData.company), userRequesting: new ObjectId(employee._id) })
+        .then(async requests => {
+            const allEmployees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
+            if (!requests || !requests.length) {
+                console.log('No Completed Requests Found');
+                return [];
+            }
+
+            console.log(requests);
+
+            const subReviews = await Review.find({ requestID: {'$in': requests.map(r => r._id)} });
+
+
+            return reviewsByYear(subReviews .map(review => {
+                // console.log(review);
+                const request = requests.find((_req) => _req._id.toString() === review.requestID.toString());
+                // console.log(request);
+                const sendingEmployee = allEmployees.find(e => e._id.toString() === request.userReceiving.toString());
+                return {
+                    id: request._id,
+                    contents: review.contents,
+                    dateWritten: review.dateWritten,
+                    isCompleted: review.completed,
+                    firstName: sendingEmployee.firstName,
+                    lastName: sendingEmployee.lastName,
+                    email: sendingEmployee.email,
+                    position: sendingEmployee.position,
+                }
+            }));
+            
+        });
+    }
+
+    return reviews;
 
 });
 

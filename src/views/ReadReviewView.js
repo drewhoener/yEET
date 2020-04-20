@@ -42,11 +42,10 @@ const SubordinateReviews = ({}) => {
                 setReviews(data.reviews);
             })
             .catch(err => {
-                // const error = {};
-                // setReviews([error]);
+                console.log(err);
             });
     }, []);
-
+    return <div></div>
 }
 
 const MyReviews = ({classes}) => {
@@ -130,7 +129,7 @@ export default function ReadReviewView(props) {
     return (
         <div className={ classes.inlineFlex }>
             <TabbedReviewBar>
-                <MyReviews classes = {classes}></MyReviews>
+                <SubordinateReviews></SubordinateReviews>
             </TabbedReviewBar>
         </div>
     );
