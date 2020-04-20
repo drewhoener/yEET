@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { ExpansionPanel, ListItemSecondaryAction, ListItemText, useTheme } from '@material-ui/core';
+import { ExpansionPanel, ListItemSecondaryAction, ListItemText, useTheme, Paper, Container } from '@material-ui/core';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -10,11 +10,9 @@ import List from '@material-ui/core/List';
 import moment from 'moment';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-import RequestList from '../components/RequestList'
 import axios from 'axios';
-
+import Button from '@material-ui/core/Button';
+import Modal from '@material-ui/core/Modal';
 const useStyle = makeStyles(theme => ({
     inlineFlex: {
         display: 'inline-flex',
@@ -30,6 +28,23 @@ const useStyle = makeStyles(theme => ({
     },
     list: {
         width: '100%'
+    },
+    modalcontainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        '&>div':{
+            flex: 1,
+            display: 'flex',
+            paddingLeft: 0,
+            paddingRight: 0
+        }
+        
+    },
+    modalpaper:{
+        flex: 1
+        
     }
 }));
 
@@ -51,6 +66,7 @@ const SubordinateReviews = ({classes}) => {
                 console.log(err);
             });
     }, []);
+<<<<<<< Updated upstream
     return (
         <div className={ classes.panelEnclosed }>
             {
@@ -66,8 +82,12 @@ const SubordinateReviews = ({classes}) => {
         </div>
     );
 }
+=======
 
-const MyReviews = ({classes}) => {
+};
+>>>>>>> Stashed changes
+
+const MyReviews = ({ classes }) => {
     const [reviews, setReviews] = React.useState([]);
     React.useEffect(() => {
         axios.get('/api/reviews')
@@ -97,8 +117,8 @@ const MyReviews = ({classes}) => {
 
     return (
         <ReviewList classes = { classes } reviews = { reviews }/>
-    )
-}
+    );
+};
 
 const ReviewList = ({ classes, reviews }) => {
     // const [open, setOpen] = React.useState(false);
@@ -107,15 +127,38 @@ const ReviewList = ({ classes, reviews }) => {
     const handleChange = panel => (event, isExpanded) => {
         setExpandedPanel(isExpanded ? panel : false);
     };
+    const [open, setOpen] = React.useState(false);
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
     return (
         <div className={ classes.panelEnclosed }>
+            <Modal open={open} onClose={handleClose} className={classes.modalcontainer}>
+                 <Container maxWidth='md'>
+                 <Paper elevation={4} className={classes.modalpaper}>
+                 <div>
+                     <h2>something</h2>
+                     <h2>I wish</h2>
+                 </div>
+                 </Paper>
+                 </Container>
+            </Modal> 
             {
-                Object.keys(reviews).sort((a,b)=>b.localeCompare(a)).map((year) => {
+                Object.keys(reviews).sort((a, b)=>b.localeCompare(a)).map((year) => {
                 return <LabelledExpansionPanel key={`YEAR-${year}`} classes={ classes } onChange={ handleChange } label={ `${year}` }
                                                 expandedPanel={ expandedPanel }>
                     <List className={ classes.list }>
                     {
+<<<<<<< Updated upstream
                         reviews[year].sort((a,b)=> new Date(b.dateWritten)-new Date(a.dateWritten)).map(review => {
+=======
+                        reviews[year].sort((a, b)=> new Date(b.dateWritten) - new Date(a.dateWritten)).map(review => {
+>>>>>>> Stashed changes
                             return (
                                 <React.Fragment key={`${review.firstName}_${review.lastName}_${review.id}`}>
                                     <Divider/>
@@ -123,20 +166,33 @@ const ReviewList = ({ classes, reviews }) => {
                                         <ListItemText tabIndex={ 0 } primary={ `${review.firstName + ' ' + review.lastName}` }
                                                     primaryTypographyProps={ { className: classes.listItemText } }
                                                     secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
+                                                    <Button onClick={handleOpen}>View</Button>
+                                                   
+                                                    <Button>Download</Button>
                                     </ListItem>
                                 </React.Fragment>
                             );
                         })
                     }
+<<<<<<< Updated upstream
                         <Divider/>
                     </List>
                 </LabelledExpansionPanel>
+=======
+                <Divider/>
+                </List>
+                </LabelledExpansionPanel>;
+>>>>>>> Stashed changes
             })
             }
         </div>
 
     );
 };
+<<<<<<< Updated upstream
+=======
+// .filter(review => new Date(review.dateWritten).getFullYear() === time )
+>>>>>>> Stashed changes
 
 function LabelledExpansionPanel(props) {
     const { children, classes, expandedPanel, onChange, label, ...rest } = props;
