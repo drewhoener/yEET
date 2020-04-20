@@ -42,7 +42,7 @@ const SubordinateReviews = ({classes}) => {
 
     const [reviews, setReviews] = React.useState([]);
     React.useEffect(() => {
-        axios.get(`/api/employee-reviews`)
+        axios.get('/api/employee-reviews')
             .then(({ data }) => {
                 console.log(data);
                 setReviews(data.reviews);
@@ -70,7 +70,7 @@ const SubordinateReviews = ({classes}) => {
 const MyReviews = ({classes}) => {
     const [reviews, setReviews] = React.useState([]);
     React.useEffect(() => {
-        axios.get(`/api/reviews`)
+        axios.get('/api/reviews')
             .then(({ data }) => {
                 console.log(data);
                 setReviews(data.reviews);
@@ -79,6 +79,20 @@ const MyReviews = ({classes}) => {
                 // const error = {};
                 // setReviews([error]);
             });
+
+            axios.get('/api/review-contents', {
+                params: {
+                    requestId: '5e9cbf73f9b2e7eaa85ac0a6'
+                }
+            })
+            .then(({ data }) => {
+                console.log(data);
+            })
+            .catch(err => {
+                // const error = {};
+                // setReviews([error]);
+            });
+
     }, []);
 
     return (
@@ -101,7 +115,7 @@ const ReviewList = ({ classes, reviews }) => {
                                                 expandedPanel={ expandedPanel }>
                     <List className={ classes.list }>
                     {
-                        reviews[year].sort((a,b)=> new Date(a.dateWritten)-new Date(b.dateWritten)).map(review => {
+                        reviews[year].sort((a,b)=> new Date(b.dateWritten)-new Date(a.dateWritten)).map(review => {
                             return (
                                 <React.Fragment key={`${review.firstName}_${review.lastName}_${review.id}`}>
                                     <Divider/>
@@ -121,9 +135,8 @@ const ReviewList = ({ classes, reviews }) => {
             }
         </div>
 
-    )
-}
-//.filter(review => new Date(review.dateWritten).getFullYear() === time )
+    );
+};
 
 function LabelledExpansionPanel(props) {
     const { children, classes, expandedPanel, onChange, label, ...rest } = props;
@@ -148,7 +161,7 @@ export default function ReadReviewView(props) {
     return (
         <div className={ classes.inlineFlex }>
             <TabbedReviewBar>
-                <SubordinateReviews classes = {classes}></SubordinateReviews>
+                <MyReviews classes = {classes}></MyReviews>
             </TabbedReviewBar>
         </div>
     );
