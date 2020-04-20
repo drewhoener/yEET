@@ -33,7 +33,13 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-const SubordinateReviews = ({}) => {
+const SubordinateReviews = ({classes}) => {
+    const [expandedPanel, setExpandedPanel] = React.useState('');
+
+    const handleChange = panel => (event, isExpanded) => {
+        setExpandedPanel(isExpanded ? panel : false);
+    };
+
     const [reviews, setReviews] = React.useState([]);
     React.useEffect(() => {
         axios.get(`/api/employee-reviews`)
@@ -45,7 +51,20 @@ const SubordinateReviews = ({}) => {
                 console.log(err);
             });
     }, []);
-    return <div></div>
+    return (
+        <div className={ classes.panelEnclosed }>
+            {
+            Object.keys(reviews).map((name) => {
+                return (
+                <LabelledExpansionPanel key={`EMPLOYEE-${name}`} classes={ classes } onChange={ handleChange } label={ `${name}` }
+                                                expandedPanel={ expandedPanel }>
+                    <ReviewList classes = {classes} reviews = {reviews[[name]]}/>
+                </LabelledExpansionPanel>
+                );
+            })
+            }
+        </div>
+    );
 }
 
 const MyReviews = ({classes}) => {
@@ -95,8 +114,8 @@ const ReviewList = ({ classes, reviews }) => {
                             );
                         })
                     }
-                <Divider/>
-                </List>
+                        <Divider/>
+                    </List>
                 </LabelledExpansionPanel>
             })
             }
@@ -129,7 +148,7 @@ export default function ReadReviewView(props) {
     return (
         <div className={ classes.inlineFlex }>
             <TabbedReviewBar>
-                <SubordinateReviews></SubordinateReviews>
+                <SubordinateReviews classes = {classes}></SubordinateReviews>
             </TabbedReviewBar>
         </div>
     );

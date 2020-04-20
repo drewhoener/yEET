@@ -310,7 +310,7 @@ apiRouter.get('/employee-reviews', authMiddleware, async (req, res) => {
     let reviews = {};
 
     for(var employee of employees) {
-        console.log(employee.firstName);
+        // console.log(employee.firstName);
         reviews[`${employee.firstName} ${employee.lastName}`] = await Request.find({ status: PendingState.COMPLETED, company: new ObjectId(req.tokenData.company), userRequesting: new ObjectId(employee._id) })
         .then(async requests => {
             const allEmployees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
@@ -319,10 +319,12 @@ apiRouter.get('/employee-reviews', authMiddleware, async (req, res) => {
                 return [];
             }
 
-            console.log(requests);
+            // console.log(requests);
 
             const subReviews = await Review.find({ requestID: {'$in': requests.map(r => r._id)} });
 
+
+            // console.log(subReviews);
 
             return reviewsByYear(subReviews .map(review => {
                 // console.log(review);
@@ -344,7 +346,9 @@ apiRouter.get('/employee-reviews', authMiddleware, async (req, res) => {
         });
     }
 
-    return reviews;
+    res.status(200).json({
+        reviews
+    });
 
 });
 
