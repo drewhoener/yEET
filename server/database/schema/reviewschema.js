@@ -2,9 +2,13 @@ import mongoose, { Schema } from 'mongoose';
 
 const reviewSchema = new Schema({
     /**
-     * Content is the text in the review
+     * Editor contents as a stringified JSON Object
      */
     contents: { type: String, required: true },
+    /**
+     * The serialized data from the editor contents as raw HTML
+     * */
+    serializedData: { type: String, default: '<div/>' },
     /**
      * Date of when the review is published
      */

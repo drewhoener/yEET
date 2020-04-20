@@ -8,7 +8,8 @@ const FormattingType = {
     BLOCK_QUOTE: 'block-quote',
     NUMBERED_LIST: 'numbered-list',
     BULLETED_LIST: 'bulleted-list',
-    LIST_ITEM: 'list-item'
+    LIST_ITEM: 'list-item',
+    PARAGRAPH: 'paragraph'
 };
 
 export default FormattingType;
