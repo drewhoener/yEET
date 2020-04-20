@@ -1,18 +1,20 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { ExpansionPanel, ListItemSecondaryAction, ListItemText, useTheme, Paper, Container } from '@material-ui/core';
+import { Container, ExpansionPanel, ListItemText, Paper } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Modal from '@material-ui/core/Modal';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import TabbedReviewBar from '../components/TabbedReviewBar';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import List from '@material-ui/core/List';
-import moment from 'moment';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
 import axios from 'axios';
-import Button from '@material-ui/core/Button';
-import Modal from '@material-ui/core/Modal';
+import moment from 'moment';
+import React from 'react';
+import ReactHtmlParser from 'react-html-parser';
+import TabbedReviewBar from '../components/TabbedReviewBar';
+
 const useStyle = makeStyles(theme => ({
     inlineFlex: {
         display: 'inline-flex',
@@ -34,17 +36,17 @@ const useStyle = makeStyles(theme => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        '&>div':{
+        '&>div': {
             flex: 1,
             display: 'flex',
             paddingLeft: 0,
             paddingRight: 0
         }
-        
+
     },
-    modalpaper:{
+    modalpaper: {
         flex: 1
-        
+
     }
 }));
 
@@ -69,14 +71,15 @@ const SubordinateReviews = ({ classes }) => {
     return (
         <div className={ classes.panelEnclosed }>
             {
-            Object.keys(reviews).map((name) => {
-                return (
-                <LabelledExpansionPanel key={`EMPLOYEE-${name}`} classes={ classes } onChange={ handleChange } label={ `${name}` }
+                Object.keys(reviews).map((name) => {
+                    return (
+                        <LabelledExpansionPanel key={ `EMPLOYEE-${ name }` } classes={ classes }
+                                                onChange={ handleChange } label={ `${ name }` }
                                                 expandedPanel={ expandedPanel }>
-                    <ReviewList classes = {classes} reviews = {reviews[[name]]}/>
-                </LabelledExpansionPanel>
-                );
-            })
+                            <ReviewList classes={ classes } reviews={ reviews[[name]] }/>
+                        </LabelledExpansionPanel>
+                    );
+                })
             }
         </div>
     );
@@ -95,80 +98,97 @@ const MyReviews = ({ classes }) => {
                 // setReviews([error]);
             });
 
-            axios.get('/api/review-contents', {
-                params: {
-                    requestId: '5e9cbf73f9b2e7eaa85ac0a6'
-                }
-            })
-            .then(({ data }) => {
-                console.log(data);
-            })
-            .catch(err => {
-                // const error = {};
-                // setReviews([error]);
-            });
-
     }, []);
 
     return (
-        <ReviewList classes = { classes } reviews = { reviews }/>
+        <ReviewList classes={ classes } reviews={ reviews }/>
     );
 };
 
 const ReviewList = ({ classes, reviews }) => {
     // const [open, setOpen] = React.useState(false);
     const [expandedPanel, setExpandedPanel] = React.useState('');
+    const [curReview, setCurReview] = React.useState(null);
+    const [reviewData, setReviewData] = React.useState('<div/>');
+
+    React.useEffect(() => {
+        if (!curReview) {
+            return;
+        }
+        console.log(`Fetching review ${ curReview }`);
+        axios.get('/api/review-contents', {
+                params: {
+                    requestId: curReview
+                }
+            }
+        )
+            .then(({ data }) => {
+                console.log(data);
+                setReviewData(data.contents);
+            })
+            .catch(err => {
+                // const error = {};
+                // setReviews([error]);
+            });
+    }, [curReview]);
 
     const handleChange = panel => (event, isExpanded) => {
         setExpandedPanel(isExpanded ? panel : false);
     };
-    const [open, setOpen] = React.useState(false);
 
-    const handleOpen = () => {
-        setOpen(true);
+    const setModalState = state => () => {
+        console.log(state);
+        if (!state) {
+            setReviewData('<div/>');
+        }
+        setCurReview(state);
     };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
     return (
         <div className={ classes.panelEnclosed }>
-            <Modal open={open} onClose={handleClose} className={classes.modalcontainer}>
-                 <Container maxWidth='md'>
-                 <Paper elevation={4} className={classes.modalpaper}>
-                 <div>
-                     <h2>something</h2>
-                     <h2>I wish</h2>
-                 </div>
-                 </Paper>
-                 </Container>
-            </Modal> 
+            <Modal open={ !!curReview } onClose={ setModalState(null) } className={ classes.modalcontainer }>
+                <Container maxWidth='md'>
+                    <Paper elevation={ 4 } className={ classes.modalpaper }>
+                        <div>
+                            {
+                                curReview &&
+                                <>
+                                    { ReactHtmlParser(reviewData) }
+                                </>
+                            }
+                        </div>
+                    </Paper>
+                </Container>
+            </Modal>
             {
-                Object.keys(reviews).sort((a, b)=>b.localeCompare(a)).map((year) => {
-                return <LabelledExpansionPanel key={`YEAR-${year}`} classes={ classes } onChange={ handleChange } label={ `${year}` }
-                                                expandedPanel={ expandedPanel }>
-                    <List className={ classes.list }>
-                    {
-                        reviews[year].sort((a, b)=> new Date(b.dateWritten) - new Date(a.dateWritten)).map(review => {
-                            return (
-                                <React.Fragment key={`${review.firstName}_${review.lastName}_${review.id}`}>
-                                    <Divider/>
-                                    <ListItem>
-                                        <ListItemText tabIndex={ 0 } primary={ `${review.firstName + ' ' + review.lastName}` }
-                                                    primaryTypographyProps={ { className: classes.listItemText } }
-                                                    secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                                                    <Button onClick={handleOpen}>View</Button>
-                                                   
-                                                    <Button>Download</Button>
-                                    </ListItem>
-                                </React.Fragment>
-                            );
-                        })
-                    }
-                        <Divider/>
-                    </List>
-                </LabelledExpansionPanel>;
-            })
+                Object.keys(reviews).sort((a, b) => b.localeCompare(a)).map((year) => {
+                    return <LabelledExpansionPanel key={ `YEAR-${ year }` } classes={ classes }
+                                                   onChange={ handleChange } label={ `${ year }` }
+                                                   expandedPanel={ expandedPanel }>
+                        <List className={ classes.list }>
+                            {
+                                reviews[year].sort((a, b) => new Date(b.dateWritten) - new Date(a.dateWritten)).map(review => {
+                                    return (
+                                        <React.Fragment
+                                            key={ `${ review.firstName }_${ review.lastName }_${ review.reviewId }` }>
+                                            <Divider/>
+                                            <ListItem>
+                                                <ListItemText tabIndex={ 0 }
+                                                              primary={ `${ review.firstName + ' ' + review.lastName }` }
+                                                              primaryTypographyProps={ { className: classes.listItemText } }
+                                                              secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
+                                                <Button onClick={ setModalState(review.reviewId) }>View</Button>
+
+                                                <Button>Download</Button>
+                                            </ListItem>
+                                        </React.Fragment>
+                                    );
+                                })
+                            }
+                            <Divider/>
+                        </List>
+                    </LabelledExpansionPanel>;
+                })
             }
         </div>
 
@@ -176,9 +196,10 @@ const ReviewList = ({ classes, reviews }) => {
 };
 
 function LabelledExpansionPanel(props) {
-    const { children, classes, expandedPanel, onChange, label, ...rest } = props;
+    const { children, classes, expandedPanel, onChange, label } = props;
     return (
-        <ExpansionPanel expanded={ expandedPanel === label } onChange={ onChange(label) }>
+        <ExpansionPanel TransitionProps={ { unmountOnExit: true } } expanded={ expandedPanel === label }
+                        onChange={ onChange(label) }>
             <ExpansionPanelSummary
                 expandIcon={ <ExpandMoreIcon/> }
                 aria-controls="panel1bh-content"
@@ -198,7 +219,7 @@ export default function ReadReviewView(props) {
     return (
         <div className={ classes.inlineFlex }>
             <TabbedReviewBar>
-                <MyReviews classes = {classes}></MyReviews>
+                <MyReviews classes={ classes }></MyReviews>
             </TabbedReviewBar>
         </div>
     );
