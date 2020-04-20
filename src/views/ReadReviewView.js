@@ -48,7 +48,7 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-const SubordinateReviews = ({classes}) => {
+const SubordinateReviews = ({ classes }) => {
     const [expandedPanel, setExpandedPanel] = React.useState('');
 
     const handleChange = panel => (event, isExpanded) => {
@@ -66,7 +66,6 @@ const SubordinateReviews = ({classes}) => {
                 console.log(err);
             });
     }, []);
-<<<<<<< Updated upstream
     return (
         <div className={ classes.panelEnclosed }>
             {
@@ -81,11 +80,7 @@ const SubordinateReviews = ({classes}) => {
             }
         </div>
     );
-}
-=======
-
 };
->>>>>>> Stashed changes
 
 const MyReviews = ({ classes }) => {
     const [reviews, setReviews] = React.useState([]);
@@ -154,11 +149,7 @@ const ReviewList = ({ classes, reviews }) => {
                                                 expandedPanel={ expandedPanel }>
                     <List className={ classes.list }>
                     {
-<<<<<<< Updated upstream
-                        reviews[year].sort((a,b)=> new Date(b.dateWritten)-new Date(a.dateWritten)).map(review => {
-=======
                         reviews[year].sort((a, b)=> new Date(b.dateWritten) - new Date(a.dateWritten)).map(review => {
->>>>>>> Stashed changes
                             return (
                                 <React.Fragment key={`${review.firstName}_${review.lastName}_${review.id}`}>
                                     <Divider/>
@@ -174,25 +165,15 @@ const ReviewList = ({ classes, reviews }) => {
                             );
                         })
                     }
-<<<<<<< Updated upstream
                         <Divider/>
                     </List>
-                </LabelledExpansionPanel>
-=======
-                <Divider/>
-                </List>
                 </LabelledExpansionPanel>;
->>>>>>> Stashed changes
             })
             }
         </div>
 
     );
 };
-<<<<<<< Updated upstream
-=======
-// .filter(review => new Date(review.dateWritten).getFullYear() === time )
->>>>>>> Stashed changes
 
 function LabelledExpansionPanel(props) {
     const { children, classes, expandedPanel, onChange, label, ...rest } = props;

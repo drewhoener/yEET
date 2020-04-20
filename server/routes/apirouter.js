@@ -379,11 +379,6 @@ apiRouter.get('/reviews', authMiddleware, async (req, res) => {
                 const employee = employees.find(e => e._id.toString() === request.userReceiving.toString());
                 return {
                     id: request._id,
-<<<<<<< Updated upstream
-=======
-                    contents: review.contents,
-                    serialized: review.serializedData,
->>>>>>> Stashed changes
                     dateWritten: review.dateWritten,
                     isCompleted: review.completed,
                     firstName: employee.firstName,
