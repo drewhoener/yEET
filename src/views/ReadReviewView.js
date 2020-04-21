@@ -36,16 +36,24 @@ const useStyle = makeStyles(theme => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        flexWrap: 'wrap',
         '&>div': {
             flex: 1,
             display: 'flex',
             paddingLeft: 0,
-            paddingRight: 0
+            paddingRight: 0,
+            flexWrap: 'wrap',
+            
+            
+            
         }
 
     },
     modalpaper: {
-        flex: 1
+        flex: 1,
+        width: 0,
+        flexWrap: 'wrap',
+    
 
     }
 }));
