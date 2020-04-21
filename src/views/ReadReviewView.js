@@ -14,6 +14,7 @@ import moment from 'moment';
 import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import TabbedReviewBar from '../components/TabbedReviewBar';
+import { Autorenew } from '@material-ui/icons';
 
 const useStyle = makeStyles(theme => ({
     inlineFlex: {
@@ -40,12 +41,16 @@ const useStyle = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
         flexWrap: 'wrap',
+        position: 'absolute',
+        overflow: 'scroll',
         '&>div': {
             flex: 1,
             display: 'flex',
             paddingLeft: 0,
             paddingRight: 0,
             flexWrap: 'wrap',
+            height: '100%',
+        
         }
 
     },
@@ -55,6 +60,17 @@ const useStyle = makeStyles(theme => ({
         flexWrap: 'wrap',
     
 
+    },
+    buttonwrapper: {
+        flex: 1,
+        flexWrap: 'wrap',
+        flexDirection: 'column'
+    },
+    modaltext: {
+        flex: 1,
+        flexWrap: 'wrap',
+        flexDirection: 'column',
+        
     }
 }));
 
@@ -157,7 +173,7 @@ const ReviewList = ({ classes, reviews }) => {
             <Modal open={ !!curReview } onClose={ setModalState(null) } className={ classes.modalcontainer }>
                 <Container maxWidth='md'>
                     <Paper elevation={ 4 } className={ classes.modalpaper }>
-                        <div>
+                        <div className={classes.modaltext}>
                             {
                                 curReview &&
                                 <>
@@ -185,10 +201,10 @@ const ReviewList = ({ classes, reviews }) => {
                                                               primary={ `${ review.firstName + ' ' + review.lastName }` }
                                                               primaryTypographyProps={ { className: classes.listItemText } }
                                                               secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                                                <span style={{ flex: 1, flexWrap:'wrap', flexDirection:'column' }}>
+                                                <div className={classes.buttonwrapper}>
                                                     <Button onClick={ setModalState(review.reviewId) }>View</Button>
                                                     <Button>Download</Button>
-                                                </span>
+                                                </div>
                                             </ListItem>
                                         </React.Fragment>
                                     );
