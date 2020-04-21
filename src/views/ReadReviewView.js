@@ -49,6 +49,9 @@ const useStyle = makeStyles(theme => ({
             paddingLeft: 0,
             paddingRight: 0,
             flexWrap: 'wrap',
+            top: 0,
+            left:0,
+            width: '100%',
             height: '100%',
         
         }
@@ -56,7 +59,7 @@ const useStyle = makeStyles(theme => ({
     },
     modalpaper: {
         flex: 1,
-        width: 0,
+        
         flexWrap: 'wrap',
     
 
@@ -64,13 +67,22 @@ const useStyle = makeStyles(theme => ({
     buttonwrapper: {
         flex: 1,
         flexWrap: 'wrap',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        padding: theme.spacing(3),
+        width: 0
     },
     modaltext: {
         flex: 1,
         flexWrap: 'wrap',
         flexDirection: 'column',
         
+        
+    },
+    modalbutton:{
+        flex:1,
+        display: 'flex',
+        justifyContent: 'flex-end',
+        top: 0
     }
 }));
 
@@ -173,12 +185,20 @@ const ReviewList = ({ classes, reviews }) => {
             <Modal open={ !!curReview } onClose={ setModalState(null) } className={ classes.modalcontainer }>
                 <Container maxWidth='md'>
                     <Paper elevation={ 4 } className={ classes.modalpaper }>
-                        <div className={classes.modaltext}>
+                        <div>
                             {
                                 curReview &&
                                 <>
-                                    { ReactHtmlParser(reviewData) }
+                                    <div className={classes.modalbutton}>
+                                        <Button onClick={setModalState(null)}> Close </Button>
+                                    </div>
+                                    <div className={classes.modaltext}>
+                                        {ReactHtmlParser(reviewData) } 
+                                    </div>
+                                    
+                                    
                                 </>
+                               
                             }
                         </div>
                     </Paper>
