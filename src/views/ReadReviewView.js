@@ -14,6 +14,7 @@ import moment from 'moment';
 import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import TabbedReviewBar from '../components/TabbedReviewBar';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import { Autorenew } from '@material-ui/icons';
 
 const useStyle = makeStyles(theme => ({
@@ -221,10 +222,10 @@ const ReviewList = ({ classes, reviews }) => {
                                                               primary={ `${ review.firstName + ' ' + review.lastName }` }
                                                               primaryTypographyProps={ { className: classes.listItemText } }
                                                               secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                                                <div className={classes.buttonwrapper}>
+                                                <ListItemSecondaryAction>
                                                     <Button onClick={ setModalState(review.reviewId) }>View</Button>
                                                     <Button>Download</Button>
-                                                </div>
+                                                </ListItemSecondaryAction>
                                             </ListItem>
                                         </React.Fragment>
                                     );
