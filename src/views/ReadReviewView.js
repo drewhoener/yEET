@@ -23,13 +23,16 @@ const useStyle = makeStyles(theme => ({
     },
     panelEnclosed: {
         padding: theme.spacing(3),
-        flex: 1
+        flex: 1,
+        
     },
     listItemText: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     list: {
-        width: '100%'
+        width: 0,
+        flex:1,
+        flexWrap: 'wrap'
     },
     modalcontainer: {
         display: 'flex',
@@ -43,9 +46,6 @@ const useStyle = makeStyles(theme => ({
             paddingLeft: 0,
             paddingRight: 0,
             flexWrap: 'wrap',
-            
-            
-            
         }
 
     },
@@ -185,9 +185,10 @@ const ReviewList = ({ classes, reviews }) => {
                                                               primary={ `${ review.firstName + ' ' + review.lastName }` }
                                                               primaryTypographyProps={ { className: classes.listItemText } }
                                                               secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                                                <Button onClick={ setModalState(review.reviewId) }>View</Button>
-
-                                                <Button>Download</Button>
+                                                <span style={{ flex: 1, flexWrap:'wrap', flexDirection:'column' }}>
+                                                    <Button onClick={ setModalState(review.reviewId) }>View</Button>
+                                                    <Button>Download</Button>
+                                                </span>
                                             </ListItem>
                                         </React.Fragment>
                                     );
