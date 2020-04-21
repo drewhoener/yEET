@@ -69,6 +69,7 @@ apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
     }
 
     const { requestId, content, serialized } = req.body;
+    console.log(req.body);
     if (!requestId || !content || !serialized) {
         res.status(400).send('Request missing fields');
         return;

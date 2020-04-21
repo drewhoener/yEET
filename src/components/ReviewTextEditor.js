@@ -121,9 +121,9 @@ const initialEditorState = (person, reviewer) => [
 ];
 
 const serializeEditor = baseNode => {
-    return {
+    return serializeNodes({
         children: baseNode
-    };
+    });
 };
 
 function ReviewTextEditor(props) {
