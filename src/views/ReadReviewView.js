@@ -266,6 +266,7 @@ export default function ReadReviewView(props) {
         <div className={ classes.inlineFlex }>
             <TabbedReviewBar>
                 <MyReviews classes={ classes }></MyReviews>
+                <SubordinateReviews classes = {classes}></SubordinateReviews>
             </TabbedReviewBar>
         </div>
     );

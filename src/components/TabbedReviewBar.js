@@ -60,7 +60,7 @@ export default function TabbedReviewBar({ children, ...rest }) {
             </div>
             <Paper square variant='outlined' className={ classes.constrained }>
                 <Divider flexItem orientation='horizontal'/>
-                { children }
+                { children[tabValue] }
             </Paper>
         </React.Fragment>
     );
