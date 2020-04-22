@@ -16,6 +16,28 @@ apiRouter.use('/auth', authRouter);
 // noinspection JSUnresolvedFunction
 apiRouter.use('/request', requestRouter);
 
+apiRouter.get('/whoami', authMiddleware, async (req, res) => {
+    if (!req.tokenData) {
+        res.status(404).end();
+        return;
+    }
+    Employee.findOne({
+        _id: new ObjectId(req.tokenData.id),
+        company: new ObjectId(req.tokenData.company)
+    }).then(user => {
+        if (!user) {
+            res.status(404).end();
+            return;
+        }
+        res.status(200).json({
+            fullName: `${ user.firstName } ${ user.lastName }`
+        });
+    }).catch(err => {
+        res.status(404).end();
+    });
+
+});
+
 // noinspection JSUnresolvedFunction
 apiRouter.get('/companies', (req, res) => {
     Company.find({})
@@ -303,7 +325,11 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
     console.log(req);
     let request = undefined;
     try {
-        request = await Request.findOneAndDelete({ _id: req.body._id, userReceiving: req.tokenData.id });
+        request = await Request.findOneAndDelete({
+            _id: req.body._id,
+            userReceiving: req.tokenData.id,
+            status: PendingState.PENDING
+        });
         console.log(request);
         res.status(200).end();
     } catch {

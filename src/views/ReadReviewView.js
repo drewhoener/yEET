@@ -5,6 +5,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Modal from '@material-ui/core/Modal';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -14,8 +15,6 @@ import moment from 'moment';
 import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import TabbedReviewBar from '../components/TabbedReviewBar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import { Autorenew } from '@material-ui/icons';
 
 const useStyle = makeStyles(theme => ({
     inlineFlex: {
@@ -26,14 +25,14 @@ const useStyle = makeStyles(theme => ({
     panelEnclosed: {
         padding: theme.spacing(3),
         flex: 1,
-        
+
     },
     listItemText: {
         fontWeight: 'bold',
     },
     list: {
         width: 0,
-        flex:1,
+        flex: 1,
         flexWrap: 'wrap'
     },
     modalcontainer: {
@@ -51,18 +50,18 @@ const useStyle = makeStyles(theme => ({
             paddingRight: 0,
             flexWrap: 'wrap',
             top: 0,
-            left:0,
+            left: 0,
             width: '100%',
             height: '100%',
-        
+
         }
 
     },
     modalpaper: {
         flex: 1,
-        
+
         flexWrap: 'wrap',
-    
+
 
     },
     buttonwrapper: {
@@ -76,11 +75,11 @@ const useStyle = makeStyles(theme => ({
         flex: 1,
         flexWrap: 'wrap',
         flexDirection: 'column',
-        
-        
+
+
     },
-    modalbutton:{
-        flex:1,
+    modalbutton: {
+        flex: 1,
         display: 'flex',
         justifyContent: 'flex-end',
         top: 0
@@ -190,16 +189,16 @@ const ReviewList = ({ classes, reviews }) => {
                             {
                                 curReview &&
                                 <>
-                                    <div className={classes.modalbutton}>
-                                        <Button onClick={setModalState(null)}> Close </Button>
+                                    <div className={ classes.modalbutton }>
+                                        <Button onClick={ setModalState(null) }> Close </Button>
                                     </div>
-                                    <div className={classes.modaltext}>
-                                        {ReactHtmlParser(reviewData) } 
+                                    <div className={ classes.modaltext }>
+                                        { ReactHtmlParser(reviewData) }
                                     </div>
-                                    
-                                    
+
+
                                 </>
-                               
+
                             }
                         </div>
                     </Paper>
@@ -265,8 +264,8 @@ export default function ReadReviewView(props) {
     return (
         <div className={ classes.inlineFlex }>
             <TabbedReviewBar>
-                <MyReviews classes={ classes }></MyReviews>
-                <SubordinateReviews classes = {classes}></SubordinateReviews>
+                <MyReviews classes={ classes }/>
+                <SubordinateReviews classes={ classes }/>
             </TabbedReviewBar>
         </div>
     );

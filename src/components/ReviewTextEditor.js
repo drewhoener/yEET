@@ -140,6 +140,7 @@ function ReviewTextEditor(props) {
     const classes = useStyle();
     const history = useHistory();
     const [dangerous, setDangerous] = useState('<div>');
+    // eslint-disable-next-line no-unused-vars
     const [stateData, setStateData] = useState({});
     const [editorState, setEditorState] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);

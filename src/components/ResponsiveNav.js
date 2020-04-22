@@ -1,5 +1,6 @@
 import { CssBaseline } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
+import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -12,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import useTheme from '@material-ui/core/styles/useTheme';
 import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import { AccountBox, Create, ExitToApp, House, RateReview, Send } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -80,6 +82,18 @@ const useStyles = makeStyles(theme => ({
     whiteButton: {
         color: theme.status.logout,
         borderColor: theme.status.logout
+    },
+    userName: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(1)
+    },
+    largeAvatar: {
+        width: theme.spacing(9),
+        height: theme.spacing(9),
     }
 }));
 
@@ -130,6 +144,7 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
     const classes = useStyles();
     const theme = useTheme();
     const [drawerOpen, setDrawerOpen] = React.useState(false);
+    const [userName, setUserName] = React.useState('');
 
     const onDrawerToggle = () => {
         setDrawerOpen(!drawerOpen);
@@ -140,6 +155,16 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
 
     }, [setDrawerOpen]);
 
+    React.useEffect(() => {
+        axios.get('/api/whoami')
+            .then(({ data }) => {
+                if (!data) {
+                    setUserName('');
+                }
+                setUserName(data.fullName || '');
+            });
+    }, []);
+
     const onLogout = React.useCallback(() => {
         axios.post('/api/auth/logout')
             .then().catch().then(() => {
@@ -149,11 +174,18 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
     }, [history, resetRequestState]);
 
     const drawer = React.useMemo(() => {
-            console.log('Memoizing Drawer!');
             return (
                 <div>
                     {/* <div className={classes.toolbar} />*/ }
-                    <div className={ classes.toolbar }/>
+                    <div className={ classes.toolbar }>
+                        <div className={ classes.userName }>
+                            <Avatar className={ classes.largeAvatar }/>
+                            {
+                                (userName.length > 0) &&
+                                <Typography align='center' variant='h5'>{ userName }</Typography>
+                            }
+                        </div>
+                    </div>
                     <Divider/>
                     <List>
                         {
@@ -178,7 +210,7 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
                 </div>
             );
         },
-        [classes.toolbar, onLogout, closeDrawer]
+        [classes.toolbar, classes.userName, classes.largeAvatar, onLogout, closeDrawer, userName]
     );
 
     return (

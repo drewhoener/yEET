@@ -1,6 +1,6 @@
-import { FilterAction, RequestAction } from '../action/RequestActions';
 import axios from 'axios';
 import { batch } from 'react-redux';
+import { FilterAction, RequestAction } from '../action/RequestActions';
 
 export function resetRequestState() {
     return {
@@ -96,6 +96,7 @@ export function deleteRequest(employeeObjId) {
             })
             .catch(err => {
                 console.error(err);
+                dispatch(fetchRequestStates());
             });
     };
 }
