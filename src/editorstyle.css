@@ -1,0 +1,15 @@
+.editor-code {
+    font-family: monospace;
+    font-size: 1.25rem;
+    background-color: #eee;
+    padding: 2px;
+}
+
+.editor-quote {
+    border-left: 2px solid #ddd;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 10px;
+    color: #aaa;
+    font-style: italic;
+}

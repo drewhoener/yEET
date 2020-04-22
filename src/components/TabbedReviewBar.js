@@ -33,9 +33,8 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-export default function TabbedReviewBar(props) {
+export default function TabbedReviewBar({ children, ...rest }) {
     const classes = useStyle();
-    const { children, ...rest } = props;
     const [tabValue, setTabValue] = React.useState(0);
 
     const handleTabChange = (event, newVal) => {
@@ -61,7 +60,7 @@ export default function TabbedReviewBar(props) {
             </div>
             <Paper square variant='outlined' className={ classes.constrained }>
                 <Divider flexItem orientation='horizontal'/>
-                { children }
+                { children[tabValue] }
             </Paper>
         </React.Fragment>
     );

@@ -1,5 +1,5 @@
-import { createMuiTheme } from '@material-ui/core/styles';
 import { amber, green, indigo, red } from '@material-ui/core/colors';
+import { createMuiTheme } from '@material-ui/core/styles';
 
 export const isMobile = /iphone|ipod|ipad|android|blackberry|opera mini|opera mobi|skyfire|maemo|windows phone|palm|iemobile|symbian|symbianos|fennec/i.test(navigator.userAgent.toLowerCase());
 

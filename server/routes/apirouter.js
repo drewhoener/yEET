@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import authRouter from '../middleware/authrouter';
+import moment from 'moment';
+import { ObjectId } from 'mongodb';
 import Company from '../database/schema/companyschema';
-import { authMiddleware } from '../middleware/authtoken';
 import Employee from '../database/schema/employeeschema';
 import Request, { PendingState } from '../database/schema/requestschema';
-import { ObjectId } from 'mongodb';
-import { requestRouter } from './requestrouter';
 import Review from '../database/schema/reviewschema';
-import moment from 'moment';
+import authRouter from '../middleware/authrouter';
+import { authMiddleware } from '../middleware/authtoken';
+import { requestRouter } from './requestrouter';
 
 const apiRouter = Router();
 
@@ -33,6 +33,34 @@ apiRouter.get('/companies', (req, res) => {
         });
 });
 
+const truncateEmployee = ({ _id, employeeId, firstName, lastName, startDate, position }) => {
+    return {
+        _id,
+        employeeId,
+        firstName,
+        lastName,
+        startDate,
+        position,
+        fullName: `${ firstName } ${ lastName }`
+    };
+};
+
+const reviewsByYear = (reviews) => {
+
+    const byYear = {};
+    reviews.forEach(review => {
+        const year = review.dateWritten.getFullYear();
+
+        if (!byYear[year]) {
+            byYear[year] = [];
+        }
+        byYear[year].push(review);
+    });
+
+
+    return byYear;
+};
+
 
 apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
     if (!req.tokenData) {
@@ -40,8 +68,9 @@ apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
         return;
     }
 
-    const { requestId, content } = req.body;
-    if (!requestId || !content) {
+    const { requestId, content, serialized } = req.body;
+    console.log(req.body);
+    if (!requestId || !content || !serialized) {
         res.status(400).send('Request missing fields');
         return;
     }
@@ -67,19 +96,27 @@ apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
     }
 
     review.contents = content;
+    review.serializedData = serialized;
     review.dateWritten = moment().toDate();
     review.completed = true;
 
     request.status = PendingState.COMPLETED;
-    await request.save();
-    await review.save();
 
-    console.log(review);
-
-    res.status(201).json({
-        reviewId: review._id,
-        requestId: requestId
-    });
+    request.save()
+        .then(() => {
+            review.save()
+                .then(() => {
+                    console.log(review);
+                    res.status(201).json({
+                        reviewId: review._id,
+                        requestId: requestId
+                    });
+                });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).send('Internal Error');
+        });
 });
 
 apiRouter.get('/editor-data', authMiddleware, async (req, res) => {
@@ -126,8 +163,8 @@ apiRouter.get('/editor-data', authMiddleware, async (req, res) => {
     }
 
     res.status(200).json({
-        userData: loggedIn,
-        requestingData: userRequesting,
+        userData: truncateEmployee(loggedIn),
+        requestingData: truncateEmployee(userRequesting),
         request: requestObj
     });
 });
@@ -146,15 +183,7 @@ apiRouter.get('/employees', authMiddleware, (req, res) => {
                 result = [];
             }
             res.status(200).json({
-                employees: result.map(({ _id, employeeId, firstName, lastName, startDate, position }) => ({
-                    _id,
-                    employeeId,
-                    firstName,
-                    lastName,
-                    startDate,
-                    position,
-                    fullName: `${ firstName } ${ lastName }`
-                }))
+                employees: result.map(employee => truncateEmployee(employee))
             });
         })
         .catch(err => {
@@ -169,7 +198,7 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
         res.status(401).send('Unauthorized');
         return;
     }
-    console.log(req.tokenData);
+
     console.log('Requests');
     const requests = await Request.find({ company: req.tokenData.company, userReceiving: req.tokenData.id })
         .then(async requests => {
@@ -281,5 +310,140 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
         res.status(500).end();
     }
 });
+
+apiRouter.get('/employee-reviews', authMiddleware, async (req, res) => {
+
+    const employees = await Employee.find({ company: new ObjectId(req.tokenData.company), manager: req.tokenData.id });
+
+    const reviews = {};
+
+    for (const employee of employees) {
+        // console.log(employee.firstName);
+        reviews[`${ employee.firstName } ${ employee.lastName }`] = await Request.find({
+            status: PendingState.COMPLETED,
+            company: new ObjectId(req.tokenData.company),
+            userRequesting: new ObjectId(employee._id)
+        })
+            .then(async requests => {
+                const allEmployees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
+                if (!requests || !requests.length) {
+                    console.log('No Completed Requests Found');
+                    return [];
+                }
+
+                // console.log(requests);
+
+                const subReviews = await Review.find({ requestID: { '$in': requests.map(r => r._id) } });
+
+
+                // console.log(subReviews);
+
+                return reviewsByYear(subReviews.map(review => {
+                    // console.log(review);
+                    const request = requests.find((_req) => _req._id.toString() === review.requestID.toString());
+                    // console.log(request);
+                    const sendingEmployee = allEmployees.find(e => e._id.toString() === request.userReceiving.toString());
+                    return {
+                        requestId: request._id,
+                        reviewId: review._id,
+                        contents: review.contents,
+                        dateWritten: review.dateWritten,
+                        isCompleted: review.completed,
+                        firstName: sendingEmployee.firstName,
+                        lastName: sendingEmployee.lastName,
+                        email: sendingEmployee.email,
+                        position: sendingEmployee.position,
+                    };
+                }));
+
+            });
+    }
+
+    res.status(200).json({
+        reviews
+    });
+
+});
+
+
+apiRouter.get('/reviews', authMiddleware, async (req, res) => {
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    const reviews = await Request.find({
+        status: PendingState.COMPLETED,
+        company: new ObjectId(req.tokenData.company),
+        userRequesting: new ObjectId(req.tokenData.id)
+    })
+        .then(async requests => {
+            const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
+            if (!requests || !requests.length) {
+                console.log('No Completed Requests Found');
+                return [];
+            }
+
+            // console.log(requests);/
+
+            const reviews = await Review.find({ requestID: { '$in': requests.map(r => r._id) } });
+
+
+            return reviewsByYear(reviews.map(review => {
+                // console.log(review);
+                const request = requests.find((_req) => _req._id.toString() === review.requestID.toString());
+                // console.log(request);
+                const employee = employees.find(e => e._id.toString() === request.userReceiving.toString());
+                return {
+                    requestId: request._id,
+                    reviewId: review._id,
+                    dateWritten: review.dateWritten,
+                    isCompleted: review.completed,
+                    firstName: employee.firstName,
+                    lastName: employee.lastName,
+                    email: employee.email,
+                    position: employee.position,
+                };
+            }));
+
+        });
+
+
+    // console.log(reviews);
+
+    res.status(200).json({
+        reviews
+    });
+});
+
+apiRouter.get('/review-contents', authMiddleware, async (req, res) => {
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    const { requestId } = req.query;
+
+    console.log(requestId);
+
+    if (!requestId) {
+        res.status(400).send('Invalid query');
+        return;
+    }
+
+    const review = await Review.findOne({ _id: new ObjectId(requestId) });
+
+    if (!review) {
+        res.status(404).send('Not found');
+        return;
+    }
+
+    console.log(review);
+
+    res.status(200).json({
+        contents: review.serializedData
+    });
+});
+
 
 export default apiRouter;

@@ -1,12 +1,13 @@
-import React from 'react';
-import './App.css';
-import 'react-virtualized/styles.css';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import MainView from './views/MainView';
-import LoginView from './views/LoginView';
-import ProtectedRoute from './components/ProtectedRoute';
 import { green, grey } from '@material-ui/core/colors';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import React from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import 'react-virtualized/styles.css';
+import './App.css';
+import ProtectedRoute from './components/ProtectedRoute';
+import './editorstyle.css';
+import LoginView from './views/LoginView';
+import MainView from './views/MainView';
 
 const theme = createMuiTheme({
     palette: {

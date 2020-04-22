@@ -1,21 +1,24 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import apiRouter from './routes/apirouter';
+import express from 'express';
+import expressStaticGzip from 'express-static-gzip';
+import path from 'path';
 import mongoAuth from '../exempt/mongo_auth';
 import { connect as connectToDB } from './database/database';
-import path from 'path';
-import expressStaticGzip from 'express-static-gzip';
+import apiRouter from './routes/apirouter';
 
 const app = express();
 
 const useProductionPaths = () => {
+    console.log(`Path: ${ path.join(__dirname, '../build') }`);
     app.use(expressStaticGzip(path.join(__dirname, '../build'), {
         enableBrotli: true,
-        orderPreference: ['br', 'gz'],
-        setHeaders: function (res, path) {
-            res.setHeader('Cache-Control', 'public, max-age=31536000');
+        orderPreference: ['br'],
+        serveStatic: {
+            setHeaders: function (res, path) {
+                res.setHeader('Cache-Control', 'public, max-age=31536000');
+            }
         }
     }));
     // noinspection JSUnresolvedFunction
@@ -24,7 +27,7 @@ const useProductionPaths = () => {
     });
 };
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use(cookieParser());
 app.use('/api', apiRouter);
 // useProductionPaths();

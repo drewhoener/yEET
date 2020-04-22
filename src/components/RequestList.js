@@ -5,7 +5,6 @@ import ListItem from '@material-ui/core/ListItem';
 import { ListItemText } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
-import Modal from '@material-ui/core/Modal';
 import { useHistory } from 'react-router-dom';
 import { Check, Close, Create } from '@material-ui/icons';
 
@@ -26,16 +25,6 @@ const buttons = {
         'icon': <Create/>
     }
 };
-
-function getModalStyle() {
-    const top = 50;
-    const left = 50;
-    return {
-        top: `${ top }%`,
-        left: `${ left }%`,
-        transform: `translate(-${ top }%, -${ left }%)`,
-    };
-}
 
 // classes is style
 // status is 0 = Pending, 1 = Accepted, 2 = Rejected, 3 = Completed
@@ -72,20 +61,11 @@ export default function RequestList({ classes, status, requests, setRequests }) 
     };
 
     const history = useHistory();
-    const [modalStyle] = React.useState(getModalStyle);
-    const [open, setOpen] = React.useState(false);
+
     const redirectToEditor = (reviewId) => {
         history.push(`/write/${ reviewId }`);
     };
-    const handleType = (request) => {
-        console.log('type');
-        console.log(request);
-        setOpen(true);
-    };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     return (
         <List className={ classes.list }>
@@ -125,14 +105,6 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                                         onClick={ () => redirectToEditor(request._id) }>
                                                 { React.cloneElement(buttons.type.icon) }
                                             </IconButton>
-                                            <Modal open={ open }
-                                                   onClose={ handleClose }>
-                                                <div className={ classes.modalPaper }
-                                                     style={ modalStyle }
-                                                     aria-labelledby="text-box"
-                                                     aria-describedby="write-your-review-here">
-                                                </div>
-                                            </Modal>
                                             <IconButton aria-label={ request.firstName }
                                                         style={ { color: buttons.reject.color } }
                                                         onClick={ () => handleReject(request) }>
