@@ -27,7 +27,7 @@ const useProductionPaths = () => {
     });
 };
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use(cookieParser());
 app.use('/api', apiRouter);
 // useProductionPaths();

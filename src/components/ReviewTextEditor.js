@@ -197,6 +197,8 @@ function ReviewTextEditor(props) {
             requestId,
             content: JSON.stringify(editorState),
             serialized: serializeEditor(editorState),
+        }, {
+            timeout: 10000
         }).then(response => {
             console.log(response);
         }).catch(err => {

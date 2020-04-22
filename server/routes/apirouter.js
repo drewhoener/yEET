@@ -101,15 +101,22 @@ apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
     review.completed = true;
 
     request.status = PendingState.COMPLETED;
-    await request.save();
-    await review.save();
 
-    console.log(review);
-
-    res.status(201).json({
-        reviewId: review._id,
-        requestId: requestId
-    });
+    request.save()
+        .then(() => {
+            review.save()
+                .then(() => {
+                    console.log(review);
+                    res.status(201).json({
+                        reviewId: review._id,
+                        requestId: requestId
+                    });
+                });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).send('Internal Error');
+        });
 });
 
 apiRouter.get('/editor-data', authMiddleware, async (req, res) => {
