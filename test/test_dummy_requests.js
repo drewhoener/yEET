@@ -5,7 +5,6 @@ import { close as disconnectDB, connect as connectDB } from '../server/database/
 import Employee from '../server/database/schema/employeeschema';
 import Request from '../server/database/schema/requestschema';
 import Review from '../server/database/schema/reviewschema';
-import { serializeNodes } from '../src/components/editor/EditorSerializer';
 
 //5 years
 const fiveYear = 157784760000;
@@ -50,8 +49,7 @@ connectDB(mongoAuth.username, mongoAuth.password, mongoAuth.database, mongoAuth.
                         }
                     ];
                     const review = new Review({
-                        contents: JSON.stringify(content(requester, responder)),
-                        serializedData: serializeNodes({ children: content(requester, responder) }),
+                        contents: JSON.stringify({ children: content(requester, responder) }),
                         dateWritten: time.clone().add(2, 'weeks'),
                         requestID: request._id,
                         completed: true

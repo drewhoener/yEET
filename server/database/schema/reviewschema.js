@@ -6,10 +6,6 @@ const reviewSchema = new Schema({
      */
     contents: { type: String, required: true },
     /**
-     * The serialized data from the editor contents as raw HTML
-     * */
-    serializedData: { type: String, default: '<div/>' },
-    /**
      * Date of when the review is published
      */
     dateWritten: { type: Date, required: true },

@@ -237,8 +237,9 @@ function ReviewTextEditor(props) {
     const submitReview = () => {
         axios.post('/api/submit-review', {
             requestId,
-            content: JSON.stringify(editorState),
-            serialized: serializeEditor(editorState),
+            content: JSON.stringify({
+                children: editorState
+            }),
         }, {
             timeout: 10000
         }).then(response => {

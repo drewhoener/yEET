@@ -14,6 +14,7 @@ import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
+import { serializeNodes } from '../components/editor/EditorSerializer';
 import TabbedReviewBar from '../components/TabbedReviewBar';
 
 const useStyle = makeStyles(theme => ({
@@ -53,16 +54,11 @@ const useStyle = makeStyles(theme => ({
             left: 0,
             width: '100%',
             height: '100%',
-
         }
-
     },
     modalpaper: {
         flex: 1,
-
         flexWrap: 'wrap',
-
-
     },
     buttonwrapper: {
         flex: 1,
@@ -151,16 +147,14 @@ const ReviewList = ({ classes, reviews }) => {
         if (!curReview) {
             return;
         }
-        console.log(`Fetching review ${ curReview }`);
         axios.get('/api/review-contents', {
-                params: {
-                    requestId: curReview
-                }
+            params: {
+                requestId: curReview
             }
-        )
+        })
             .then(({ data }) => {
                 console.log(data);
-                setReviewData(data.contents);
+                setReviewData(serializeNodes(JSON.parse(data.contents)));
             })
             .catch(err => {
                 // const error = {};
@@ -195,10 +189,7 @@ const ReviewList = ({ classes, reviews }) => {
                                     <div className={ classes.modaltext }>
                                         { ReactHtmlParser(reviewData) }
                                     </div>
-
-
                                 </>
-
                             }
                         </div>
                     </Paper>

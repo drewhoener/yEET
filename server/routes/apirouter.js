@@ -90,9 +90,9 @@ apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
         return;
     }
 
-    const { requestId, content, serialized } = req.body;
+    const { requestId, content } = req.body;
     console.log(req.body);
-    if (!requestId || !content || !serialized) {
+    if (!requestId || !content) {
         res.status(400).send('Request missing fields');
         return;
     }
@@ -118,7 +118,6 @@ apiRouter.post('/submit-review', authMiddleware, async (req, res) => {
     }
 
     review.contents = content;
-    review.serializedData = serialized;
     review.dateWritten = moment().toDate();
     review.completed = true;
 
@@ -467,7 +466,7 @@ apiRouter.get('/review-contents', authMiddleware, async (req, res) => {
     console.log(review);
 
     res.status(200).json({
-        contents: review.serializedData
+        contents: review.contents
     });
 });
 
