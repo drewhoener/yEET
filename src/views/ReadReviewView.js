@@ -15,6 +15,7 @@ import moment from 'moment';
 import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { serializeNodes } from '../components/editor/EditorSerializer';
+import Loader from '../components/Loader';
 import TabbedReviewBar from '../components/TabbedReviewBar';
 
 const useStyle = makeStyles(theme => ({
@@ -35,6 +36,11 @@ const useStyle = makeStyles(theme => ({
         width: 0,
         flex: 1,
         flexWrap: 'wrap'
+    },
+    loader: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     modalcontainer: {
         display: 'flex',
@@ -71,8 +77,6 @@ const useStyle = makeStyles(theme => ({
         flex: 1,
         flexWrap: 'wrap',
         flexDirection: 'column',
-
-
     },
     modalbutton: {
         flex: 1,
@@ -84,6 +88,7 @@ const useStyle = makeStyles(theme => ({
 
 const SubordinateReviews = ({ classes }) => {
     const [expandedPanel, setExpandedPanel] = React.useState('');
+    const [loading, setLoading] = React.useState(true);
 
     const handleChange = panel => (event, isExpanded) => {
         setExpandedPanel(isExpanded ? panel : false);
@@ -95,6 +100,7 @@ const SubordinateReviews = ({ classes }) => {
             .then(({ data }) => {
                 console.log(data);
                 setReviews(data.reviews);
+                setLoading(false);
             })
             .catch(err => {
                 console.log(err);
@@ -102,7 +108,11 @@ const SubordinateReviews = ({ classes }) => {
     }, []);
     return (
         <div className={ classes.panelEnclosed }>
+            <div className={ classes.loader }>
+                <Loader visible={ loading }/>
+            </div>
             {
+                !loading &&
                 Object.keys(reviews).map((name) => {
                     return (
                         <LabelledExpansionPanel key={ `EMPLOYEE-${ name }` } classes={ classes }
