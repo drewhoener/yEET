@@ -219,7 +219,15 @@ function ReviewTextEditor(props) {
             children: state
         });
         if (chars > CHAR_MAX) {
-            editor.undo();
+            const diff = chars - CHAR_MAX;
+            if (diff === 1) {
+                editor.undo();
+                return;
+            }
+            while (countCharacters({ children: editor.children }) > CHAR_MAX) {
+                editor.deleteBackward('word');
+            }
+            setEditorState(editor.children);
             return;
         }
         setCharCount(chars);
