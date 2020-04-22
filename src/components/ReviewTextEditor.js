@@ -67,7 +67,17 @@ const useStyle = makeStyles(theme => ({
         paddingRight: theme.spacing(0.125),
     },
     paddedEditor: {
-        paddingLeft: theme.spacing(1.5)
+        paddingLeft: theme.spacing(1.5),
+        '&>div': {
+            overflowWrap: 'break-word',
+            wordWrap: 'break-word',
+            wordBreak: 'break-word',
+            msWordBreak: 'break-all',
+            msHyphens: 'auto',
+            MozHyphens: 'auto',
+            WebkitHyphens: 'auto',
+            hyphens: 'auto',
+        }
     },
     editorBase: {
         flexGrow: 1,
