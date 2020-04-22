@@ -10,6 +10,7 @@ import {
     useMediaQuery
 } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import {
     Code,
     FormatBold,
@@ -31,7 +32,7 @@ import { withHistory } from 'slate-history';
 import { Editable, Slate, withReact } from 'slate-react';
 import { BlockButton, BlockTextButton } from './editor/BlockButton';
 import { EditorElement, EditorLeaf } from './editor/EditorRenderer';
-import { serializeNodes } from './editor/EditorSerializer';
+import { countCharacters, serializeNodes } from './editor/EditorSerializer';
 import FormattingType from './editor/FormattingType';
 import { MarkdownButton } from './editor/MarkdownButton';
 
@@ -68,7 +69,11 @@ const useStyle = makeStyles(theme => ({
     },
     paddedEditor: {
         paddingLeft: theme.spacing(1.5),
-        '&>div': {
+        position: 'relative',
+        display: 'flex',
+        paddingBottom: theme.spacing(1),
+        '&>div[role="textbox"]': {
+            flex: 1,
             overflowWrap: 'break-word',
             wordWrap: 'break-word',
             wordBreak: 'break-word',
@@ -78,6 +83,22 @@ const useStyle = makeStyles(theme => ({
             WebkitHyphens: 'auto',
             hyphens: 'auto',
         }
+    },
+    editorOverlay: {
+        display: 'flex',
+        position: 'absolute',
+        flex: '1 0 auto',
+        top: 0,
+        left: 0,
+        minWidth: '100%',
+        minHeight: '100%',
+        zIndex: 100,
+        pointerEvents: 'none',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
+    },
+    wordCount: {
+        marginRight: theme.spacing(2)
     },
     editorBase: {
         flexGrow: 1,
@@ -136,6 +157,8 @@ const serializeEditor = baseNode => {
     });
 };
 
+const CHAR_MAX = 10000;
+
 function ReviewTextEditor(props) {
     const classes = useStyle();
     const history = useHistory();
@@ -143,6 +166,7 @@ function ReviewTextEditor(props) {
     // eslint-disable-next-line no-unused-vars
     const [stateData, setStateData] = useState({});
     const [editorState, setEditorState] = useState([]);
+    const [charCount, setCharCount] = useState(0);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogState, setDialogState] = useState('success');
     const renderElement = useCallback(props => <EditorElement classes={ classes } { ...props } />, [classes]);
@@ -152,6 +176,7 @@ function ReviewTextEditor(props) {
     const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const { requestId } = props.match.params;
+
     React.useEffect(() => {
         axios.get('/api/editor-data',
             {
@@ -190,6 +215,14 @@ function ReviewTextEditor(props) {
     };
 
     const onChange = (state) => {
+        const chars = countCharacters({
+            children: state
+        });
+        if (chars > CHAR_MAX) {
+            editor.undo();
+            return;
+        }
+        setCharCount(chars);
         setEditorState(state);
     };
 
@@ -277,6 +310,10 @@ function ReviewTextEditor(props) {
                         </Toolbar>
                     </Paper>
                     <Paper square className={ classes.paddedEditor }>
+                        <div className={ classes.editorOverlay }>
+                            <Typography className={ classes.wordCount } variant='caption'>{ charCount } /
+                                10000</Typography>
+                        </div>
                         <Editable
                             renderElement={ renderElement }
                             renderLeaf={ renderLeaf }

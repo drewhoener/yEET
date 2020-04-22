@@ -50,3 +50,15 @@ export const serializeNodes = stateNode => {
             return children;
     }
 };
+
+export const countCharacters = stateNode => {
+    if (Text.isText(stateNode)) {
+        return stateNode.text.length;
+    }
+
+    const lengths = stateNode.children.map(child => countCharacters(child));
+    if (!lengths.length) {
+        return 0;
+    }
+    return lengths.reduce((o1, o2) => o1 + o2);
+};

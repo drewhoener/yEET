@@ -94,6 +94,7 @@ const useStyles = makeStyles(theme => ({
     largeAvatar: {
         width: theme.spacing(9),
         height: theme.spacing(9),
+        marginBottom: theme.spacing(0.75)
     }
 }));
 
