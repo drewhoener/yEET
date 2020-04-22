@@ -193,7 +193,7 @@ const ReviewList = ({ classes, reviews }) => {
                             {
                                 curReview &&
                                 <>
-                                    <div className={ classes.modalbutton }>
+                                    <div tabIndex={ -1 } className={ classes.modalbutton }>
                                         <Button onClick={ setModalState(null) }> Close </Button>
                                     </div>
                                     <div className={ classes.modaltext }>
