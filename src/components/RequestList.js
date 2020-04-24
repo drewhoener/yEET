@@ -76,7 +76,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                         return (
                             // React.fragment is a sort of hack to return multiple JSX elements
                             <React.Fragment
-                                key={ `${ (request.firstName + ' ' + request.lastName).toLowerCase().replace(' ', '_') }-${ request._id }` }>
+                                key={ `${ request.firstName }_${ request.lastName }_${ request._id }` }>
                                 <Divider/>
                                 <ListItem>
                                     <ListItemText tabIndex={ 0 } primary={ request.firstName + ' ' + request.lastName }
