@@ -53,7 +53,8 @@ export default function TabbedReviewBar({ children, ...rest }) {
                         textColor='inherit'
                         centered
                     >
-                        <Tab className={ classes.wideTab } label='My Reviews'/>
+                        <Tab onKeyDown={ () => console.log('Key Down') } className={ classes.wideTab }
+                             label='My Reviews'/>
                         <Tab className={ classes.wideTab } label='Employee Reviews'/>
                     </Tabs>
                 </Paper>

@@ -1,11 +1,11 @@
-import React from 'react';
+import { ListItemText } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { ListItemText } from '@material-ui/core';
 import axios from 'axios';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
 
 const PendingState = {
     PENDING: 0,
@@ -66,23 +66,30 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                 key={ `${ request.firstName }_${ request.lastName }_${ request._id }` }>
                                 <Divider/>
                                 <ListItem
-                                    className={ classes.listItem }
-                                    aria-label={`${PendingState[status]} request from ${request.firstName} ${request.lastName}, ${request.position}`}>
-                                    <ListItemText tabIndex={ 0 } primary={ request.firstName + ' ' + request.lastName }
-                                                  primaryTypographyProps={ { className: classes.listItemText } }
-                                                  secondary={ request.position }/>
+                                    tabIndex={ 0 }
+                                    aria-labelledby={ `req_${ request._id }` }
+                                    className={ classes.listItem }>
+                                    <ListItemText
+                                        aria-label={ `${ PendingState[status] } request from ${ request.firstName } ${ request.lastName }, ${ request.position }` }
+                                        id={ `req_${ request._id }` }
+                                        primary={ request.firstName + ' ' + request.lastName }
+                                        primaryTypographyProps={ { className: classes.listItemText } }
+                                        secondary={ request.position }
+                                    />
                                     {
                                         status === 0 &&
                                         <>
-                                            <Button aria-label={ `Accept pending request from ${request.firstName} ${request.lastName}` }
-                                                    style={ { color: '#4caf50' } }
+                                            <Button variant={ 'outlined' }
+                                                    aria-label={ `Accept pending request from ${ request.firstName } ${ request.lastName }` }
+                                                    style={ { color: '#000000' } }
                                                     onClick={ () => handleAccept(request) }>
-                                                    Accept
+                                                Accept
                                             </Button>
-                                            <Button aria-label={ `Reject pending request from ${request.firstName} ${request.lastName}` }
+                                            <Button variant={ 'outlined' }
+                                                    aria-label={ `Reject pending request from ${ request.firstName } ${ request.lastName }` }
                                                     style={ { color: '#f44336' } }
                                                     onClick={ () => handleReject(request) }>
-                                                    Reject
+                                                Reject
                                             </Button>
                                         </>
                                     }
