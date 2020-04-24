@@ -34,11 +34,9 @@ const useStyle = makeStyles(theme => ({
         width: '100%'
     },
     listItem: {
-        [theme.breakpoints.down('sm')]: {
-            width: '69.69%',
-        },
-        [theme.breakpoints.up('md')]: {
-            maxWidth: '30%'
+        backgroundColor: '#ffffff',
+        '&:hover': {
+            backgroundColor: '#eeeeee'
         }
     },
     listItemText: {
@@ -49,7 +47,6 @@ const useStyle = makeStyles(theme => ({
 export default function WriteView(props) {
     const classes = useStyle();
     const [requests, setRequests] = React.useState([]);
-    // Fetch requests on load: this should be virtualized
     React.useEffect(() => {
         axios.get('/api/open-requests')
             .then(({ data }) => {

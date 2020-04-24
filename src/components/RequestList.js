@@ -66,6 +66,7 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                 key={ `${ request.firstName }_${ request.lastName }_${ request._id }` }>
                                 <Divider/>
                                 <ListItem
+                                    className={ classes.listItem }
                                     aria-label={`${PendingState[status]} request from ${request.firstName} ${request.lastName}, ${request.position}`}>
                                     <ListItemText tabIndex={ 0 } primary={ request.firstName + ' ' + request.lastName }
                                                   primaryTypographyProps={ { className: classes.listItemText } }
