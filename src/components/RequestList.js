@@ -3,32 +3,21 @@ import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { ListItemText } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import { Check, Close, Create } from '@material-ui/icons';
+import Button from '@material-ui/core/Button';
 
-const buttons = {
-    'accept': {
-        'name': 'accept',
-        'color': '#4caf50',
-        'icon': <Check/>
-    },
-    'reject': {
-        'name': 'reject',
-        'color': '#f44336',
-        'icon': <Close/>
-    },
-    'type': {
-        'name': 'type',
-        'color': '#000000',
-        'icon': <Create/>
-    }
+const PendingState = {
+    PENDING: 0,
+    ACCEPTED: 1,
+    REJECTED: 2,
+    COMPLETED: 3,
+    0: 'Pending',
+    1: 'Accepted',
+    2: 'Rejected',
+    3: 'Completed',
 };
 
-// classes is style
-// status is 0 = Pending, 1 = Accepted, 2 = Rejected, 3 = Completed
-// requests is the requests fetched in RespondView.js
 export default function RequestList({ classes, status, requests, setRequests }) {
 
     const handleAccept = (request) => {
@@ -70,46 +59,45 @@ export default function RequestList({ classes, status, requests, setRequests }) 
     return (
         <List className={ classes.list }>
             {
-                // Only fetch requests with the appropriate status
                 requests.filter(req => req.statusNumber === status)
                     .map(request => {
                         return (
-                            // React.fragment is a sort of hack to return multiple JSX elements
                             <React.Fragment
                                 key={ `${ request.firstName }_${ request.lastName }_${ request._id }` }>
                                 <Divider/>
-                                <ListItem>
+                                <ListItem
+                                    aria-label={`${PendingState[status]} request from ${request.firstName} ${request.lastName}, ${request.position}`}>
                                     <ListItemText tabIndex={ 0 } primary={ request.firstName + ' ' + request.lastName }
                                                   primaryTypographyProps={ { className: classes.listItemText } }
                                                   secondary={ request.position }/>
                                     {
                                         status === 0 &&
                                         <>
-                                            <IconButton aria-label={ request.firstName }
-                                                        style={ { color: buttons.accept.color } }
-                                                        onClick={ () => handleAccept(request) }>
-                                                { React.cloneElement(buttons.accept.icon) }
-                                            </IconButton>
-                                            <IconButton aria-label={ request.firstName }
-                                                        style={ { color: buttons.reject.color } }
-                                                        onClick={ () => handleReject(request) }>
-                                                { React.cloneElement(buttons.reject.icon) }
-                                            </IconButton>
+                                            <Button aria-label={ `Accept pending request from ${request.firstName} ${request.lastName}` }
+                                                    style={ { color: '#4caf50' } }
+                                                    onClick={ () => handleAccept(request) }>
+                                                    Accept
+                                            </Button>
+                                            <Button aria-label={ `Reject pending request from ${request.firstName} ${request.lastName}` }
+                                                    style={ { color: '#f44336' } }
+                                                    onClick={ () => handleReject(request) }>
+                                                    Reject
+                                            </Button>
                                         </>
                                     }
                                     {
                                         status === 1 &&
                                         <>
-                                            <IconButton aria-label={ request.firstName }
-                                                        style={ { color: buttons.type.color } }
-                                                        onClick={ () => redirectToEditor(request._id) }>
-                                                { React.cloneElement(buttons.type.icon) }
-                                            </IconButton>
-                                            <IconButton aria-label={ request.firstName }
-                                                        style={ { color: buttons.reject.color } }
-                                                        onClick={ () => handleReject(request) }>
-                                                { React.cloneElement(buttons.reject.icon) }
-                                            </IconButton>
+                                            <Button aria-label={ `Write review for ${request.firstName} ${request.lastName}` }
+                                                    style={ { color: '#000000' } }
+                                                    onClick={ () => redirectToEditor(request) }>
+                                                    Write
+                                            </Button>
+                                            <Button aria-label={ `Reject request from ${request.firstName} ${request.lastName}` }
+                                                    style={ { color: '#f44336' } }
+                                                    onClick={ () => handleReject(request) }>
+                                                    Reject
+                                            </Button>
                                         </>
                                     }
                                 </ListItem>
