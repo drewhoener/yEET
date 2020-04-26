@@ -1,11 +1,27 @@
-import { ListItemText } from '@material-ui/core';
+import { ListItemSecondaryAction, ListItemText } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+
+const useStyle = makeStyles(theme => ({
+    list: {
+        width: '100%'
+    },
+    listItem: {
+        backgroundColor: '#ffffff',
+        '&:hover': {
+            backgroundColor: '#eeeeee'
+        }
+    },
+    listItemText: {
+        fontWeight: 'bold'
+    }
+}));
 
 const PendingState = {
     PENDING: 0,
@@ -18,7 +34,9 @@ const PendingState = {
     3: 'Completed',
 };
 
-export default function RequestList({ classes, status, requests, setRequests }) {
+export default function RequestList({ status, requests, setRequests }) {
+
+    const classes = useStyle();
 
     const handleAccept = (request) => {
         console.log('accepted');
@@ -76,38 +94,42 @@ export default function RequestList({ classes, status, requests, setRequests }) 
                                         primaryTypographyProps={ { className: classes.listItemText } }
                                         secondary={ request.position }
                                     />
-                                    {
-                                        status === 0 &&
-                                        <>
-                                            <Button variant={ 'outlined' }
-                                                    aria-label={ `Accept pending request from ${ request.firstName } ${ request.lastName }` }
+                                    <ListItemSecondaryAction>
+                                        {
+                                            status === 0 &&
+                                            <>
+                                                <Button variant={ 'outlined' }
+                                                        aria-label={ `Accept pending request from ${ request.firstName } ${ request.lastName }` }
+                                                        style={ { color: '#000000' } }
+                                                        onClick={ () => handleAccept(request) }>
+                                                    Accept
+                                                </Button>
+                                                <Button variant={ 'outlined' }
+                                                        aria-label={ `Reject pending request from ${ request.firstName } ${ request.lastName }` }
+                                                        style={ { color: '#f44336' } }
+                                                        onClick={ () => handleReject(request) }>
+                                                    Reject
+                                                </Button>
+                                            </>
+                                        }
+                                        {
+                                            status === 1 &&
+                                            <>
+                                                <Button
+                                                    aria-label={ `Write review for ${ request.firstName } ${ request.lastName }` }
                                                     style={ { color: '#000000' } }
-                                                    onClick={ () => handleAccept(request) }>
-                                                Accept
-                                            </Button>
-                                            <Button variant={ 'outlined' }
-                                                    aria-label={ `Reject pending request from ${ request.firstName } ${ request.lastName }` }
-                                                    style={ { color: '#f44336' } }
-                                                    onClick={ () => handleReject(request) }>
-                                                Reject
-                                            </Button>
-                                        </>
-                                    }
-                                    {
-                                        status === 1 &&
-                                        <>
-                                            <Button aria-label={ `Write review for ${request.firstName} ${request.lastName}` }
-                                                    style={ { color: '#000000' } }
-                                                    onClick={ () => redirectToEditor(request) }>
+                                                    onClick={ () => redirectToEditor(request._id) }>
                                                     Write
-                                            </Button>
-                                            <Button aria-label={ `Reject request from ${request.firstName} ${request.lastName}` }
+                                                </Button>
+                                                <Button
+                                                    aria-label={ `Reject request from ${ request.firstName } ${ request.lastName }` }
                                                     style={ { color: '#f44336' } }
                                                     onClick={ () => handleReject(request) }>
                                                     Reject
-                                            </Button>
-                                        </>
-                                    }
+                                                </Button>
+                                            </>
+                                        }
+                                    </ListItemSecondaryAction>
                                 </ListItem>
                             </React.Fragment>
                         );

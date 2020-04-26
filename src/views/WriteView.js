@@ -1,9 +1,9 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
-import RequestList from '../components/RequestList';
+import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
+import React from 'react';
+import RequestList from '../components/RequestList';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -30,18 +30,6 @@ const useStyle = makeStyles(theme => ({
     margin: {
         margin: theme.spacing(1)
     },
-    list: {
-        width: '100%'
-    },
-    listItem: {
-        backgroundColor: '#ffffff',
-        '&:hover': {
-            backgroundColor: '#eeeeee'
-        }
-    },
-    listItemText: {
-        fontWeight: 'bold'
-    }
 }));
 
 export default function WriteView(props) {
@@ -64,17 +52,17 @@ export default function WriteView(props) {
                 <Container maxWidth='xl'>
                     <h1>Pending</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 0 } classes={ classes } requests={ requests }
+                        <RequestList status={ 0 } requests={ requests }
                                      setRequests={ setRequests }/>
                     </Paper>
                     <h1>Accepted</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 1 } classes={ classes } requests={ requests }
+                        <RequestList status={ 1 } requests={ requests }
                                      setRequests={ setRequests }/>
                     </Paper>
                     <h1>Completed</h1>
                     <Paper className={ classes.paper }>
-                        <RequestList status={ 3 } classes={ classes } requests={ requests }
+                        <RequestList status={ 3 } requests={ requests }
                                      setRequests={ setRequests }/>
                     </Paper>
                 </Container>
