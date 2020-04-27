@@ -1,24 +1,25 @@
-import React from 'react';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
 import { Snackbar, TextField } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import { Search } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-import { AutoSizer } from 'react-virtualized';
-import Loader from '../components/Loader';
+import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
-import EmployeeList from '../components/EmployeeList';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import Slide from '@material-ui/core/Slide';
+import { makeStyles } from '@material-ui/core/styles';
+import { FilterList } from '@material-ui/icons';
+import Alert from '@material-ui/lab/Alert';
+import React from 'react';
 import { connect } from 'react-redux';
+import { AutoSizer } from 'react-virtualized';
+import EmployeeList from '../components/EmployeeList';
+import Loader from '../components/Loader';
+import RequestFilteredMenu from '../components/RequestFilteredMenu';
+import RequestInfoData from '../components/RequestInfoData';
 import {
     closeTopErrorMessage,
     fetchOrUpdateEmployees,
     popErrorMessage,
     setAndRefreshFilter
 } from '../state/selector/RequestSelector';
-import RequestInfoData from '../components/RequestInfoData';
-import Slide from '@material-ui/core/Slide';
-import Alert from '@material-ui/lab/Alert';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -83,6 +84,7 @@ function RequestViewVirtualized(
         closeTopErrorMessage
     }) {
     const classes = useStyle();
+
     // On load fetch or update employees if needed
     // On unload uncache the search filter
     React.useEffect(() => {
@@ -91,6 +93,31 @@ function RequestViewVirtualized(
             setSearchFilter('');
         };
     }, [setSearchFilter, fetchOrUpdateEmployees]);
+
+    const [filterWindowOpen, setFilterWindowOpen] = React.useState(false);
+    const filterAnchor = React.useRef(null);
+    const prevOpenState = React.useRef(filterWindowOpen);
+    // Restore focus on close window
+    React.useEffect(() => {
+        if (prevOpenState.current === true && filterWindowOpen === false) {
+            // noinspection JSUnresolvedFunction
+            filterAnchor.current.focus();
+        }
+
+        prevOpenState.current = filterWindowOpen;
+    }, [filterWindowOpen]);
+
+    const toggleFilterWindow = () => {
+        setFilterWindowOpen((prev) => !prev);
+    };
+
+    const closeFilterWindow = (event) => {
+        if (filterAnchor.current && filterAnchor.current.contains(event.target)) {
+            return;
+        }
+
+        setFilterWindowOpen(false);
+    };
 
     return (
         <React.Fragment>
@@ -106,13 +133,22 @@ function RequestViewVirtualized(
                                 value={ searchFilter }
                                 InputProps={ {
                                     endAdornment: (
-                                        <IconButton position='end' aria-label='Search'>
-                                            <Search/>
+                                        <IconButton
+                                            position='end'
+                                            aria-label='edit filters'
+                                            ref={ filterAnchor }
+                                            aria-haspopup='true'
+                                            aria-controls={ filterWindowOpen ? 'employee-list-filters' : undefined }
+                                            onClick={ toggleFilterWindow }
+                                        >
+                                            <FilterList/>
                                         </IconButton>
                                     ),
                                 } }
                                 onChange={ e => setSearchFilter(e.target.value) }
                             />
+                            <RequestFilteredMenu ref={ filterAnchor } open={ filterWindowOpen }
+                                                 closeWindow={ closeFilterWindow }/>
                             <RequestInfoData/>
                         </div>
                         <Divider/>

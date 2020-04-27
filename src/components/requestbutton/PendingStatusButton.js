@@ -1,8 +1,8 @@
+import { ClickAwayListener, useMediaQuery, useTheme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
-import { ClickAwayListener, useMediaQuery, useTheme } from '@material-ui/core';
 import { deleteRequest } from '../../state/selector/RequestSelector';
 
 const useStyle = makeStyles(theme => ({
@@ -18,6 +18,7 @@ const useStyle = makeStyles(theme => ({
 
 function PendingStatusButton(
     {
+        employeeName,
         employeeObjId,
         deleteRequest
     }) {
@@ -35,6 +36,7 @@ function PendingStatusButton(
                             classes={ {
                                 root: classes.cancel
                             } }
+                            aria-label={ `confirm cancel request for ${ employeeName }` }
                             variant='outlined' onClick={ deleteRequest(employeeObjId) }
                     >
                         { `Cancel${ smallScreen ? '' : ' Request' }` }
@@ -44,6 +46,7 @@ function PendingStatusButton(
                             classes={ {
                                 root: classes.pending
                             } }
+                            aria-label={ `request to ${ employeeName } is pending. click to cancel` }
                             variant='outlined' onClick={ () => setShowCancel(true) }
                     >
                         Pending

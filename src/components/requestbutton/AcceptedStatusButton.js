@@ -1,7 +1,7 @@
-import Button from '@material-ui/core/Button';
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useMediaQuery, useTheme } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 
 const useStyle = makeStyles(theme => ({
     completed: {
@@ -9,7 +9,7 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-export default function AcceptedStatusButton() {
+export default function AcceptedStatusButton({ employeeName }) {
 
     const classes = useStyle();
     const theme = useTheme();
@@ -24,6 +24,7 @@ export default function AcceptedStatusButton() {
                 classes={ {
                     root: classes.completed
                 } }
+                aria-label={ `Review from ${ employeeName } in progress` }
         >
             { `${ smallScreen ? 'Writing' : 'In Progress' }` }
         </Button>

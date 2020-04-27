@@ -5,13 +5,19 @@ import { sendRequests } from '../../state/selector/RequestSelector';
 
 function RequestStatusButton(
     {
+        employeeName,
         employeeObjId,
         sendSingleRequest
     }) {
 
     return (
-        <Button edge='end' color='primary' variant='outlined'
-                onClick={ sendSingleRequest(employeeObjId.toString()) }>
+        <Button
+            edge='end'
+            color='primary'
+            variant='outlined'
+            onClick={ sendSingleRequest(employeeObjId.toString()) }
+            aria-label={ `request review from ${ employeeName }` }
+        >
             Request
         </Button>
     );

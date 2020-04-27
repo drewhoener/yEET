@@ -88,7 +88,10 @@ export default function RequestList({ status, requests, setRequests }) {
                                     aria-labelledby={ `req_${ request._id }` }
                                     className={ classes.listItem }>
                                     <ListItemText
-                                        aria-label={ `${ PendingState[status] } request from ${ request.firstName } ${ request.lastName }, ${ request.position }` }
+                                        aria-label={ status === PendingState.COMPLETED ?
+                                            `${ PendingState[status] } review for ${ request.firstName } ${ request.lastName }` :
+                                            `${ PendingState[status] } request from ${ request.firstName } ${ request.lastName }, ${ request.position }`
+                                        }
                                         id={ `req_${ request._id }` }
                                         primary={ request.firstName + ' ' + request.lastName }
                                         primaryTypographyProps={ { className: classes.listItemText } }

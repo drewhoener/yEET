@@ -1,9 +1,9 @@
-import React from 'react';
-import { useSlate } from 'slate-react';
-import { Editor } from 'slate';
+import { makeStyles } from '@material-ui/core/styles';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { Editor } from 'slate';
+import { useSlate } from 'slate-react';
 
 const useStyle = makeStyles(theme => ({
     coloredToggleButton: {
@@ -40,8 +40,10 @@ export function MarkdownButton({ format, className = '', IconComponent, iconProp
                     classes.coloredToggleButton
                 ])
             }
+            aria-label={ `Toggle markdown ${ format } ${ isMarkdownActive(editor, format) ? ' (Selected)' : '' }` }
             size='small'
-            value={ format } selected={ isMarkdownActive(editor, format) }
+            value={ format }
+            selected={ isMarkdownActive(editor, format) }
             onMouseDown={ (e) => e.preventDefault() }
             onClick={ () => {
                 toggleMarkdown(editor, format);
