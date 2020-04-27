@@ -50,7 +50,7 @@ const useStyle = makeStyles(theme => ({
         justifyContent: 'center',
         flexWrap: 'wrap',
         position: 'absolute',
-        
+        overflow: 'auto',
         '&>div': {
             flex: 1,
             display: 'flex',
@@ -61,7 +61,7 @@ const useStyle = makeStyles(theme => ({
             left: 0,
             width: '100%',
             height: '100%',
-            overflow: 'auto',
+           // overflow : 'auto'
             
         }
     },
