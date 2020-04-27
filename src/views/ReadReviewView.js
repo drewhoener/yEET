@@ -68,6 +68,7 @@ const useStyle = makeStyles(theme => ({
     modalpaper: {
         flex: 1,
         flexWrap: 'wrap',
+        padding: 20,
     },
     buttonwrapper: {
         [theme.breakpoints.down('sm')]:{
