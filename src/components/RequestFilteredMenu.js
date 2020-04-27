@@ -5,17 +5,58 @@ import MenuList from '@material-ui/core/MenuList';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import { makeStyles } from '@material-ui/core/styles';
+import Switch from '@material-ui/core/Switch';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
+import { connect } from 'react-redux';
+import { StatusFilter } from '../state/action/RequestActions';
+import { toggleStatusFilterOption } from '../state/selector/RequestSelector';
 
 const useStyle = makeStyles(theme => ({
     elevatedMenu: {
         zIndex: 300
+    },
+    menuPaper: {
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    expandedText: {
+        flex: 1
+    },
+    menuFlexItem: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        flex: 1
     }
 }));
 
 const RequestFilteredMenu = (props, ref) => {
     const classes = useStyle();
-    const { open, closeWindow } = props;
+    const { open, closeWindow, hasFilterStatusOption, toggleOption } = props;
+
+    const sliderOptions = React.useMemo(() => [
+        {
+            text: 'Show Selected',
+            option: StatusFilter.SHOW_SELECTED
+        },
+        {
+            text: 'Show Pending',
+            option: StatusFilter.SHOW_PENDING
+        },
+        {
+            text: 'Show In Progress',
+            option: StatusFilter.SHOW_PROGRESS
+        },
+        {
+            text: 'Show Unselected',
+            option: StatusFilter.SHOW_UNSELECTED
+        },
+    ], []);
+
+    const toggleStatusOption = React.useCallback((statusOption) => () => {
+        toggleOption(statusOption, !hasFilterStatusOption(statusOption));
+    }, [hasFilterStatusOption]);
 
     const onKeyDown = (event) => {
         if (event.key === 'Tab') {
@@ -49,16 +90,31 @@ const RequestFilteredMenu = (props, ref) => {
                             { ...TransitionProps }
                             style={ { transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' } }
                         >
-                            <Paper>
+                            <Paper className={ classes.menuPaper }>
                                 <ClickAwayListener onClickAway={ closeWindow }>
                                     <MenuList
                                         autoFocusItem={ open }
                                         id='employee-list-filters'
                                         onKeyDown={ onKeyDown }
                                     >
-                                        <MenuItem onClick={ closeWindow }>Show Selected</MenuItem>
-                                        <MenuItem onClick={ closeWindow }>Show Pending</MenuItem>
-                                        <MenuItem onClick={ closeWindow }>Show In Progress</MenuItem>
+                                        {
+                                            sliderOptions.map(item => {
+                                                console.log(item);
+                                                return (
+                                                    <MenuItem key={ `MenuItem_${ item.option }` }
+                                                              onClick={ toggleStatusOption(item.option) }>
+                                                        <div className={ classes.menuFlexItem }>
+                                                            <Typography
+                                                                className={ classes.expandedText }
+                                                            >
+                                                                { item.text }
+                                                            </Typography>
+                                                            <Switch checked={ hasFilterStatusOption(item.option) }/>
+                                                        </div>
+                                                    </MenuItem>
+                                                )
+                                            })
+                                        }
                                     </MenuList>
                                 </ClickAwayListener>
                             </Paper>
@@ -70,4 +126,19 @@ const RequestFilteredMenu = (props, ref) => {
     );
 };
 
-export default React.forwardRef(RequestFilteredMenu);
+const mapStateToProps = state => ({
+    hasFilterStatusOption: (status) => state.requests.filter.options.some(item => item === status)
+});
+
+const mapDispatchToProps = (dispatch, getState) => ({
+    toggleOption: (option) => dispatch(toggleStatusFilterOption(option, !getState().requests.filter.options.some(item => item === option)))
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+    undefined,
+    {
+        forwardRef: true
+    }
+)(React.forwardRef(RequestFilteredMenu));

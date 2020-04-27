@@ -197,13 +197,15 @@ function RequestViewVirtualized(
 }
 
 const mapStateToProps = state => ({
-    searchFilter: state.requests.filter,
+    searchFilter: state.requests.filter.text,
     loading: state.requests.loading,
     errorMessages: state.requests.errorMessages,
 });
 
 const mapDispatchToProps = dispatch => ({
-    setSearchFilter: filter => dispatch(setAndRefreshFilter(filter)),
+    setSearchFilter: filter => {
+        dispatch(setAndRefreshFilter(filter))
+    },
     fetchOrUpdateEmployees: () => dispatch(fetchOrUpdateEmployees()),
     popErrorMessage: () => dispatch(popErrorMessage()),
     closeTopErrorMessage: () => dispatch(closeTopErrorMessage()),

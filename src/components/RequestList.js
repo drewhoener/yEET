@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { PendingState } from '../state/action/RequestActions';
 
 const useStyle = makeStyles(theme => ({
     list: {
@@ -22,17 +23,6 @@ const useStyle = makeStyles(theme => ({
         fontWeight: 'bold'
     }
 }));
-
-const PendingState = {
-    PENDING: 0,
-    ACCEPTED: 1,
-    REJECTED: 2,
-    COMPLETED: 3,
-    0: 'Pending',
-    1: 'Accepted',
-    2: 'Rejected',
-    3: 'Completed',
-};
 
 export default function RequestList({ status, requests, setRequests }) {
 

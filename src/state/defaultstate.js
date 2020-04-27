@@ -1,4 +1,5 @@
 import Fuse from 'fuse.js';
+import { StatusFilter } from './action/RequestActions';
 
 export const InitialLoginState = {
     needsRedirect: false,
@@ -12,7 +13,15 @@ export const InitialLoginState = {
 };
 
 export const InitialRequestState = {
-    filter: '',
+    filter: {
+        text: '',
+        options: [
+            StatusFilter.SHOW_UNSELECTED,
+            StatusFilter.SHOW_PROGRESS,
+            StatusFilter.SHOW_PENDING,
+            StatusFilter.SHOW_SELECTED
+        ],
+    },
     employees: [],
     requestStates: {
         keys: [],

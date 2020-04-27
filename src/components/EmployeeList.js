@@ -6,7 +6,7 @@ import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import React from 'react';
 import { connect } from 'react-redux';
 import { List } from 'react-virtualized';
-import { toggleEmployeeSelect } from '../state/selector/RequestSelector';
+import { toggleEmployeeSelect, updateShownEntries } from '../state/selector/RequestSelector';
 import { colorButtonTheme } from '../util';
 import ThemedStatusButton from './requestbutton/ThemedStatusButton';
 
@@ -36,10 +36,15 @@ function EmployeeList(
         selectedEmployees,
         requestStates,
         selectEmployee,
+        updateShownEntries,
         ...rest
     }) {
 
     const classes = useStyle();
+
+    React.useEffect(() => {
+        updateShownEntries();
+    }, [selectedEmployees, requestStates]);
 
     const SecondaryActionWrapper = ({ ...props }) => <ListItemSecondaryAction { ...props }/>;
     SecondaryActionWrapper.muiName = ListItemSecondaryAction.muiName;
@@ -133,6 +138,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch, getState) => ({
     selectEmployee: idx => () => dispatch(toggleEmployeeSelect(idx)),
+    updateShownEntries: () => dispatch(updateShownEntries()),
 });
 
 export default connect(

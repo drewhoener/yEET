@@ -1,6 +1,6 @@
-import { FilterAction, RequestAction } from '../action/RequestActions';
 import Fuse from 'fuse.js';
 import { createReducer } from '../../util';
+import { FilterAction, RequestAction } from '../action/RequestActions';
 import { InitialRequestState } from '../defaultstate';
 
 const employeeSearchOptions = {
@@ -34,15 +34,36 @@ const employeeSearchOptions = {
 };
 
 const filterReducer = createReducer(InitialRequestState.filter, {
-    [FilterAction.UPDATE_FILTER]: (state, action) => {
+    [FilterAction.UPDATE_SEARCH_FILTER]: (state, action) => {
         if (action.payload.filter == null) {
             return state;
         }
-        return action.payload.filter;
+        return {
+            ...state,
+            text: action.payload.filter
+        };
     },
-    [FilterAction.CLEAR_FILTER]: () => {
-        return '';
+    [FilterAction.CLEAR_SEARCH_FILTER]: (state) => {
+        return {
+            ...state,
+            text: ''
+        };
     },
+    [FilterAction.TOGGLE_STATUS_FILTER]: (state, action) => {
+        if (action.payload.type == null) {
+            return state;
+        }
+
+        const newOptions = state.options.filter(item => item !== action.payload.type);
+        if (action.payload.state) {
+            newOptions.push(action.type);
+        }
+
+        return {
+            text: state.text,
+            options: newOptions
+        };
+    }
 });
 
 const employeesReducer = createReducer([...InitialRequestState.employees], {
@@ -86,7 +107,7 @@ const requestStateReducer = createReducer({ ...InitialRequestState.requestStates
 });
 
 const filteredEmployeesReducer = createReducer([...InitialRequestState.filteredEmployees], {
-    [FilterAction.UPDATE_FILTER]: (state, action) => {
+    [FilterAction.UPDATE_SEARCH_FILTER]: (state, action) => {
         if (!action.payload) {
             return state;
         }
@@ -108,6 +129,27 @@ const filteredEmployeesReducer = createReducer([...InitialRequestState.filteredE
             }
             return o1.item.lastName.localeCompare(o2.item.lastName);
         }).map(item => item.refIndex);
+    },
+    [RequestAction.UPDATE_SHOWN_ENTRIES]: (state, action) => {
+        if (!action.payload) {
+            return state;
+        }
+
+        const { employees, options } = action.payload;
+        if (!options || !options.length) {
+            return [];
+        }
+
+
+        const withOptions = state.map(idx => employees[idx]).filter(o => o !== undefined)
+            .concat(employees.filter(employee => {
+
+            }))
+            .filter((unique, curItem) => {
+                return unique.includes(curItem) ? unique : [...unique, curItem];
+            }, []);
+
+        return state;
     }
 });
 

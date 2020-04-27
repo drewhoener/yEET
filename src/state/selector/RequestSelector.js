@@ -8,6 +8,20 @@ export function resetRequestState() {
     };
 }
 
+export function toggleStatusFilterOption(option, state) {
+    return (dispatch, getState) => {
+        dispatch({
+            type: FilterAction.TOGGLE_STATUS_FILTER,
+            payload: {
+                toggleState: state,
+                type: option,
+                curOptions: getState().requests.filter.options
+            }
+        });
+        dispatch(updateShownEntries());
+    }
+}
+
 export function setAndRefreshFilter(filter) {
     return (dispatch, getState) => {
         const state = getState();
@@ -17,13 +31,27 @@ export function setAndRefreshFilter(filter) {
 
 function setSearchFilter(filter, employees, searcher) {
     return {
-        type: FilterAction.UPDATE_FILTER,
+        type: FilterAction.UPDATE_SEARCH_FILTER,
         payload: {
             filter,
             employees,
             searcher
         },
     };
+}
+
+export function updateShownEntries() {
+    return (dispatch, getState) => {
+        const state = getState();
+        dispatch({
+            type: RequestAction.UPDATE_SHOWN_ENTRIES,
+            payload: {
+                employees: state.requests.employees,
+                selected: state.requests.selectedEmployees,
+                options: state.requests.filter.options
+            }
+        });
+    }
 }
 
 export function unselectEmployees(employees) {
@@ -124,7 +152,7 @@ function fetchRequestStates() {
 
 function receiveEmployees(employees) {
     return (dispatch, getState) => {
-        const filter = getState().requests.filter;
+        const filter = getState().requests.filter.text;
         setTimeout(() => {
             batch(() => {
                 dispatch(setEmployees(employees));
