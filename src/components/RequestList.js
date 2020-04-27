@@ -115,13 +115,13 @@ export default function RequestList({ status, requests, setRequests }) {
                                         {
                                             status === 1 &&
                                             <>
-                                                <Button
+                                                <Button variant={ 'outlined' }
                                                     aria-label={ `Write review for ${ request.firstName } ${ request.lastName }` }
                                                     style={ { color: '#000000' } }
                                                     onClick={ () => redirectToEditor(request._id) }>
                                                     Write
                                                 </Button>
-                                                <Button
+                                                <Button variant={ 'outlined' }
                                                     aria-label={ `Reject request from ${ request.firstName } ${ request.lastName }` }
                                                     style={ { color: '#f44336' } }
                                                     onClick={ () => handleReject(request) }>
