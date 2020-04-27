@@ -27,6 +27,7 @@ const useStyle = makeStyles(theme => ({
     panelEnclosed: {
         padding: theme.spacing(3),
         flex: 1,
+        
 
     },
     listItemText: {
@@ -49,7 +50,7 @@ const useStyle = makeStyles(theme => ({
         justifyContent: 'center',
         flexWrap: 'wrap',
         position: 'absolute',
-        overflow: 'scroll',
+        
         '&>div': {
             flex: 1,
             display: 'flex',
@@ -60,18 +61,23 @@ const useStyle = makeStyles(theme => ({
             left: 0,
             width: '100%',
             height: '100%',
+            overflow: 'auto',
+            
         }
     },
     modalpaper: {
         flex: 1,
         flexWrap: 'wrap',
+        padding: 20,
     },
     buttonwrapper: {
-        flex: 1,
-        flexWrap: 'wrap',
-        flexDirection: 'column',
-        padding: theme.spacing(3),
-        width: 0
+        [theme.breakpoints.down('sm')]:{
+            display: 'flex',
+            flex: 1,
+            flexWrap: 'wrap',
+            flexDirection: 'column',
+        }
+        
     },
     modaltext: {
         flex: 1,
@@ -222,7 +228,7 @@ const ReviewList = ({ classes, reviews }) => {
                                                               primary={ `${ review.firstName + ' ' + review.lastName }` }
                                                               primaryTypographyProps={ { className: classes.listItemText } }
                                                               secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                                                <ListItemSecondaryAction>
+                                                <ListItemSecondaryAction className={classes.buttonwrapper}>
                                                     <Button onClick={ setModalState(review.reviewId) }>View</Button>
                                                     <Button>Download</Button>
                                                 </ListItemSecondaryAction>
