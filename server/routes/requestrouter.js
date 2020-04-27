@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middleware/authtoken';
+import moment from 'moment';
 import { ObjectId } from 'mongodb';
 import Employee from '../database/schema/employeeschema';
 import Request, { PendingState } from '../database/schema/requestschema';
-import moment from 'moment';
+import { authMiddleware } from '../middleware/authtoken';
 
 export const requestRouter = Router();
 
@@ -33,9 +33,6 @@ requestRouter.post('/request-users', authMiddleware, async (req, res) => {
             return [];
         });
 
-    console.log('Employees for the current request');
-    console.log(foundEmployees);
-
     // Get the current requests for this user to make sure they're not performing a double request
     // This shouldn't happen but it's good to check just in case?
     const currentRequests = await Request.find(
@@ -63,7 +60,6 @@ requestRouter.post('/request-users', authMiddleware, async (req, res) => {
     }
 
     console.log(`Found ${ currentRequests.length } requests that match users being asked for`);
-    console.log(currentRequests);
 
     const newRequests = foundEmployees.filter(employee => {
         return !currentRequests.some(request => request.userReceiving.toString() === employee._id.toString());
@@ -135,8 +131,6 @@ requestRouter.get('/request-states', authMiddleware, (req, res) => {
             result = [];
         }
 
-        console.log(result);
-
         res.status(200).json({
             requestStates: result.map(request => ({
                 userObjId: request.userReceiving,
@@ -163,14 +157,31 @@ requestRouter.post('/cancel', authMiddleware, (req, res) => {
         return;
     }
 
-    Request.findOneAndDelete({
+    Request.findOne({
         company: req.tokenData.company,
         userRequesting: req.tokenData.id,
         userReceiving: new ObjectId(requestedEmployee),
         status: { '$in': [PendingState.PENDING, PendingState.ACCEPTED] }
     })
         .then(result => {
-            res.status(200).send('OK');
+            if (!result) {
+                res.status(404).json({
+                    message: 'Could not cancel. The request either does not exist, or has already been completed. You may send a new request.'
+                });
+                return;
+            }
+
+            if (result.status === PendingState.ACCEPTED) {
+                res.status(404).json({
+                    message: 'Could not cancel. This request has already been accepted.'
+                });
+                return;
+            }
+
+            result.remove();
+            res.status(200).json({
+                message: 'Cancelled Request!'
+            });
         })
         .catch(err => {
             console.error(err);

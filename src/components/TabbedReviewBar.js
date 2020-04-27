@@ -55,7 +55,7 @@ export default function TabbedReviewBar({ children, ...rest }) {
                     >
                         <Tab onKeyDown={ () => console.log('Key Down') } className={ classes.wideTab }
                              label='My Reviews'/>
-                        <Tab className={ classes.wideTab } label='Employee Reviews'/>
+                        <Tab className={ classes.wideTab } label={ 'My Employees\' Reviews' }/>
                     </Tabs>
                 </Paper>
             </div>

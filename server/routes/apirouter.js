@@ -327,7 +327,7 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
         request = await Request.findOneAndDelete({
             _id: req.body._id,
             userReceiving: req.tokenData.id,
-            status: PendingState.PENDING
+            status: { '$in': [PendingState.PENDING, PendingState.ACCEPTED] },
         });
         console.log(request);
         res.status(200).end();
@@ -352,7 +352,6 @@ apiRouter.get('/employee-reviews', authMiddleware, async (req, res) => {
             .then(async requests => {
                 const allEmployees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
                 if (!requests || !requests.length) {
-                    console.log('No Completed Requests Found');
                     return [];
                 }
 
@@ -405,7 +404,6 @@ apiRouter.get('/reviews', authMiddleware, async (req, res) => {
         .then(async requests => {
             const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
             if (!requests || !requests.length) {
-                console.log('No Completed Requests Found');
                 return [];
             }
 

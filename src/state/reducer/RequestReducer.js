@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js';
 import { createReducer } from '../../util';
-import { FilterAction, RequestAction } from '../action/RequestActions';
+import { FilterAction, RequestAction, StatusFilter } from '../action/RequestActions';
 import { InitialRequestState } from '../defaultstate';
 
 const employeeSearchOptions = {
@@ -55,8 +55,8 @@ const filterReducer = createReducer(InitialRequestState.filter, {
         }
 
         const newOptions = state.options.filter(item => item !== action.payload.type);
-        if (action.payload.state) {
-            newOptions.push(action.type);
+        if (action.payload.toggleState) {
+            newOptions.push(action.payload.type);
         }
 
         return {
@@ -135,21 +135,52 @@ const filteredEmployeesReducer = createReducer([...InitialRequestState.filteredE
             return state;
         }
 
-        const { employees, options } = action.payload;
+        const { selected, employees, options } = action.payload;
         if (!options || !options.length) {
             return [];
         }
 
+        const alreadyFiltered = [...state];
+        console.log('Already Filtered users');
+        console.log(alreadyFiltered);
 
-        const withOptions = state.map(idx => employees[idx]).filter(o => o !== undefined)
-            .concat(employees.filter(employee => {
+        let alreadyFilteredMapped = alreadyFiltered.map(idx => ({
+            employee: employees[idx],
+            idx
+        })).filter(o => o.employee !== undefined);
+        console.log('Mapped');
+        console.log(alreadyFilteredMapped);
 
-            }))
-            .filter((unique, curItem) => {
-                return unique.includes(curItem) ? unique : [...unique, curItem];
-            }, []);
+        const unselected = alreadyFilteredMapped.filter(employee => {
+            const existsInSelected = selected.some(selectedEmployee => selectedEmployee === employee.employee._id);
+            return !existsInSelected;
+        });
+        console.log('Unselected Employees');
+        console.log(unselected);
 
-        return state;
+        const selectedMappedUsers = selected.map(selectedUser => {
+            const idx = employees.findIndex(employee => employee._id === selectedUser);
+            return {
+                employee: employees[idx],
+                idx
+            };
+        }).filter(obj => alreadyFiltered.includes(obj.idx));
+
+        console.log('Selected Users Mapped:');
+        console.log(selectedMappedUsers);
+
+        // Don't show selected users
+        if (!options.includes(StatusFilter.SHOW_SELECTED)) {
+            alreadyFilteredMapped = alreadyFilteredMapped.filter(employee => {
+                const isSelected = selectedMappedUsers.some(selectedUser => selectedUser.idx === employee.idx);
+                return !isSelected;
+            });
+        }
+
+        console.log('Without Selected');
+        console.log(alreadyFilteredMapped);
+
+        return alreadyFilteredMapped.map(o => o.idx);
     }
 });
 

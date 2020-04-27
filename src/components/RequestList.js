@@ -21,6 +21,10 @@ const useStyle = makeStyles(theme => ({
     },
     listItemText: {
         fontWeight: 'bold'
+    },
+    spacedButton: {
+        marginLeft: theme.spacing(0.5),
+        marginRight: theme.spacing(0.5)
     }
 }));
 
@@ -60,7 +64,7 @@ export default function RequestList({ status, requests, setRequests }) {
     const history = useHistory();
 
     const redirectToEditor = (reviewId) => {
-        history.push(`/write/${ reviewId }`);
+        history.push(`/write/editor/${ reviewId }`);
     };
 
 
@@ -91,13 +95,13 @@ export default function RequestList({ status, requests, setRequests }) {
                                         {
                                             status === 0 &&
                                             <>
-                                                <Button variant={ 'outlined' }
+                                                <Button className={ classes.spacedButton } variant={ 'outlined' }
                                                         aria-label={ `Accept pending request from ${ request.firstName } ${ request.lastName }` }
                                                         style={ { color: '#000000' } }
                                                         onClick={ () => handleAccept(request) }>
                                                     Accept
                                                 </Button>
-                                                <Button variant={ 'outlined' }
+                                                <Button className={ classes.spacedButton } variant={ 'outlined' }
                                                         aria-label={ `Reject pending request from ${ request.firstName } ${ request.lastName }` }
                                                         style={ { color: '#f44336' } }
                                                         onClick={ () => handleReject(request) }>
@@ -108,16 +112,16 @@ export default function RequestList({ status, requests, setRequests }) {
                                         {
                                             status === 1 &&
                                             <>
-                                                <Button variant={ 'outlined' }
-                                                    aria-label={ `Write review for ${ request.firstName } ${ request.lastName }` }
-                                                    style={ { color: '#000000' } }
-                                                    onClick={ () => redirectToEditor(request._id) }>
+                                                <Button className={ classes.spacedButton } variant={ 'outlined' }
+                                                        aria-label={ `Write review for ${ request.firstName } ${ request.lastName }` }
+                                                        style={ { color: '#000000' } }
+                                                        onClick={ () => redirectToEditor(request._id) }>
                                                     Write
                                                 </Button>
-                                                <Button variant={ 'outlined' }
-                                                    aria-label={ `Reject request from ${ request.firstName } ${ request.lastName }` }
-                                                    style={ { color: '#f44336' } }
-                                                    onClick={ () => handleReject(request) }>
+                                                <Button className={ classes.spacedButton } variant={ 'outlined' }
+                                                        aria-label={ `Reject request from ${ request.firstName } ${ request.lastName }` }
+                                                        style={ { color: '#f44336' } }
+                                                        onClick={ () => handleReject(request) }>
                                                     Reject
                                                 </Button>
                                             </>

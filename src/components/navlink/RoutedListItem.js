@@ -1,11 +1,11 @@
-import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import Avatar from '@material-ui/core/Avatar';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { Link, withRouter } from 'react-router-dom';
 
 const useStyle = makeStyles(theme => ({
     smallIcon: {
@@ -21,7 +21,7 @@ const useStyle = makeStyles(theme => ({
 const showNotify = false;
 
 function RoutedListItem(props) {
-    const { icon, primary, to, location, notify, onClick } = props;
+    const { icon, primary, to, location, notify, onClick, headerText = true, headerProps = {} } = props;
     const classes = useStyle();
     // Copied from MaterialUI, still figuring out how this works
     const renderLink = React.useMemo(
@@ -36,8 +36,15 @@ function RoutedListItem(props) {
         <li>
             <ListItem button component={ renderLink } onClick={ onClick }
                       selected={ location.pathname.toLowerCase() === to }>
-                <ListItemIcon>{ icon }</ListItemIcon>
-                <ListItemText primary={ primary }/>
+                {
+                    icon &&
+                    <ListItemIcon>{ icon }</ListItemIcon>
+                }
+                {
+                    headerText ?
+                        <ListItemText { ...headerProps } primary={ primary }/> :
+                        <span { ...headerProps }>{ primary }</span>
+                }
                 {
                     showNotify &&
                     notify > 0 ?

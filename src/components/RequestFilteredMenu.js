@@ -56,10 +56,10 @@ const RequestFilteredMenu = (props, ref) => {
 
     const toggleStatusOption = React.useCallback((statusOption) => () => {
         toggleOption(statusOption, !hasFilterStatusOption(statusOption));
-    }, [hasFilterStatusOption]);
+    }, [toggleOption, hasFilterStatusOption]);
 
     const onKeyDown = (event) => {
-        if (event.key === 'Tab') {
+        if (event.key === 'Tab' || event.key === 'Escape') {
             event.preventDefault();
             closeWindow();
         }
@@ -99,7 +99,6 @@ const RequestFilteredMenu = (props, ref) => {
                                     >
                                         {
                                             sliderOptions.map(item => {
-                                                console.log(item);
                                                 return (
                                                     <MenuItem key={ `MenuItem_${ item.option }` }
                                                               onClick={ toggleStatusOption(item.option) }>
@@ -112,7 +111,7 @@ const RequestFilteredMenu = (props, ref) => {
                                                             <Switch checked={ hasFilterStatusOption(item.option) }/>
                                                         </div>
                                                     </MenuItem>
-                                                )
+                                                );
                                             })
                                         }
                                     </MenuList>
@@ -131,7 +130,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = (dispatch, getState) => ({
-    toggleOption: (option) => dispatch(toggleStatusFilterOption(option, !getState().requests.filter.options.some(item => item === option)))
+    toggleOption: (option, toggleStatus) => dispatch(toggleStatusFilterOption(option, toggleStatus))
 });
 
 export default connect(

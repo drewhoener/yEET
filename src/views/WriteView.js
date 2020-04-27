@@ -3,6 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import React from 'react';
+import { Route, Switch } from 'react-router-dom';
 import RequestList from '../components/RequestList';
 
 const useStyle = makeStyles(theme => ({
@@ -50,21 +51,29 @@ export default function WriteView(props) {
             <div className={ classes.toolbar }/>
             <div className={ classes.root }>
                 <Container maxWidth='xl'>
-                    <h1>Pending</h1>
-                    <Paper className={ classes.paper }>
-                        <RequestList status={ 0 } requests={ requests }
-                                     setRequests={ setRequests }/>
-                    </Paper>
-                    <h1>Accepted</h1>
-                    <Paper className={ classes.paper }>
-                        <RequestList status={ 1 } requests={ requests }
-                                     setRequests={ setRequests }/>
-                    </Paper>
-                    <h1>Completed</h1>
-                    <Paper className={ classes.paper }>
-                        <RequestList status={ 3 } requests={ requests }
-                                     setRequests={ setRequests }/>
-                    </Paper>
+                    <Switch>
+                        <Route path={ '/write/accept-pending' }>
+                            <h1>Pending</h1>
+                            <Paper className={ classes.paper }>
+                                <RequestList status={ 0 } requests={ requests }
+                                             setRequests={ setRequests }/>
+                            </Paper>
+                        </Route>
+                        <Route path={ '/write/write-request' }>
+                            <h1>Accepted</h1>
+                            <Paper className={ classes.paper }>
+                                <RequestList status={ 1 } requests={ requests }
+                                             setRequests={ setRequests }/>
+                            </Paper>
+                        </Route>
+                        <Route path={ '/write/completed' }>
+                            <h1>Completed</h1>
+                            <Paper className={ classes.paper }>
+                                <RequestList status={ 3 } requests={ requests }
+                                             setRequests={ setRequests }/>
+                            </Paper>
+                        </Route>
+                    </Switch>
                 </Container>
             </div>
         </React.Fragment>

@@ -15,7 +15,7 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import { AccountBox, Create, ExitToApp, House, RateReview, Send } from '@material-ui/icons';
+import { Create, ExitToApp, House, RateReview, Send } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -24,7 +24,8 @@ import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import logo from '../img/logo.png';
 import { resetRequestState } from '../state/selector/RequestSelector';
-import RoutedListItem from './RoutedListItem';
+import CollapseNavItem from './navlink/CollapseNavItem';
+import RoutedListItem from './navlink/RoutedListItem';
 
 const drawerWidth = 250;
 const useStyles = makeStyles(theme => ({
@@ -74,6 +75,9 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.up('sm')]: {
             display: 'none',
         },
+    },
+    drawerSubLink: {
+        paddingLeft: theme.spacing(4)
     },
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
@@ -132,11 +136,21 @@ const drawerItems = {
     'Write Review': {
         path: '/write',
         icon: (<Create/>),
-        notify: 1
-    },
-    'My Account': {
-        path: '/account',
-        icon: (<AccountBox/>)
+        notify: 1,
+        children: [
+            {
+                path: '/accept-pending',
+                name: 'Accept Requests'
+            },
+            {
+                path: '/write-request',
+                name: 'Complete Requests'
+            },
+            {
+                path: '/completed',
+                name: 'Completed'
+            }
+        ]
     }
 };
 
@@ -190,16 +204,44 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
                     <Divider/>
                     <List>
                         {
-                            Object.entries(drawerItems).map(([key, value]) => (
-                                <RoutedListItem
-                                    key={ key.toLowerCase().replace(' ', '_') }
-                                    icon={ React.cloneElement(value.icon) }
-                                    primary={ key }
-                                    to={ value.path }
-                                    notify={ value.notify ? value.notify : 0 }
-                                    onClick={ closeDrawer }
-                                />
-                            ))
+                            Object.entries(drawerItems).map(([key, value]) => {
+                                if (value.children) {
+                                    return (
+                                        <CollapseNavItem
+                                            key={ key.toLowerCase().replace(' ', '_') }
+                                            basePath={ value.path }
+                                            name={ key }
+                                            icon={ React.cloneElement(value.icon) }
+                                        >
+                                            {
+                                                value.children.map(item => (
+                                                    <RoutedListItem
+                                                        key={ item.name.toLowerCase().replace(' ', '_') }
+                                                        primary={ item.name }
+                                                        to={ `${ value.path }${ item.path }` }
+                                                        notify={ 0 }
+                                                        onClick={ closeDrawer }
+                                                        headerText={ false }
+                                                        headerProps={ {
+                                                            className: classes.drawerSubLink
+                                                        } }
+                                                    />
+                                                ))
+                                            }
+                                        </CollapseNavItem>
+                                    );
+                                }
+                                return (
+                                    <RoutedListItem
+                                        key={ key.toLowerCase().replace(' ', '_') }
+                                        icon={ React.cloneElement(value.icon) }
+                                        primary={ key }
+                                        to={ value.path }
+                                        notify={ value.notify ? value.notify : 0 }
+                                        onClick={ closeDrawer }
+                                    />
+                                );
+                            })
                         }
                         <Hidden smUp>
                             <ListItem button onClick={ onLogout }>

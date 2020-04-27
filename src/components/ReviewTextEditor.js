@@ -162,7 +162,7 @@ const CHAR_MAX = 10000;
 function ReviewTextEditor(props) {
     const classes = useStyle();
     const history = useHistory();
-    const [dangerous, setDangerous] = useState('<div>');
+    const [dangerous] = useState('<div>');
     // eslint-disable-next-line no-unused-vars
     const [stateData, setStateData] = useState({});
     const [editorState, setEditorState] = useState([]);
@@ -208,10 +208,6 @@ function ReviewTextEditor(props) {
     };
 
     const onSaveDraft = () => {
-        setDangerous(serializeNodes({
-            children: editorState
-        }));
-        console.log(dangerous);
     };
 
     const onChange = (state) => {

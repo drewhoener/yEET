@@ -112,7 +112,7 @@ function RequestViewVirtualized(
     };
 
     const closeFilterWindow = (event) => {
-        if (filterAnchor.current && filterAnchor.current.contains(event.target)) {
+        if (event && filterAnchor.current && filterAnchor.current.contains(event.target)) {
             return;
         }
 
@@ -204,7 +204,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     setSearchFilter: filter => {
-        dispatch(setAndRefreshFilter(filter))
+        dispatch(setAndRefreshFilter(filter));
     },
     fetchOrUpdateEmployees: () => dispatch(fetchOrUpdateEmployees()),
     popErrorMessage: () => dispatch(popErrorMessage()),

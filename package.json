@@ -41,6 +41,7 @@
     "backend": "babel-watch ./server/server.js",
     "serve": "serve -s build",
     "populatedb": "babel-node ./test/populateschema.js",
+    "add_user": "babel-node ./test/create_neena.js",
     "testdb": "babel-node ./test/testfetchpromise.js",
     "lint": "eslint --ext .js 'src/**/*.js'",
     "populateresponse": "babel-node ./test/test_dummy_requests.js",

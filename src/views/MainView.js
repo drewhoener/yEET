@@ -1,12 +1,11 @@
-import ResponsiveNav from '../components/ResponsiveNav';
-import DummyView from './DummyView';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
+import ResponsiveNav from '../components/ResponsiveNav';
+import ReviewTextEditor from '../components/ReviewTextEditor';
 import ReadReviewView from './ReadReviewView';
 import RequestViewVirtualized from './RequestViewVirtualized';
 import WriteView from './WriteView';
-import ReviewTextEditor from '../components/ReviewTextEditor';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -35,7 +34,7 @@ export default function MainView(props) {
                     <Redirect exact from='/' to='/home'/>
                     <Route path='/home'>
                         <div className={ classes.toolbar }/>
-                        <DummyView/>
+
                     </Route>
                     <Route path='/my-reviews'>
                         <ReadReviewView/>
@@ -43,10 +42,14 @@ export default function MainView(props) {
                     <Route path='/request'>
                         <RequestViewVirtualized/>
                     </Route>
-                    <Route exact path='/write/'>
-                        <WriteView/>
+                    <Route path='/write'>
+                        <Switch>
+                            <Route exact path='/write/editor/:requestId' component={ ReviewTextEditor }/>
+                            <Route>
+                                <WriteView/>
+                            </Route>
+                        </Switch>
                     </Route>
-                    <Route path='/write/:requestId' component={ ReviewTextEditor }/>
                 </Switch>
             </main>
         </div>

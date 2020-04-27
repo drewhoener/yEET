@@ -10,16 +10,18 @@ export function resetRequestState() {
 
 export function toggleStatusFilterOption(option, state) {
     return (dispatch, getState) => {
-        dispatch({
-            type: FilterAction.TOGGLE_STATUS_FILTER,
-            payload: {
-                toggleState: state,
-                type: option,
-                curOptions: getState().requests.filter.options
-            }
+        batch(() => {
+            dispatch({
+                type: FilterAction.TOGGLE_STATUS_FILTER,
+                payload: {
+                    toggleState: state,
+                    type: option,
+                    curOptions: getState().requests.filter.options
+                }
+            });
+            dispatch(updateShownEntries());
         });
-        dispatch(updateShownEntries());
-    }
+    };
 }
 
 export function setAndRefreshFilter(filter) {
@@ -51,7 +53,7 @@ export function updateShownEntries() {
                 options: state.requests.filter.options
             }
         });
-    }
+    };
 }
 
 export function unselectEmployees(employees) {
@@ -120,10 +122,20 @@ export function deleteRequest(employeeObjId) {
     return dispatch => {
         axios.post('/api/request/cancel', { requestedEmployee: employeeObjId.toString() })
             .then(response => {
-                dispatch(removeRequestState(employeeObjId));
+                batch(() => {
+                    dispatch(pushErrorMessage('success', response.data.message));
+                    dispatch(removeRequestState(employeeObjId));
+                });
+
             })
             .catch(err => {
                 console.error(err);
+                if (err.response) {
+                    const { data } = err.response;
+                    if (data && data.message) {
+                        dispatch(pushErrorMessage('warning', data.message));
+                    }
+                }
                 dispatch(fetchRequestStates());
             });
     };
@@ -231,14 +243,16 @@ export function sendRequests(requestIds) {
                 batch(() => {
                     dispatch(unselectEmployees(requestIds));
                     dispatch(fetchRequestStates());
-                    if (response.data.message) {
+                    if (response && response.data.message) {
                         dispatch(pushErrorMessage('success', response.data.message));
                     }
                 });
             })
             .catch(err => {
                 console.log(err.response);
-                dispatch(pushErrorMessage('error', err.response.data.message));
+                if (err.response) {
+                    dispatch(pushErrorMessage('error', err.response.data.message));
+                }
             });
     };
 }

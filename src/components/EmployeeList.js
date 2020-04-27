@@ -44,7 +44,7 @@ function EmployeeList(
 
     React.useEffect(() => {
         updateShownEntries();
-    }, [selectedEmployees, requestStates]);
+    }, [updateShownEntries, selectedEmployees, requestStates]);
 
     const SecondaryActionWrapper = ({ ...props }) => <ListItemSecondaryAction { ...props }/>;
     SecondaryActionWrapper.muiName = ListItemSecondaryAction.muiName;
