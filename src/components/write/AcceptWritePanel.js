@@ -8,7 +8,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'row',
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         height: '100%',
         [theme.breakpoints.down('md')]: {
             flexDirection: 'column',
