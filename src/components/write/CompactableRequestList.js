@@ -33,12 +33,12 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const CompactableRequestList = ({ title, status, requests, setRequests, emptyRequestsTitle }) => {
+const CompactableRequestList = ({ title, status, requests, setRequests, emptyRequestsTitle, maxWidth = false }) => {
 
     const classes = useStyles();
 
     return (
-        <Container className={ classes.container } maxWidth={ false }>
+        <Container className={ classes.container } maxWidth={ maxWidth }>
             <div className={ classes.halfPanel }>
                 <Typography variant='h3'>{ title }</Typography>
                 <div className={ classes.paperContainer }>

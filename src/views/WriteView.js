@@ -37,9 +37,13 @@ export default function WriteView() {
                         <AcceptWritePanel requests={ requests } setRequests={ setRequests }/>
                     </Route>
                     <Route path={ '/write/completed' }>
-                        <CompactableRequestList title='Completed' status={ 3 } requests={ requests }
-                                                setRequests={ setRequests }
-                                                emptyRequestsTitle={ 'You haven\'t completed any requests yet' }/>
+                        <CompactableRequestList
+                            title='Completed' status={ 3 }
+                            requests={ requests }
+                            setRequests={ setRequests }
+                            emptyRequestsTitle={ 'You haven\'t completed any requests yet' }
+                            maxWidth={ 'xl' }
+                        />
                     </Route>
                 </Switch>
             </div>

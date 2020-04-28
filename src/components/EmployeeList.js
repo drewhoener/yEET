@@ -98,7 +98,7 @@ function EmployeeList(
                             />
                         </ListItemIcon>
                         <ListItemText primary={ employee.fullName }
-                                      secondary={ employee.position }
+                                      secondary={ `${ employee.position }` }
                         />
                         <ListItemSecondaryAction>
                             <ThemedStatusButton
