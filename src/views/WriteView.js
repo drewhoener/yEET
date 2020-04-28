@@ -33,7 +33,7 @@ const useStyle = makeStyles(theme => ({
     },
 }));
 
-export default function WriteView(props) {
+export default function WriteView() {
     const classes = useStyle();
     const [requests, setRequests] = React.useState([]);
     React.useEffect(() => {
@@ -42,6 +42,7 @@ export default function WriteView(props) {
                 setRequests(data.requests);
             })
             .catch(err => {
+                console.log(err);
                 // const error = {};
                 // setRequests([error]);
             });

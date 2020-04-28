@@ -33,7 +33,7 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-export default function TabbedReviewBar({ children, ...rest }) {
+export default function TabbedReviewBar({ children }) {
     const classes = useStyle();
     const [tabValue, setTabValue] = React.useState(0);
 

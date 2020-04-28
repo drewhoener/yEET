@@ -10,7 +10,7 @@ import { toggleEmployeeSelect, updateShownEntries } from '../state/selector/Requ
 import { colorButtonTheme } from '../util';
 import ThemedStatusButton from './requestbutton/ThemedStatusButton';
 
-const useStyle = makeStyles(theme => ({
+const useStyle = makeStyles(() => ({
     smallScrollbar: {
         '&::-webkit-scrollbar': {
             width: '0.8em',
@@ -136,7 +136,7 @@ const mapStateToProps = state => ({
     requestStates: state.requests.requestStates.byKey,
 });
 
-const mapDispatchToProps = (dispatch, getState) => ({
+const mapDispatchToProps = (dispatch) => ({
     selectEmployee: idx => () => dispatch(toggleEmployeeSelect(idx)),
     updateShownEntries: () => dispatch(updateShownEntries()),
 });

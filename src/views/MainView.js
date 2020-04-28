@@ -23,7 +23,7 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-export default function MainView(props) {
+export default function MainView() {
     const classes = useStyle();
     return (
         <div className={ classes.root }>

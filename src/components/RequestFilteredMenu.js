@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import { StatusFilter } from '../state/action/RequestActions';
 import { toggleStatusFilterOption } from '../state/selector/RequestSelector';
 
-const useStyle = makeStyles(theme => ({
+const useStyle = makeStyles(() => ({
     elevatedMenu: {
         zIndex: 300
     },
@@ -129,7 +129,7 @@ const mapStateToProps = state => ({
     hasFilterStatusOption: (status) => state.requests.filter.options.some(item => item === status)
 });
 
-const mapDispatchToProps = (dispatch, getState) => ({
+const mapDispatchToProps = (dispatch) => ({
     toggleOption: (option, toggleStatus) => dispatch(toggleStatusFilterOption(option, toggleStatus))
 });
 

@@ -32,7 +32,7 @@ import { withHistory } from 'slate-history';
 import { Editable, Slate, withReact } from 'slate-react';
 import { BlockButton, BlockTextButton } from './editor/BlockButton';
 import { EditorElement, EditorLeaf } from './editor/EditorRenderer';
-import { countCharacters, serializeNodes } from './editor/EditorSerializer';
+import { countCharacters } from './editor/EditorSerializer';
 import FormattingType from './editor/FormattingType';
 import { MarkdownButton } from './editor/MarkdownButton';
 
@@ -151,12 +151,6 @@ const initialEditorState = (person, reviewer) => [
 
 ];
 
-const serializeEditor = baseNode => {
-    return serializeNodes({
-        children: baseNode
-    });
-};
-
 const CHAR_MAX = 10000;
 
 function ReviewTextEditor(props) {
@@ -178,7 +172,13 @@ function ReviewTextEditor(props) {
     const { requestId } = props.match.params;
 
     React.useEffect(() => {
-        axios.get('/api/editor-data',
+        return () => {
+            onSaveDraft();
+        };
+    }, []);
+
+    React.useEffect(() => {
+        axios.get('/api/editor/editor-data',
             {
                 params: {
                     requestId
@@ -203,7 +203,7 @@ function ReviewTextEditor(props) {
     const closeAndRedirect = () => {
         setDialogOpen(false);
         if (dialogState === 'success') {
-            history.replace('/write');
+            history.replace('/write/write-request');
         }
     };
 
@@ -231,7 +231,7 @@ function ReviewTextEditor(props) {
     };
 
     const submitReview = () => {
-        axios.post('/api/submit-review', {
+        axios.post('/api/editor/submit-review', {
             requestId,
             content: JSON.stringify({
                 children: editorState
