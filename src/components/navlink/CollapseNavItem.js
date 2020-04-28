@@ -7,14 +7,19 @@ const CollapseNavItem = ({ children, basePath, icon, name }, ref) => {
 
     const history = useHistory();
     const { pathname } = history.location;
-    const [open, setOpen] = React.useState(pathname.toLowerCase().startsWith(basePath.toLowerCase()));
+
+    const matchesPath = React.useCallback(() => {
+        return pathname.toLowerCase().startsWith(basePath.toLowerCase());
+    }, [basePath, pathname]);
+
+    const [open, setOpen] = React.useState(matchesPath());
     const toggleOpen = () => {
         setOpen(prev => !prev);
     };
 
     return (
         <>
-            <ListItem button onClick={ toggleOpen } ref={ ref }>
+            <ListItem button onClick={ toggleOpen } ref={ ref } selected={ !open && matchesPath() }>
                 <ListItemIcon>{ icon }</ListItemIcon>
                 <ListItemText primary={ name }/>
             </ListItem>

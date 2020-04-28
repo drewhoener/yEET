@@ -22,13 +22,16 @@ const useStyle = makeStyles(theme => ({
     listItemText: {
         fontWeight: 'bold'
     },
+    emptyRequestSet: {
+        textAlign: 'center',
+    },
     spacedButton: {
         marginLeft: theme.spacing(0.5),
         marginRight: theme.spacing(0.5)
     }
 }));
 
-export default function RequestList({ status, requests, setRequests }) {
+export default function RequestList({ status, requests, setRequests, emptyText }) {
 
     const classes = useStyle();
 
@@ -71,6 +74,25 @@ export default function RequestList({ status, requests, setRequests }) {
     return (
         <List className={ classes.list }>
             {
+                requests.length <= 0 && (
+                    <>
+                        <Divider/>
+                        <ListItem
+                            tabIndex={ 0 }
+                            aria-labelledby={ `req_emptystatus_${ status }` }
+                            className={ classes.listItem }>
+                            <ListItemText
+                                className={ classes.emptyRequestSet }
+                                aria-label={ 'Nothing to display' }
+                                id={ `req_emptystatus_${ status }` }
+                                primary={ emptyText || 'No Requests to display' }
+                            />
+                        </ListItem>
+                    </>
+                )
+            }
+            {
+                requests.length > 0 &&
                 requests.filter(req => req.statusNumber === status)
                     .map(request => {
                         return (

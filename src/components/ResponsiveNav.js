@@ -6,7 +6,6 @@ import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -15,7 +14,7 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import { Create, ExitToApp, House, RateReview, Send } from '@material-ui/icons';
+import { ExitToApp } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -24,8 +23,7 @@ import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import logo from '../img/logo.png';
 import { resetRequestState } from '../state/selector/RequestSelector';
-import CollapseNavItem from './navlink/CollapseNavItem';
-import RoutedListItem from './navlink/RoutedListItem';
+import DrawerNavigation from './navlink/DrawerNavigation';
 
 const drawerWidth = 250;
 const useStyles = makeStyles(theme => ({
@@ -76,9 +74,6 @@ const useStyles = makeStyles(theme => ({
             display: 'none',
         },
     },
-    drawerSubLink: {
-        paddingLeft: theme.spacing(4)
-    },
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
         width: drawerWidth,
@@ -118,40 +113,6 @@ function ElevationScroll(props) {
 ElevationScroll.propTypes = {
     children: PropTypes.element.isRequired,
     window: PropTypes.func
-};
-
-const drawerItems = {
-    'Home': {
-        path: '/home',
-        icon: (<House/>)
-    },
-    'My Reviews': {
-        path: '/my-reviews',
-        icon: (<RateReview/>)
-    },
-    'Request Review': {
-        path: '/request',
-        icon: (<Send/>)
-    },
-    'Write Review': {
-        path: '/write',
-        icon: (<Create/>),
-        notify: 1,
-        children: [
-            {
-                path: '/accept-pending',
-                name: 'Accept Requests'
-            },
-            {
-                path: '/write-request',
-                name: 'Complete Requests'
-            },
-            {
-                path: '/completed',
-                name: 'Completed'
-            }
-        ]
-    }
 };
 
 function ResponsiveNav({ container, resetRequestState, ...rest }) {
@@ -202,54 +163,14 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
                         </div>
                     </div>
                     <Divider/>
-                    <List>
-                        {
-                            Object.entries(drawerItems).map(([key, value]) => {
-                                if (value.children) {
-                                    return (
-                                        <CollapseNavItem
-                                            key={ key.toLowerCase().replace(' ', '_') }
-                                            basePath={ value.path }
-                                            name={ key }
-                                            icon={ React.cloneElement(value.icon) }
-                                        >
-                                            {
-                                                value.children.map(item => (
-                                                    <RoutedListItem
-                                                        key={ item.name.toLowerCase().replace(' ', '_') }
-                                                        primary={ item.name }
-                                                        to={ `${ value.path }${ item.path }` }
-                                                        notify={ 0 }
-                                                        onClick={ closeDrawer }
-                                                        headerText={ false }
-                                                        headerProps={ {
-                                                            className: classes.drawerSubLink
-                                                        } }
-                                                    />
-                                                ))
-                                            }
-                                        </CollapseNavItem>
-                                    );
-                                }
-                                return (
-                                    <RoutedListItem
-                                        key={ key.toLowerCase().replace(' ', '_') }
-                                        icon={ React.cloneElement(value.icon) }
-                                        primary={ key }
-                                        to={ value.path }
-                                        notify={ value.notify ? value.notify : 0 }
-                                        onClick={ closeDrawer }
-                                    />
-                                );
-                            })
-                        }
+                    <DrawerNavigation closeDrawer={ closeDrawer }>
                         <Hidden smUp>
                             <ListItem button onClick={ onLogout }>
                                 <ListItemIcon><ExitToApp/></ListItemIcon>
                                 <ListItemText primary="Logout"/>
                             </ListItem>
                         </Hidden>
-                    </List>
+                    </DrawerNavigation>
                 </div>
             );
         },

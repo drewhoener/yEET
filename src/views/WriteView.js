@@ -1,23 +1,26 @@
 import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import RequestList from '../components/RequestList';
+import AcceptWritePanel from '../components/write/AcceptWritePanel';
+import CompactableRequestList from '../components/write/CompactableRequestList';
 
 const useStyle = makeStyles(theme => ({
     root: {
         display: 'flex',
-        padding: theme.spacing(3)
+        padding: theme.spacing(3),
+        flex: 1,
     },
     toolbar: theme.mixins.toolbar,
+    paperContainer: {
+        width: '100%',
+    },
     paper: {
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'center',
         padding: 8,
-        width: '100%'
     },
     modalPaper: {
         position: 'absolute',
@@ -53,26 +56,13 @@ export default function WriteView() {
             <div className={ classes.root }>
                 <Container maxWidth='xl'>
                     <Switch>
-                        <Route path={ '/write/accept-pending' }>
-                            <h1>Pending</h1>
-                            <Paper className={ classes.paper }>
-                                <RequestList status={ 0 } requests={ requests }
-                                             setRequests={ setRequests }/>
-                            </Paper>
-                        </Route>
-                        <Route path={ '/write/write-request' }>
-                            <h1>Accepted</h1>
-                            <Paper className={ classes.paper }>
-                                <RequestList status={ 1 } requests={ requests }
-                                             setRequests={ setRequests }/>
-                            </Paper>
+                        <Route path={ '/write/accept' }>
+                            <AcceptWritePanel requests={ requests } setRequests={ setRequests }/>
                         </Route>
                         <Route path={ '/write/completed' }>
-                            <h1>Completed</h1>
-                            <Paper className={ classes.paper }>
-                                <RequestList status={ 3 } requests={ requests }
-                                             setRequests={ setRequests }/>
-                            </Paper>
+                            <CompactableRequestList title='Completed' status={ 3 } requests={ requests }
+                                                    setRequests={ setRequests }
+                                                    emptyRequestsTitle={ 'You haven\'t completed any requests yet' }/>
                         </Route>
                     </Switch>
                 </Container>
