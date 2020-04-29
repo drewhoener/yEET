@@ -356,5 +356,38 @@ apiRouter.get('/review-contents', authMiddleware, async (req, res) => {
     });
 });
 
+apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
+
+    let data = {};
+
+    let companyRequests = await Request.find({ company: req.tokenData.company });
+
+    let requestsRecived = companyRequests.filter((reqest) => reqest.userReceiving == req.tokenData.id);
+
+    let requestsSent = companyRequests.filter((reqest) => reqest.userRequesting == req.tokenData.id);
+
+    data.receivedRequests = {
+        pending: requestsRecived.reduce((acc, curr) => {
+            return acc + (curr.status == PendingState.PENDING ? 1 : 0)
+        }, 0),
+        accepted: requestsRecived.reduce((acc, curr) => {
+            return acc + (curr.status == PendingState.ACCEPTED ? 1 : 0)
+        }, 0)
+    };
+
+    data.sentRequests = {
+        pending: requestsSent.reduce((acc, curr) => {
+            return acc + (curr.status == PendingState.PENDING ? 1 : 0)
+        }, 0),
+        accepted: requestsSent.reduce((acc, curr) => {
+            return acc + (curr.status == PendingState.ACCEPTED ? 1 : 0)
+        }, 0)
+    };
+
+    res.status(200).json({
+        data
+    }); 
+
+});
 
 export default apiRouter;
