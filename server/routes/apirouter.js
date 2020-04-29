@@ -171,7 +171,7 @@ apiRouter.post('/accept-request', authMiddleware, async (req, res) => {
     console.log(finalRequest);
     if (!finalRequest) {
         res.sendStatus(404);
-        return
+        return;
     }
     const employee = await Employee.findOne({ _id: finalRequest.userRequesting });
     if (!employee) {
@@ -214,7 +214,7 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
             status: { '$in': [PendingState.PENDING, PendingState.ACCEPTED] },
         });
         console.log(request);
-        if(!request){
+        if (!request) {
             res.sendStatus(404);
             return;
         }
@@ -357,36 +357,38 @@ apiRouter.get('/review-contents', authMiddleware, async (req, res) => {
 });
 
 apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
 
-    let data = {};
+    const data = {};
 
-    let companyRequests = await Request.find({ company: req.tokenData.company });
-
-    let requestsRecived = companyRequests.filter((reqest) => reqest.userReceiving == req.tokenData.id);
-
-    let requestsSent = companyRequests.filter((reqest) => reqest.userRequesting == req.tokenData.id);
+    const companyRequests = await Request.find({ company: req.tokenData.company });
+    const requestsReceived = companyRequests.filter((request) => request.userReceiving.toString() === req.tokenData.id.toString());
+    const requestsSent = companyRequests.filter((request) => request.userRequesting.toString() === req.tokenData.id.toString());
 
     data.receivedRequests = {
-        pending: requestsRecived.reduce((acc, curr) => {
-            return acc + (curr.status == PendingState.PENDING ? 1 : 0)
+        pending: requestsReceived.reduce((acc, curr) => {
+            return acc + (curr.status === PendingState.PENDING ? 1 : 0);
         }, 0),
-        accepted: requestsRecived.reduce((acc, curr) => {
-            return acc + (curr.status == PendingState.ACCEPTED ? 1 : 0)
+        accepted: requestsReceived.reduce((acc, curr) => {
+            return acc + (curr.status === PendingState.ACCEPTED ? 1 : 0);
         }, 0)
     };
 
     data.sentRequests = {
         pending: requestsSent.reduce((acc, curr) => {
-            return acc + (curr.status == PendingState.PENDING ? 1 : 0)
+            return acc + (curr.status === PendingState.PENDING ? 1 : 0);
         }, 0),
         accepted: requestsSent.reduce((acc, curr) => {
-            return acc + (curr.status == PendingState.ACCEPTED ? 1 : 0)
+            return acc + (curr.status === PendingState.ACCEPTED ? 1 : 0);
         }, 0)
     };
 
     res.status(200).json({
         data
-    }); 
+    });
 
 });
 
