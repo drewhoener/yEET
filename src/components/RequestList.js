@@ -45,32 +45,33 @@ export default function RequestList({ status, requests, setRequests, emptyText }
         console.log('accepted');
         axios.post('/api/accept-request', request)
             .then(({ data }) => {
-                
                 if (data && data.request) {
-                    const newRequests = [data.request, ...requests.filter(o => o._id.toString() !== data.request._id.toString())];
-                    console.log(requests);
-                    console.log(newRequests);
-                    setRequests(newRequests);
+                    console.log('Notify success here');
+                    return data;
                 }
             })
             .catch(err => {
-                const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
+                console.log('Notify failure here');
+            }).then((data) => {
+                let newRequests = requests.filter(o => o._id.toString() !== request._id.toString());
+                if (data && data.request) newRequests = [data.request, ...newRequests];
                 setRequests(newRequests);
-                console.log(err);
-            });
+        });
     };
 
     const handleReject = (request) => {
         console.log('rejected');
         axios.post('/api/delete-request', request)
             .then(() => {
-                //setRequests(newRequests);
+                console.log('Notify success here');
             })
             .catch(err => {
-                console.log(err);
-            });
-        const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
-        setRequests(newRequests);
+                console.log('Notify failure here');
+            })
+            .then(() =>{
+                const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
+                setRequests(newRequests);
+        });
     };
 
     const history = useHistory();

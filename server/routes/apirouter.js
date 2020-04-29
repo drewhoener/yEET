@@ -170,10 +170,8 @@ apiRouter.post('/accept-request', authMiddleware, async (req, res) => {
     console.log('Final Request');
     console.log(finalRequest);
     if (!finalRequest) {
-        res.status(200).json({
-            request: finalRequest
-        });
-        return;
+        res.sendStatus(404);
+        return
     }
     const employee = await Employee.findOne({ _id: finalRequest.userRequesting });
     if (!employee) {
@@ -216,7 +214,10 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
             status: { '$in': [PendingState.PENDING, PendingState.ACCEPTED] },
         });
         console.log(request);
-        if(!request) res.sendStatus(404);
+        if(!request){
+            res.sendStatus(404);
+            return;
+        }
         res.status(200).end();
     } catch {
         res.status(500).end();
