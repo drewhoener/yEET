@@ -8,6 +8,8 @@ import axios from 'axios';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { PendingState } from '../state/action/RequestActions';
+import { connect } from 'react-redux';
+import { pushErrorMessage } from '../state/selector/RequestSelector.js'
 
 const useStyle = makeStyles(theme => ({
     list: {
@@ -31,7 +33,7 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-export default function RequestList({ status, requests, setRequests, emptyText }) {
+function RequestList({ status, requests, setRequests, emptyText, pushError }) {
 
     const classes = useStyle();
 
@@ -46,12 +48,12 @@ export default function RequestList({ status, requests, setRequests, emptyText }
         axios.post('/api/accept-request', request)
             .then(({ data }) => {
                 if (data && data.request) {
-                    console.log('Notify success here');
+                    pushError('success', 'Request accepted');
                     return data;
                 }
             })
             .catch(err => {
-                console.log('Notify failure here');
+                pushError('error', 'Request unsuccessfully accepted. It either expired or does not exist.');
             }).then((data) => {
                 let newRequests = requests.filter(o => o._id.toString() !== request._id.toString());
                 if (data && data.request) newRequests = [data.request, ...newRequests];
@@ -63,10 +65,10 @@ export default function RequestList({ status, requests, setRequests, emptyText }
         console.log('rejected');
         axios.post('/api/delete-request', request)
             .then(() => {
-                console.log('Notify success here');
+                pushError('success', 'Request rejected');
             })
             .catch(err => {
-                console.log('Notify failure here');
+                pushError('error', 'Request unsuccessfully rejected. It either expired or does not exist.');
             })
             .then(() =>{
                 const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
@@ -167,3 +169,9 @@ export default function RequestList({ status, requests, setRequests, emptyText }
         </List>
     );
 }
+
+const mapDispatchToProps = (dispatch) => ({
+    pushError: (severity, message) => dispatch(pushErrorMessage(severity, message))
+});
+
+export default connect(null, mapDispatchToProps)(RequestList);
