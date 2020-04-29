@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { scheduleJob } from 'node-schedule';
 import util from 'util';
 import Request, { PendingState } from '../database/schema/requestschema';
+import Review from '../database/schema/reviewschema';
 import { getExpireTime } from '../util/serverutil';
 
 const DBUrl = 'mongodb://%sdrewhoener.com/%s?authSource=%s';
@@ -12,7 +13,8 @@ let databaseCleanJob;
 
 export function scheduleCleanup() {
     console.log('Scheduling Database Cleanup Job...');
-    databaseCleanJob = scheduleJob('59 59 23 * * *', async () => {
+    databaseCleanJob = scheduleJob('*/30 * * * * *', async () => {
+        console.log('Running Database Cleanup...');
         let requests = await Request.find({ status: { '$ne': PendingState.COMPLETED } });
         const now = moment();
         let deleted = 0;
@@ -25,6 +27,10 @@ export function scheduleCleanup() {
         for (const request of requests) {
             try {
                 await request.remove();
+                await Review.findOneAndDelete({
+                    requestID: request._id,
+                    completed: false,
+                });
                 deleted++;
             } catch (err) {
                 console.err(err);
