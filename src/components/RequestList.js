@@ -35,6 +35,12 @@ export default function RequestList({ status, requests, setRequests, emptyText }
 
     const classes = useStyle();
 
+    // Using useMemo so that we don't waste time filtering every time we call this
+    // The memoized value will only change if status or requests change
+    const renderableRequests = React.useMemo(() => {
+        return requests.filter(request => request.statusNumber === status);
+    }, [status, requests]);
+
     const handleAccept = (request) => {
         console.log('accepted');
         axios.post('/api/accept-request', request)
@@ -74,7 +80,7 @@ export default function RequestList({ status, requests, setRequests, emptyText }
     return (
         <List className={ classes.list }>
             {
-                requests.length <= 0 && (
+                renderableRequests.length <= 0 && (
                     <>
                         <Divider/>
                         <ListItem
@@ -92,19 +98,18 @@ export default function RequestList({ status, requests, setRequests, emptyText }
                 )
             }
             {
-                requests.length > 0 &&
-                requests.filter(req => req.statusNumber === status)
-                    .map(request => {
-                        return (
-                            <React.Fragment
-                                key={ `${ request.firstName }_${ request.lastName }_${ request._id }` }>
-                                <Divider/>
-                                <ListItem
-                                    tabIndex={ 0 }
-                                    aria-labelledby={ `req_${ request._id }` }
-                                    className={ classes.listItem }>
-                                    <ListItemText
-                                        aria-label={ status === PendingState.COMPLETED ?
+                renderableRequests.length > 0 &&
+                renderableRequests.map(request => {
+                    return (
+                        <React.Fragment
+                            key={ `${ request.firstName }_${ request.lastName }_${ request._id }` }>
+                            <Divider/>
+                            <ListItem
+                                tabIndex={ 0 }
+                                aria-labelledby={ `req_${ request._id }` }
+                                className={ classes.listItem }>
+                                <ListItemText
+                                    aria-label={ status === PendingState.COMPLETED ?
                                             `${ PendingState[status] } review for ${ request.firstName } ${ request.lastName }` :
                                             `${ PendingState[status] } request from ${ request.firstName } ${ request.lastName }, ${ request.position }`
                                         }

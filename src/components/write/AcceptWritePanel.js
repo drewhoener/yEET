@@ -1,6 +1,7 @@
 import { Divider, useMediaQuery } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import { PendingState } from '../../state/action/RequestActions';
 import CompactableRequestList from './CompactableRequestList';
 
 const useStyles = makeStyles(theme => ({
@@ -23,9 +24,11 @@ const AcceptWritePanel = ({ requests, setRequests }) => {
 
     return (
         <div className={ classes.root }>
-            <CompactableRequestList title='Pending' status={ 0 } requests={ requests } setRequests={ setRequests }/>
+            <CompactableRequestList title='Pending' status={ PendingState.PENDING } requests={ requests }
+                                    setRequests={ setRequests }/>
             <Divider orientation={ dividerHorizontal ? 'horizontal' : 'vertical' } flexItem={ !dividerHorizontal }/>
-            <CompactableRequestList title='Accepted' status={ 1 } requests={ requests } setRequests={ setRequests }/>
+            <CompactableRequestList title='Accepted' status={ PendingState.ACCEPTED } requests={ requests }
+                                    setRequests={ setRequests }/>
         </div>
     );
 };
