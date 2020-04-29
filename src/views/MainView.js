@@ -11,6 +11,7 @@ import { closeTopErrorMessage, popErrorMessage } from '../state/selector/Request
 import ReadReviewView from './ReadReviewView';
 import RequestViewVirtualized from './RequestViewVirtualized';
 import WriteView from './WriteView';
+import HomepageView from './HomepageView';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -48,7 +49,7 @@ function MainView(
                     <Redirect exact from='/' to='/home'/>
                     <Route path='/home'>
                         <div className={ classes.toolbar }/>
-
+                        <HomepageView/>
                     </Route>
                     <Route path='/my-reviews'>
                         <ReadReviewView/>
