@@ -45,7 +45,7 @@ export default function RequestList({ status, requests, setRequests, emptyText }
         console.log('accepted');
         axios.post('/api/accept-request', request)
             .then(({ data }) => {
-                console.log('nice');
+                
                 if (data && data.request) {
                     const newRequests = [data.request, ...requests.filter(o => o._id.toString() !== data.request._id.toString())];
                     console.log(requests);
@@ -54,6 +54,8 @@ export default function RequestList({ status, requests, setRequests, emptyText }
                 }
             })
             .catch(err => {
+                const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
+                setRequests(newRequests);
                 console.log(err);
             });
     };
@@ -62,12 +64,13 @@ export default function RequestList({ status, requests, setRequests, emptyText }
         console.log('rejected');
         axios.post('/api/delete-request', request)
             .then(() => {
-                setRequests(newRequests);
+                //setRequests(newRequests);
             })
             .catch(err => {
                 console.log(err);
             });
         const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
+        setRequests(newRequests);
     };
 
     const history = useHistory();
