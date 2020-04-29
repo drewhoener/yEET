@@ -17,8 +17,6 @@ function RequestStatusButton(
     return (
         <Tooltip
             { ...tooltipProps }
-            enterDelay={ 1000 }
-            placement={ 'bottom-end' }
             title={
                 <div className={ containerClass }>
                     <Typography variant={ 'caption' }>Request a review from { employeeName }.</Typography>
@@ -26,7 +24,6 @@ function RequestStatusButton(
                         writing.</Typography>
                 </div>
             }
-            arrow
         >
             <Button
                 edge='end'

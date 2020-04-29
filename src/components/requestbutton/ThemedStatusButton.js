@@ -26,7 +26,10 @@ export default function ThemedStatusButton({ type, ...rest }) {
     const tooltipProps = {
         classes: {
             tooltip: classes.tooltip,
-        }
+        },
+        enterDelay: 750,
+        placement: 'bottom-end',
+        arrow: true
     };
 
     return (

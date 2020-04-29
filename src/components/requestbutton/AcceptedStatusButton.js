@@ -18,10 +18,7 @@ export default function AcceptedStatusButton({ employeeName, tooltipProps = {} }
     return (
         <Tooltip
             { ...tooltipProps }
-            enterDelay={ 1000 }
-            placement={ 'bottom-end' }
             title={ 'This user has already started writing your review, you may not cancel the request.' }
-            arrow
         >
             <Button edge='end' variant='outlined'
                     disableElevation

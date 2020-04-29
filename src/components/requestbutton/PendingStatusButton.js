@@ -35,8 +35,6 @@ function PendingStatusButton(
         <ClickAwayListener onClickAway={ () => setShowCancel(false) }>
             <Tooltip
                 { ...tooltipProps }
-                enterDelay={ 1000 }
-                placement={ 'bottom-end' }
                 title={
                     <div className={ containerClass }>
                         {
@@ -57,7 +55,6 @@ function PendingStatusButton(
                         }
                     </div>
                 }
-                arrow
             >
                 {
                     showCancel ? (
