@@ -35,6 +35,9 @@ app.use('/api', apiRouter);
 app.listen(3001, () => {
     console.log('Backend Express Server is running on port 3001');
     connectToDB(mongoAuth.username, mongoAuth.password, mongoAuth.database, mongoAuth.authDatabase)
-        .then(() => console.log('Connected to database'))
+        .then(() => {
+            console.log('Connected to database');
+            scheduleCleanup();
+        })
         .catch(error => 'An error occurred connecting to the database');
 });
