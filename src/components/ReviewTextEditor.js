@@ -203,7 +203,7 @@ function ReviewTextEditor(props) {
     const closeAndRedirect = () => {
         setDialogOpen(false);
         if (dialogState === 'success') {
-            history.replace('/write/write-request');
+            history.replace('/write/accept');
         }
     };
 

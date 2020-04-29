@@ -9,3 +9,7 @@ export const truncateEmployee = ({ _id, employeeId, firstName, lastName, startDa
         fullName: `${ firstName } ${ lastName }`
     };
 };
+
+export const getExpireTime = (request) => {
+
+};
