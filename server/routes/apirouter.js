@@ -216,6 +216,7 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
             status: { '$in': [PendingState.PENDING, PendingState.ACCEPTED] },
         });
         console.log(request);
+        if(!request) res.sendStatus(404);
         res.status(200).end();
     } catch {
         res.status(500).end();

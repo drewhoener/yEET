@@ -62,12 +62,12 @@ export default function RequestList({ status, requests, setRequests, emptyText }
         console.log('rejected');
         axios.post('/api/delete-request', request)
             .then(() => {
-                const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
                 setRequests(newRequests);
             })
             .catch(err => {
                 console.log(err);
             });
+        const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
     };
 
     const history = useHistory();
