@@ -100,7 +100,7 @@ export function popErrorMessage() {
     };
 }
 
-function pushErrorMessage(severity, message) {
+export function pushErrorMessage(severity, message) {
     return {
         type: RequestAction.PUSH_ERROR_MESSAGE,
         severity,
