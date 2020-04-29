@@ -1,17 +1,13 @@
-import { Snackbar } from '@material-ui/core';
-import Slide from '@material-ui/core/Slide';
 import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import { connect } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import ResponsiveNav from '../components/ResponsiveNav';
 import ReviewTextEditor from '../components/ReviewTextEditor';
-import { closeTopErrorMessage, popErrorMessage } from '../state/selector/RequestSelector';
+import SnackbarNotify from '../components/SnackbarNotify';
+import HomepageView from './HomepageView';
 import ReadReviewView from './ReadReviewView';
 import RequestViewVirtualized from './RequestViewVirtualized';
 import WriteView from './WriteView';
-import HomepageView from './HomepageView';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -29,16 +25,7 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-function SlideTransition(props) {
-    return <Slide { ...props } direction="up"/>;
-}
-
-function MainView(
-    {
-        errorMessages,
-        closeTopErrorMessage,
-        popErrorMessage,
-    }) {
+export default function MainView() {
     const classes = useStyle();
     return (
         <div className={ classes.root }>
@@ -67,44 +54,8 @@ function MainView(
                     </Route>
                 </Switch>
                 {/* Holder for snackbar messages */ }
-                <div>
-                    {
-
-                        errorMessages.filter((val, idx) => idx === 0)
-                            .map(message => {
-                                return (
-                                    <Snackbar
-                                        key={ `error-message-${ message.key }` }
-                                        open={ message.open }
-                                        autoHideDuration={ 3500 }
-                                        TransitionComponent={ SlideTransition }
-                                        onClose={ () => closeTopErrorMessage() }
-                                        TransitionProps={ {
-                                            onExited: () => popErrorMessage()
-                                        } }
-                                        disableWindowBlurListener
-                                    >
-                                        <Alert action={ undefined } severity={ message.severity }>
-                                            { message.content }
-                                        </Alert>
-                                    </Snackbar>
-                                );
-                            })
-
-                    }
-                </div>
+                <SnackbarNotify/>
             </main>
         </div>
     );
 }
-
-const mapStateToProps = state => ({
-    errorMessages: state.requests.errorMessages,
-});
-
-const mapDispatchToProps = dispatch => ({
-    popErrorMessage: () => dispatch(popErrorMessage()),
-    closeTopErrorMessage: () => dispatch(closeTopErrorMessage()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(MainView);
