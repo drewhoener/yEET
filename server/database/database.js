@@ -17,27 +17,42 @@ export function scheduleCleanup() {
         console.log('Running Database Cleanup...');
         let requests = await Request.find({ status: { '$ne': PendingState.COMPLETED } });
         const now = moment();
-        let deleted = 0;
-        let errors = 0;
+
         requests = requests.filter(request => {
             const endTime = getExpireTime(request);
             return now.isAfter(endTime);
         });
+        const ids = requests.map(o => o._id);
 
-        for (const request of requests) {
-            try {
-                await request.remove();
-                await Review.findOneAndDelete({
-                    requestID: request._id,
-                    completed: false,
-                });
-                deleted++;
-            } catch (err) {
-                console.err(err);
-                errors++;
+        try {
+
+            const requestDeleteResults = await Request.deleteMany({
+                _id: { '$in': ids }
+            });
+
+            const reviewDeleteResults = await Review.deleteMany({
+                requestID: { '$in': ids },
+                completed: false
+            });
+
+            // console.log(requestDeleteResults);
+            // console.log(reviewDeleteResults);
+
+            if (requestDeleteResults.deletedCount > 0 || reviewDeleteResults.deletedCount > 0) {
+
+                console.log('----------[ Prune Results ]----------');
+                console.log(`Initially Found ${ requests.length } to delete`);
+                console.log(`Requests Found: ${ requestDeleteResults.n } / Deleted: ${ requestDeleteResults.deletedCount }`);
+                console.log(`Reviews Found: ${ reviewDeleteResults.n } / Deleted: ${ reviewDeleteResults.deletedCount }`);
+                console.log('----------------------------------------');
+            } else {
+                console.log('No Data to prune.');
             }
+
+        } catch (err) {
+            console.error('An Error occurred while pruning old results');
+            console.error(err);
         }
-        console.log(`Pruned ${ deleted } expired requests with ${ errors } error(s)`);
     });
     console.log('Database Cleanup Scheduled!');
 }

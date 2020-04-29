@@ -3,11 +3,12 @@ import { ObjectId } from 'mongodb';
 import mongoAuth from '../exempt/mongo_auth';
 import { close as disconnectDB, connect as connectDB } from '../server/database/database';
 import Employee from '../server/database/schema/employeeschema';
-import Request from '../server/database/schema/requestschema';
-import Review from '../server/database/schema/reviewschema';
+import Request, { PendingState } from '../server/database/schema/requestschema';
 
 //5 years
 const fiveYear = 157784760000;
+const twentyMin = 1000 * 60 * 20;
+
 
 connectDB(mongoAuth.username, mongoAuth.password, mongoAuth.database, mongoAuth.authDatabase)
     .then(async () => {
@@ -22,9 +23,9 @@ connectDB(mongoAuth.username, mongoAuth.password, mongoAuth.database, mongoAuth.
                     }
                     const time = moment();
                     if (Math.random() > .5) {
-                        time.add(Math.random() * fiveYear, 'ms');
+                        time.add(Math.random() * twentyMin, 'ms');
                     } else {
-                        time.subtract(Math.random() * fiveYear, 'ms');
+                        time.subtract(Math.random() * twentyMin, 'ms');
                     }
 
                     const request = new Request({
@@ -32,9 +33,10 @@ connectDB(mongoAuth.username, mongoAuth.password, mongoAuth.database, mongoAuth.
                         timeRequested: time.toDate(),
                         userRequesting: requester._id,
                         userReceiving: responder._id,
-                        status: 3,
+                        status: PendingState.PENDING,
                     });
                     await request.save();
+                    /*
                     const content = (rq, rs) => [
                         {
                             'type': 'heading-one',
@@ -55,6 +57,7 @@ connectDB(mongoAuth.username, mongoAuth.password, mongoAuth.database, mongoAuth.
                         completed: true
                     });
                     await review.save();
+                     */
                 }
             }
         }
