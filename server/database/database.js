@@ -1,6 +1,9 @@
+import moment from 'moment';
 import mongoose from 'mongoose';
 import { scheduleJob } from 'node-schedule';
 import util from 'util';
+import Request, { PendingState } from '../database/schema/requestschema';
+import { getExpireTime } from '../util/serverutil';
 
 const DBUrl = 'mongodb://%sdrewhoener.com/%s?authSource=%s';
 
@@ -8,14 +11,26 @@ const database = null;
 let databaseCleanJob;
 
 export async function scheduleCleanup() {
-    databaseCleanJob = scheduleJob('*/30 * * * * *', () => {
-        // logger.info('Checking to see if chain time is the same as stored time');
-        const nextTime = this.getNextUpdateTime(WeatherHolder.getTimes());
-        if (nextTime.valueOf() !== this.chainExpireTime?.valueOf()) {
-            logger.info(`*** Next Time is ${ nextTime.valueOf() }, which is different from ${ this.chainExpireTime }`);
-            logger.info(`*** Scheduling a job for the next embed to be sent at ${ nextTime.toLocaleString() }`);
-            this.scheduleEmbedJob(nextTime);
+    databaseCleanJob = scheduleJob('59 59 23 * * *', async () => {
+        let requests = await Request.find({ status: { '$ne': PendingState.COMPLETED } });
+        const now = moment();
+        let deleted = 0;
+        let errors = 0;
+        requests = requests.filter(request => {
+            const endTime = getExpireTime(request);
+            return now.isAfter(endTime);
+        });
+
+        for (const request of requests) {
+            try {
+                await request.remove();
+                deleted++;
+            } catch (err) {
+                console.err(err);
+                errors++;
+            }
         }
+        console.log(`Pruned ${ deleted } expired requests with ${ errors } error(s)`);
     });
 }
 

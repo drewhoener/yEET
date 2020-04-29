@@ -158,7 +158,7 @@ function ReviewTextEditor(props) {
     const history = useHistory();
     const [dangerous] = useState('<div>');
     // eslint-disable-next-line no-unused-vars
-    const [stateData, setStateData] = useState({});
+    const [setStateData] = useState({});
     const [editorState, setEditorState] = useState([]);
     const [charCount, setCharCount] = useState(0);
     const [dialogOpen, setDialogOpen] = useState(false);

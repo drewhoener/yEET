@@ -14,5 +14,5 @@ export const truncateEmployee = ({ _id, employeeId, firstName, lastName, startDa
 
 export const getExpireTime = (request) => {
     const requestTime = moment(request.timeRequested);
-    return requestTime.endOf('day');
+    return requestTime.add(21, 'days').endOf('day');
 };
