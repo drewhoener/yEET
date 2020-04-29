@@ -93,7 +93,7 @@ function EmployeeList(
                                 disabled={ hasRequest }
                                 tabIndex={ -1 }
                                 disableRipple
-                                inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
+                                inputProps={ { 'aria-label': 'Add or Remove from Review Request' } }
                                 color='primary'
                             />
                         </ListItemIcon>

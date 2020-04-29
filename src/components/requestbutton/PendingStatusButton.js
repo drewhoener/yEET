@@ -1,6 +1,7 @@
-import { ClickAwayListener, useMediaQuery, useTheme } from '@material-ui/core';
+import { ClickAwayListener, Tooltip, useMediaQuery, useTheme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { connect } from 'react-redux';
 import { deleteRequest } from '../../state/selector/RequestSelector';
@@ -20,7 +21,9 @@ function PendingStatusButton(
     {
         employeeName,
         employeeObjId,
-        deleteRequest
+        deleteRequest,
+        tooltipProps = {},
+        containerClass
     }) {
 
     const classes = useStyle();
@@ -30,29 +33,56 @@ function PendingStatusButton(
 
     return (
         <ClickAwayListener onClickAway={ () => setShowCancel(false) }>
-            {
-                showCancel ? (
-                    <Button edge='end'
-                            classes={ {
-                                root: classes.cancel
-                            } }
-                            aria-label={ `confirm cancel request for ${ employeeName }` }
-                            variant='outlined' onClick={ deleteRequest(employeeObjId) }
-                    >
-                        { `Cancel${ smallScreen ? '' : ' Request' }` }
-                    </Button>
-                ) : (
-                    <Button edge='end'
-                            classes={ {
-                                root: classes.pending
-                            } }
-                            aria-label={ `request to ${ employeeName } is pending. click to cancel` }
-                            variant='outlined' onClick={ () => setShowCancel(true) }
-                    >
-                        Pending
-                    </Button>
-                )
-            }
+            <Tooltip
+                { ...tooltipProps }
+                enterDelay={ 1000 }
+                placement={ 'bottom-end' }
+                title={
+                    <div className={ containerClass }>
+                        {
+                            showCancel ?
+                                <>
+                                    <Typography variant={ 'caption' }> Click to cancel this request.</Typography>
+                                    <Typography variant={ 'caption' }>
+                                        Doing so will remove it from the users pending list.
+                                    </Typography>
+
+                                </> :
+                                <>
+                                    <Typography variant={ 'caption' }>
+                                        This request is in the user's pending box and has not been started.
+                                    </Typography>
+                                    <Typography variant={ 'caption' }> Click to cancel.</Typography>
+                                </>
+                        }
+                    </div>
+                }
+                arrow
+            >
+                {
+                    showCancel ? (
+                        <Button edge='end'
+                                classes={ {
+                                    root: classes.cancel
+                                } }
+                                aria-label={ `confirm cancel request for ${ employeeName }` }
+                                variant='outlined' onClick={ deleteRequest(employeeObjId) }
+                        >
+                            { `Cancel${ smallScreen ? '' : ' Request' }` }
+                        </Button>
+                    ) : (
+                        <Button edge='end'
+                                classes={ {
+                                    root: classes.pending
+                                } }
+                                aria-label={ `request to ${ employeeName } is pending. click to cancel` }
+                                variant='outlined' onClick={ () => setShowCancel(true) }
+                        >
+                            Pending
+                        </Button>
+                    )
+                }
+            </Tooltip>
         </ClickAwayListener>
     );
 }
