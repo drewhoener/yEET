@@ -10,7 +10,8 @@ const DBUrl = 'mongodb://%sdrewhoener.com/%s?authSource=%s';
 const database = null;
 let databaseCleanJob;
 
-export async function scheduleCleanup() {
+export function scheduleCleanup() {
+    console.log('Scheduling Database Cleanup Job...');
     databaseCleanJob = scheduleJob('59 59 23 * * *', async () => {
         let requests = await Request.find({ status: { '$ne': PendingState.COMPLETED } });
         const now = moment();
@@ -32,6 +33,7 @@ export async function scheduleCleanup() {
         }
         console.log(`Pruned ${ deleted } expired requests with ${ errors } error(s)`);
     });
+    console.log('Database Cleanup Scheduled!');
 }
 
 export async function connect(user, pass, database, authDatabase) {

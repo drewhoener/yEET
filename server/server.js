@@ -5,7 +5,7 @@ import express from 'express';
 import expressStaticGzip from 'express-static-gzip';
 import path from 'path';
 import mongoAuth from '../exempt/mongo_auth';
-import { connect as connectToDB } from './database/database';
+import { connect as connectToDB, scheduleCleanup } from './database/database';
 import apiRouter from './routes/apirouter';
 
 const app = express();
