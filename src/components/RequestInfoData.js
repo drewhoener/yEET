@@ -1,11 +1,11 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import { useMediaQuery } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import { makeStyles, ThemeProvider, useTheme } from '@material-ui/core/styles';
-import { sendSelectedRequests, unselectEmployees } from '../state/selector/RequestSelector';
 import Grow from '@material-ui/core/Grow';
 import Hidden from '@material-ui/core/Hidden';
-import { useMediaQuery } from '@material-ui/core';
+import { makeStyles, ThemeProvider, useTheme } from '@material-ui/core/styles';
+import React from 'react';
+import { connect } from 'react-redux';
+import { sendSelectedRequests, unselectEmployees } from '../state/selector/RequestSelector';
 import { colorButtonTheme } from '../util';
 
 const useStyle = makeStyles(theme => ({
@@ -50,8 +50,8 @@ function RequestInfoData(
         <ThemeProvider theme={ colorButtonTheme }>
             <Grow in={ showOptionButtons() } unmountOnExit timeout={ 450 }>
                 <div className={ classes.infoBlockHolder }>
-                    <Button className={ classes.deselectButton } variant='contained'
-                            color='secondary'
+                    <Button className={ classes.deselectButton } variant='outlined'
+                            color='primary'
                             onClick={ resetSelected(selectedEmployees) } disableElevation
                             disableFocusRipple
                     >

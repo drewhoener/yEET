@@ -1,11 +1,13 @@
 import { Tooltip, useMediaQuery, useTheme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
 const useStyle = makeStyles(theme => ({
     completed: {
-        color: theme.status.success
+        color: theme.status.success,
+        borderColor: theme.status.success,
     }
 }));
 
@@ -18,7 +20,11 @@ export default function AcceptedStatusButton({ employeeName, tooltipProps = {} }
     return (
         <Tooltip
             { ...tooltipProps }
-            title={ 'This user has already started writing your review, you may not cancel the request.' }
+            title={
+                <Typography variant='caption'>
+                    This user has already started writing your review, you may not cancel the request.
+                </Typography>
+            }
         >
             <Button edge='end' variant='outlined'
                     disableElevation
