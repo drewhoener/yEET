@@ -367,32 +367,50 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
         return;
     }
 
-    const data = {};
+    const stats = {};
 
     const companyRequests = await Request.find({ company: req.tokenData.company });
     const requestsReceived = companyRequests.filter((request) => request.userReceiving.toString() === req.tokenData.id.toString());
     const requestsSent = companyRequests.filter((request) => request.userRequesting.toString() === req.tokenData.id.toString());
 
-    data.receivedRequests = {
-        pending: requestsReceived.reduce((acc, curr) => {
-            return acc + (curr.status === PendingState.PENDING ? 1 : 0);
-        }, 0),
-        accepted: requestsReceived.reduce((acc, curr) => {
-            return acc + (curr.status === PendingState.ACCEPTED ? 1 : 0);
-        }, 0)
+    // console.log(companyRequests);
+
+    stats.receivedRequests = {
+        pending: requestsReceived.filter(r => r.status === PendingState.PENDING).length,
+        accepted: requestsReceived.filter(r => r.status === PendingState.ACCEPTED).length
     };
 
-    data.sentRequests = {
-        pending: requestsSent.reduce((acc, curr) => {
-            return acc + (curr.status === PendingState.PENDING ? 1 : 0);
-        }, 0),
-        accepted: requestsSent.reduce((acc, curr) => {
-            return acc + (curr.status === PendingState.ACCEPTED ? 1 : 0);
-        }, 0)
+    stats.sentRequests = {
+        pending: requestsSent.filter(r => r.status === PendingState.PENDING).length,
+        accpeted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length
     };
+
+
+    const companyReviews = await Review.find({ requestID: { '$in': companyRequests.map(r => r.id) } });
+
+    const reqRecievedIds = requestsReceived.filter(r => r.status = PendingState.COMPLETED).map(r => r.id);
+    const reqSentIds = requestsSent.filter(r => r.status = PendingState.COMPLETED).map(r => r.id);
+
+    const reviewsReceived = companyReviews.filter(rev => reqRecievedIds.includes(rev.requestID));
+    const reviewsSent = companyReviews.filter(rev => reqSentIds.includes(rev.requestID));
+
+    const now = new Date();
+
+    const week = 1000 * 60 * 60 * 24 * 7; //prolly a better way to do this
+
+    stats.receivedReviews = {
+        lastWeek: reviewsReceived.filter(r => now - r.dateWritten < week ).length,
+        allTime: reviewsReceived.length
+    };
+
+    stats.sentReviews = {
+        lastWeek: reviewsSent.filter(r => now - r.dateWritten < week ).length,
+        allTime: reviewsSent.length
+    };
+
 
     res.status(200).json({
-        data
+        stats
     });
 
 });
