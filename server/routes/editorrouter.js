@@ -88,12 +88,7 @@ editorRouter.get('/editor-data', authMiddleware, async (req, res) => {
         _id: new ObjectId(req.tokenData.id)
     });
 
-    const requestObj = await Request.findOne({
-        company: new ObjectId(req.tokenData.company),
-        _id: new ObjectId(requestId)
-    });
-
-    const requestAndReview = await Request.aggregate([
+    const requestAndReviewArr = await Request.aggregate([
         {
             '$match': {
                 company: new ObjectId(req.tokenData.company),
@@ -104,26 +99,30 @@ editorRouter.get('/editor-data', authMiddleware, async (req, res) => {
             '$lookup': {
                 from: 'reviews',
                 localField: '_id',
-                foreignField: 'requestId',
-                as: 'review'
+                foreignField: 'requestID',
+                as: 'reviews'
             }
         }
     ]);
-
-    console.log('Aggregate Result');
-    console.log(requestAndReview);
 
     if (!loggedIn) {
         res.status(401).send('Unauthorized');
         return;
     }
 
-    if (!requestObj) {
+    if (!requestAndReviewArr || !requestAndReviewArr.length) {
         res.status(404).send('Not Found');
         return;
     }
-    console.log(loggedIn);
+
+    const requestAndReview = requestAndReviewArr[0];
+    const requestObj = { ...requestAndReview };
+    delete requestObj['reviews'];
+
+    console.log('Aggregate Result:');
+    console.log(requestAndReview);
     console.log(requestObj);
+
     const userRequesting = await Employee.findOne({
         company: new ObjectId(req.tokenData.company),
         _id: new ObjectId(requestObj.userRequesting.toString())
@@ -137,6 +136,18 @@ editorRouter.get('/editor-data', authMiddleware, async (req, res) => {
     res.status(200).json({
         userData: truncateEmployee(loggedIn),
         requestingData: truncateEmployee(userRequesting),
-        request: requestObj
+        request: requestObj,
+        contents: extractFirstReviewContent(requestAndReview),
     });
 });
+
+const extractFirstReviewContent = reqRevPair => {
+    if (!reqRevPair || !reqRevPair.reviews || !reqRevPair.reviews.length) {
+        return;
+    }
+    const contents = reqRevPair.reviews[0].contents;
+    if (contents === '') {
+        return undefined;
+    }
+    return contents;
+};

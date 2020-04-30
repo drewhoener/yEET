@@ -8,6 +8,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Modal from '@material-ui/core/Modal';
 import { makeStyles } from '@material-ui/core/styles';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import axios from 'axios';
@@ -136,8 +138,18 @@ const SubordinateReviews = ({ classes }) => {
     );
 };
 
+const years = [
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020
+].sort((o1, o2) => o2 - o1);
+
 const MyReviews = ({ classes }) => {
     const [reviews, setReviews] = React.useState([]);
+    const [selectedYear, setSelectedYear] = React.useState(years.indexOf(new Date().getFullYear()));
     React.useEffect(() => {
         axios.get('/api/reviews')
             .then(({ data }) => {
@@ -151,8 +163,26 @@ const MyReviews = ({ classes }) => {
 
     }, []);
 
+    const handleTabChange = (event, newValue) => {
+        setSelectedYear(newValue);
+    };
+
     return (
         <div className={ classes.experimentTabs }>
+            <Tabs
+                orientation='vertical'
+                variant='scrollable'
+                value={ selectedYear }
+                onChange={ handleTabChange }
+                aria-label='Year Selection Tabs'
+            >
+                {
+                    years.map((year, index) => (
+                        <Tab key={ `yeartab-${ year }` } id={ `tab-yearselect-${ index }` }
+                             aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
+                    ))
+                }
+            </Tabs>
             <ReviewList classes={ classes } reviews={ reviews }/>
         </div>
     );

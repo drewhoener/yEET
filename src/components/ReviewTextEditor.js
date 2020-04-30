@@ -24,6 +24,7 @@ import {
 } from '@material-ui/icons';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import axios from 'axios';
+import moment from 'moment';
 import React, { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -72,7 +73,7 @@ const useStyle = makeStyles(theme => ({
         paddingLeft: theme.spacing(1.5),
         position: 'relative',
         display: 'flex',
-        paddingBottom: theme.spacing(1),
+        paddingBottom: theme.spacing(2),
         '&>div[role="textbox"]': {
             flex: 1,
             overflowWrap: 'break-word',
@@ -96,10 +97,17 @@ const useStyle = makeStyles(theme => ({
         zIndex: 100,
         pointerEvents: 'none',
         alignItems: 'flex-end',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-start',
     },
     wordCount: {
         marginRight: theme.spacing(2)
+    },
+    draftSaved: {
+        marginLeft: theme.spacing(1.5),
+        marginRight: theme.spacing(2),
+    },
+    spacer: {
+        flex: '1 0 auto'
     },
     editorBase: {
         flexGrow: 1,
@@ -159,6 +167,7 @@ function ReviewTextEditor({ pushError, ...props }) {
     const history = useHistory();
     const [saveOnUnmount, setSaveOnUnmount] = useState(true);
     // eslint-disable-next-line no-unused-vars
+    const [draftSaveTime, setDraftSaveTime] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
     const [editorState, setEditorState] = useState([]);
     const [charCount, setCharCount] = useState(0);
@@ -184,6 +193,14 @@ function ReviewTextEditor({ pushError, ...props }) {
                     return;
                 }
                 console.log(data);
+                if (data.contents) {
+                    const jsonData = JSON.parse(data.contents);
+                    if (!jsonData.children || !Array.isArray(jsonData.children)) {
+                        return;
+                    }
+                    setEditorState(jsonData.children);
+                    return;
+                }
                 setEditorState(initialEditorState(
                     `${ data.requestingData.firstName } ${ data.requestingData.lastName }`,
                     `${ data.userData.firstName } ${ data.userData.lastName }`)
@@ -246,6 +263,7 @@ function ReviewTextEditor({ pushError, ...props }) {
         prepareSave(false, editorState)
             .then(response => {
                 console.log(response);
+                setDraftSaveTime(moment());
             })
             .catch(err => {
                 console.error(err);
@@ -280,9 +298,10 @@ function ReviewTextEditor({ pushError, ...props }) {
     React.useEffect(() => {
         return () => {
             console.log('In useEffect return value');
+            console.log(editor);
             if (saveOnUnmount) {
                 console.error('Saving Draft Data in UseEffect');
-                prepareSave(false, editorState)
+                prepareSave(false, editor.children)
                     .then(response => {
                         console.log(response);
                         pushError('success', 'Draft Saved!');
@@ -290,13 +309,10 @@ function ReviewTextEditor({ pushError, ...props }) {
                     .catch(err => {
                         console.error(err);
                         pushError('error', 'Failed to save draft!');
-                    })
-                    .then(() => {
-
                     });
             }
         };
-    }, []);
+    }, [editor, prepareSave, pushError, saveOnUnmount]);
 
     return (
         <>
@@ -366,6 +382,19 @@ function ReviewTextEditor({ pushError, ...props }) {
                     </Paper>
                     <Paper square className={ classes.paddedEditor }>
                         <div className={ classes.editorOverlay }>
+                            <div className={ classes.spacer }/>
+                            <Typography variant='caption'>
+                                {
+                                    draftSaveTime &&
+                                    `Draft Saved ${ draftSaveTime.calendar() }`
+                                }
+                            </Typography>
+                            <Typography variant='caption' className={ classes.draftSaved }>
+                                {
+                                    draftSaveTime &&
+                                    '|'
+                                }
+                            </Typography>
                             <Typography className={ classes.wordCount } variant='caption'>
                                 { charCount } / 10000
                             </Typography>

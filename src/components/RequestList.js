@@ -72,7 +72,7 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
                 }
             })
             .catch(err => {
-                pushError('error', 'Request unsuccessfully accepted. It either expired or does not exist.');
+                pushError('error', 'Request couldn\'t be accepted. It either expired or does not exist.');
             }).then((data) => {
             let newRequests = requests.filter(o => o._id.toString() !== request._id.toString());
             if (data && data.request) newRequests = [data.request, ...newRequests];
@@ -87,7 +87,7 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
                 pushError('success', 'Request rejected');
             })
             .catch(err => {
-                pushError('error', 'Request unsuccessfully rejected. It either expired or does not exist.');
+                pushError('error', 'Request couln\'t be rejected. It either expired or does not exist.');
             })
             .then(() => {
                 const newRequests = [...requests.filter(o => o._id.toString() !== request._id.toString())];
