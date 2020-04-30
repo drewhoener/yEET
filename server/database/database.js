@@ -13,7 +13,7 @@ let databaseCleanJob;
 
 export function scheduleCleanup() {
     console.log('Scheduling Database Cleanup Job...');
-    databaseCleanJob = scheduleJob('0 0 23 * * *', async () => {
+    databaseCleanJob = scheduleJob('0 0 0 * * *', async () => {
         console.log('Running Database Cleanup...');
         let requests = await Request.find({ status: { '$ne': PendingState.COMPLETED } });
         const now = moment();
