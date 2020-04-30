@@ -42,7 +42,7 @@ function PendingStatusButton(
                                 <>
                                     <Typography variant={ 'caption' }> Click to cancel this request.</Typography>
                                     <Typography variant={ 'caption' }>
-                                        Doing so will remove it from the users pending list.
+                                        Doing so will remove it from the user's pending list.
                                     </Typography>
 
                                 </> :

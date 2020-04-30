@@ -9,13 +9,13 @@ import { truncateEmployee } from '../util/serverutil';
 
 export const editorRouter = Router();
 
-editorRouter.post('/submit-review', authMiddleware, async (req, res) => {
+editorRouter.post('/save-review', authMiddleware, async (req, res) => {
     if (!req.tokenData) {
         res.status(401).send('Unauthorized');
         return;
     }
 
-    const { requestId, content } = req.body;
+    const { requestId, content, submit = false } = req.body;
     console.log(req.body);
     if (!requestId || !content) {
         res.status(400).send('Request missing fields');
@@ -25,17 +25,21 @@ editorRouter.post('/submit-review', authMiddleware, async (req, res) => {
     const request = await Request.findOne({
         _id: new ObjectId(requestId),
         company: new ObjectId(req.tokenData.company),
-        userReceiving: new ObjectId(req.tokenData.id)
+        userReceiving: new ObjectId(req.tokenData.id),
+        status: PendingState.ACCEPTED
     });
 
-    console.log(request);
+    // console.log(request);
 
     if (!request) {
         res.status(404).send('Requested Resource not found');
         return;
     }
 
-    let review = await Review.findOne({ requestID: new ObjectId(requestId) });
+    let review = await Review.findOne({
+        requestID: new ObjectId(requestId),
+        completed: false,
+    });
     if (!review) {
         review = new Review({
             requestID: requestId,
@@ -44,9 +48,11 @@ editorRouter.post('/submit-review', authMiddleware, async (req, res) => {
 
     review.contents = content;
     review.dateWritten = moment().toDate();
-    review.completed = true;
 
-    request.status = PendingState.COMPLETED;
+    if (submit) {
+        review.completed = true;
+        request.status = PendingState.COMPLETED;
+    }
 
     request.save()
         .then(() => {
@@ -86,6 +92,26 @@ editorRouter.get('/editor-data', authMiddleware, async (req, res) => {
         company: new ObjectId(req.tokenData.company),
         _id: new ObjectId(requestId)
     });
+
+    const requestAndReview = await Request.aggregate([
+        {
+            '$match': {
+                company: new ObjectId(req.tokenData.company),
+                _id: new ObjectId(requestId),
+            },
+        },
+        {
+            '$lookup': {
+                from: 'reviews',
+                localField: '_id',
+                foreignField: 'requestId',
+                as: 'review'
+            }
+        }
+    ]);
+
+    console.log('Aggregate Result');
+    console.log(requestAndReview);
 
     if (!loggedIn) {
         res.status(401).send('Unauthorized');

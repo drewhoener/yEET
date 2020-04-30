@@ -30,6 +30,7 @@ import { useHistory } from 'react-router-dom';
 import { createEditor } from 'slate';
 import { withHistory } from 'slate-history';
 import { Editable, Slate, withReact } from 'slate-react';
+import { pushErrorMessage } from '../state/selector/RequestSelector';
 import { BlockButton, BlockTextButton } from './editor/BlockButton';
 import { EditorElement, EditorLeaf } from './editor/EditorRenderer';
 import { countCharacters } from './editor/EditorSerializer';
@@ -153,12 +154,12 @@ const initialEditorState = (person, reviewer) => [
 
 const CHAR_MAX = 10000;
 
-function ReviewTextEditor(props) {
+function ReviewTextEditor({ pushError, ...props }) {
     const classes = useStyle();
     const history = useHistory();
-    const [dangerous] = useState('<div>');
+    const [saveOnUnmount, setSaveOnUnmount] = useState(true);
     // eslint-disable-next-line no-unused-vars
-    const [setStateData] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
     const [editorState, setEditorState] = useState([]);
     const [charCount, setCharCount] = useState(0);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -170,12 +171,6 @@ function ReviewTextEditor(props) {
     const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const { requestId } = props.match.params;
-
-    React.useEffect(() => {
-        return () => {
-            onSaveDraft();
-        };
-    }, []);
 
     React.useEffect(() => {
         axios.get('/api/editor/editor-data',
@@ -193,7 +188,6 @@ function ReviewTextEditor(props) {
                     `${ data.requestingData.firstName } ${ data.requestingData.lastName }`,
                     `${ data.userData.firstName } ${ data.userData.lastName }`)
                 );
-                setStateData({ ...data });
             })
             .catch(err => {
                 console.error(err);
@@ -205,9 +199,6 @@ function ReviewTextEditor(props) {
         if (dialogState === 'success') {
             history.replace('/write/accept');
         }
-    };
-
-    const onSaveDraft = () => {
     };
 
     const onChange = (state) => {
@@ -230,23 +221,82 @@ function ReviewTextEditor(props) {
         setEditorState(state);
     };
 
+    const prepareSave = React.useCallback((submitReview, editorState) => {
+        return axios.post('/api/editor/save-review',
+            {
+                requestId,
+                content: JSON.stringify({
+                    children: editorState
+                }),
+                submit: submitReview
+            },
+            {
+                timeout: 10000
+            }
+        );
+    }, [requestId]);
+
+    const onSaveDraft = React.useCallback(() => {
+        if (isSaving) {
+            console.log('Stopping save procedure because we\'re saving');
+            return;
+        }
+        console.log('Setting save var for draft');
+        setIsSaving(true);
+        prepareSave(false, editorState)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(err => {
+                console.error(err);
+            })
+            .then(() => {
+                setIsSaving(false);
+            });
+    }, [editorState, prepareSave, isSaving]);
+
     const submitReview = () => {
-        axios.post('/api/editor/submit-review', {
-            requestId,
-            content: JSON.stringify({
-                children: editorState
-            }),
-        }, {
-            timeout: 10000
-        }).then(response => {
-            console.log(response);
-        }).catch(err => {
-            console.error(err);
-            setDialogState('failure');
-        }).then(() => {
-            setDialogOpen(true);
-        });
+        if (isSaving) {
+            console.log('Stopping submit procedure because we\'re saving');
+            return;
+        }
+        console.log('Setting save var for review');
+        setIsSaving(true);
+        prepareSave(true, editorState)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(err => {
+                console.error(err);
+                setDialogState('failure');
+            })
+            .then(() => {
+                setIsSaving(false);
+                setSaveOnUnmount(false);
+                setDialogOpen(true);
+            });
     };
+
+    React.useEffect(() => {
+        return () => {
+            console.log('In useEffect return value');
+            if (saveOnUnmount) {
+                console.error('Saving Draft Data in UseEffect');
+                prepareSave(false, editorState)
+                    .then(response => {
+                        console.log(response);
+                        pushError('success', 'Draft Saved!');
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        pushError('error', 'Failed to save draft!');
+                    })
+                    .then(() => {
+
+                    });
+            }
+        };
+    }, []);
 
     return (
         <>
@@ -299,14 +349,14 @@ function ReviewTextEditor(props) {
                             <div className={ classes.saveSubmitGroup }>
                                 <div className={ classes.spacedButtonGroup }>
                                     <Button size='small' className={ classes.saveButton } variant='outlined'
-                                            onClick={ () => onSaveDraft() }
+                                            onClick={ onSaveDraft }
                                             startIcon={ <Save/> }>
                                         Save Draft
                                     </Button>
                                 </div>
                                 <div className={ classes.spacedButtonGroup }>
                                     <Button size='small' className={ classes.saveButton } variant='outlined'
-                                            onClick={ () => submitReview() }
+                                            onClick={ submitReview }
                                             startIcon={ <Send/> }>
                                         { `Submit${ smallScreen ? '' : ' Review' }` }
                                     </Button>
@@ -316,8 +366,9 @@ function ReviewTextEditor(props) {
                     </Paper>
                     <Paper square className={ classes.paddedEditor }>
                         <div className={ classes.editorOverlay }>
-                            <Typography className={ classes.wordCount } variant='caption'>{ charCount } /
-                                10000</Typography>
+                            <Typography className={ classes.wordCount } variant='caption'>
+                                { charCount } / 10000
+                            </Typography>
                         </div>
                         <Editable
                             renderElement={ renderElement }
@@ -325,7 +376,6 @@ function ReviewTextEditor(props) {
                         />
                     </Paper>
                 </Slate>
-                <div dangerouslySetInnerHTML={ { __html: dangerous } }/>
             </div>
         </>
     );
@@ -333,7 +383,9 @@ function ReviewTextEditor(props) {
 
 const mapStateToProps = state => ({});
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+    pushError: (severity, message) => dispatch(pushErrorMessage(severity, message)),
+});
 
 export default connect(
     mapStateToProps,

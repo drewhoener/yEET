@@ -23,12 +23,11 @@ const useStyle = makeStyles(theme => ({
         display: 'inline-flex',
         flexDirection: 'column',
         width: '100%',
+        height: '100%'
     },
     panelEnclosed: {
         padding: theme.spacing(3),
         flex: 1,
-        
-
     },
     listItemText: {
         fontWeight: 'bold',
@@ -62,7 +61,7 @@ const useStyle = makeStyles(theme => ({
             width: '100%',
             height: '100%',
            // overflow : 'auto'
-            
+
         }
     },
     modalpaper: {
@@ -77,7 +76,7 @@ const useStyle = makeStyles(theme => ({
             flexWrap: 'wrap',
             flexDirection: 'column',
         }
-        
+
     },
     modaltext: {
         flex: 1,
@@ -89,6 +88,10 @@ const useStyle = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'flex-end',
         top: 0
+    },
+    experimentTabs: {
+        display: 'flex',
+        flexDirection: 'row'
     }
 }));
 
@@ -149,7 +152,9 @@ const MyReviews = ({ classes }) => {
     }, []);
 
     return (
-        <ReviewList classes={ classes } reviews={ reviews }/>
+        <div className={ classes.experimentTabs }>
+            <ReviewList classes={ classes } reviews={ reviews }/>
+        </div>
     );
 };
 
