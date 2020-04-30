@@ -218,6 +218,10 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
             res.sendStatus(404);
             return;
         }
+        review = await Review.findOneAndDelete({
+            requestID: req.body._id
+        });
+        console.log(review);
         res.status(200).end();
     } catch {
         res.status(500).end();
