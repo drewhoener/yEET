@@ -100,7 +100,7 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
     const redirectToEditor = (reviewId) => {
         axios.get('/api/editor/review-valid', {
             params: {
-                reviewId
+                requestId: reviewId
             }
         }).then(() => {
             history.push(`/write/editor/${ reviewId }`);
