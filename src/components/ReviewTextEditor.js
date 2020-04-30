@@ -169,7 +169,12 @@ function ReviewTextEditor({ pushError, ...props }) {
     // eslint-disable-next-line no-unused-vars
     const [draftSaveTime, setDraftSaveTime] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
-    const [editorState, setEditorState] = useState([]);
+    const [editorState, setEditorState] = useState([
+        {
+            type: FormattingType.PARAGRAPH,
+            children: [{ text: '' }]
+        }
+    ]);
     const [charCount, setCharCount] = useState(0);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogState, setDialogState] = useState('success');
@@ -180,6 +185,13 @@ function ReviewTextEditor({ pushError, ...props }) {
     const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const { requestId } = props.match.params;
+
+    const closeAndRedirect = React.useCallback(() => {
+        setDialogOpen(false);
+        if (dialogState === 'success') {
+            history.replace('/write/accept');
+        }
+    }, [dialogState, history]);
 
     React.useEffect(() => {
         axios.get('/api/editor/editor-data',
@@ -208,15 +220,9 @@ function ReviewTextEditor({ pushError, ...props }) {
             })
             .catch(err => {
                 console.error(err);
+                closeAndRedirect();
             });
-    }, [requestId]);
-
-    const closeAndRedirect = () => {
-        setDialogOpen(false);
-        if (dialogState === 'success') {
-            history.replace('/write/accept');
-        }
-    };
+    }, [requestId, closeAndRedirect]);
 
     const onChange = (state) => {
         const chars = countCharacters({
@@ -231,6 +237,7 @@ function ReviewTextEditor({ pushError, ...props }) {
             while (countCharacters({ children: editor.children }) > CHAR_MAX) {
                 editor.deleteBackward('word');
             }
+            // noinspection JSCheckFunctionSignatures
             setEditorState(editor.children);
             return;
         }

@@ -71,6 +71,32 @@ editorRouter.post('/save-review', authMiddleware, async (req, res) => {
         });
 });
 
+editorRouter.get('/review-valid', authMiddleware, (req, res) => {
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    const { requestId } = req.query;
+    if (!requestId) {
+        res.status(400).send('Invalid Id Supplied');
+        return;
+    }
+
+    Request.findOne({
+        company: new ObjectId(req.tokenData.company),
+        _id: new ObjectId(requestId)
+    }).then(request => {
+        if (!request) {
+            res.sendStatus(404);
+            return;
+        }
+        res.sendStatus(200);
+    }).catch(err => {
+        res.sendStatus(500);
+    });
+});
+
 editorRouter.get('/editor-data', authMiddleware, async (req, res) => {
     if (!req.tokenData) {
         res.status(401).send('Unauthorized');

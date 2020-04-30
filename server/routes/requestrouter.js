@@ -21,7 +21,11 @@ requestRouter.post('/request-users', authMiddleware, async (req, res) => {
     }
 
     const filteredUsers = users.filter(o => !!o).map(o => new ObjectId(o));
-    const foundEmployees = await Employee.find({ _id: { '$in': filteredUsers } })
+    const foundEmployees = await Employee.find(
+        {
+            company: new ObjectId(req.tokenData.company),
+            _id: { '$in': filteredUsers }
+        })
         .then(response => {
             if (!response) {
                 return [];
@@ -32,6 +36,13 @@ requestRouter.post('/request-users', authMiddleware, async (req, res) => {
             console.error(err);
             return [];
         });
+
+    if (!foundEmployees || !foundEmployees.length) {
+        res.status(404).json({
+            message: 'The employees that you requested aren\'t currently available'
+        });
+        return;
+    }
 
     // Get the current requests for this user to make sure they're not performing a double request
     // This shouldn't happen but it's good to check just in case?

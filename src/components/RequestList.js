@@ -98,7 +98,15 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
     const history = useHistory();
 
     const redirectToEditor = (reviewId) => {
-        history.push(`/write/editor/${ reviewId }`);
+        axios.get('/api/editor/review-valid', {
+            params: {
+                reviewId
+            }
+        }).then(() => {
+            history.push(`/write/editor/${ reviewId }`);
+        }).catch(() => {
+            pushError('warning', 'Cannot open editor, this review might not exist.');
+        });
     };
 
 
