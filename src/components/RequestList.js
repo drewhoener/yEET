@@ -10,6 +10,7 @@ import { useHistory } from 'react-router-dom';
 import { PendingState } from '../state/action/RequestActions';
 import { connect } from 'react-redux';
 import { pushErrorMessage } from '../state/selector/RequestSelector.js'
+import { blueGrey } from '@material-ui/core/colors';
 
 const useStyle = makeStyles(theme => ({
     list: {
@@ -21,13 +22,21 @@ const useStyle = makeStyles(theme => ({
             backgroundColor: '#eeeeee'
         }
     },
-    listItemText: {
-        fontWeight: 'bold'
+    accept: {
+        color: 'green',
+        borderColor: 'green',
+        marginLeft: theme.spacing(0.5),
+        marginRight: theme.spacing(0.5)
     },
-    emptyRequestSet: {
-        textAlign: 'center',
+    reject: {
+        color: 'red',
+        borderColor: 'red',
+        marginLeft: theme.spacing(0.5),
+        marginRight: theme.spacing(0.5)
     },
-    spacedButton: {
+    write: {
+        color: blueGrey[500],
+        borderColor: blueGrey[500],
         marginLeft: theme.spacing(0.5),
         marginRight: theme.spacing(0.5)
     }
@@ -130,13 +139,13 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
                                             <>
                                                 <Button className={ classes.spacedButton } variant={ 'outlined' }
                                                         aria-label={ `Accept pending request from ${ request.firstName } ${ request.lastName }` }
-                                                        style={ { color: '#000000' } }
+                                                        className={classes.accept}
                                                         onClick={ () => handleAccept(request) }>
                                                     Accept
                                                 </Button>
                                                 <Button className={ classes.spacedButton } variant={ 'outlined' }
                                                         aria-label={ `Reject pending request from ${ request.firstName } ${ request.lastName }` }
-                                                        style={ { color: '#f44336' } }
+                                                        className={classes.reject}
                                                         onClick={ () => handleReject(request) }>
                                                     Reject
                                                 </Button>
@@ -147,13 +156,13 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
                                             <>
                                                 <Button className={ classes.spacedButton } variant={ 'outlined' }
                                                         aria-label={ `Write review for ${ request.firstName } ${ request.lastName }` }
-                                                        style={ { color: '#000000' } }
+                                                        className={classes.write}
                                                         onClick={ () => redirectToEditor(request._id) }>
                                                     Write
                                                 </Button>
                                                 <Button className={ classes.spacedButton } variant={ 'outlined' }
                                                         aria-label={ `Reject request from ${ request.firstName } ${ request.lastName }` }
-                                                        style={ { color: '#f44336' } }
+                                                        className={classes.reject}
                                                         onClick={ () => handleReject(request) }>
                                                     Reject
                                                 </Button>
