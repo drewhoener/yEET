@@ -1,12 +1,10 @@
 import Button from '@material-ui/core/Button';
-import { green, red } from '@material-ui/core/colors';
+import { red } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 
 const useStyle = makeStyles(theme => ({
     accept: {
-        color: green[500],
-        borderColor: green[500],
         fontWeight: 400,
         marginLeft: theme.spacing(0.5),
         marginRight: theme.spacing(0.5)
@@ -34,7 +32,7 @@ const RequestListOptionButton = ({ status, request, handleAccept, handleReject, 
             {
                 status === 0 &&
                 <>
-                    <Button ref={ ref } className={ classes.accept } variant={ 'outlined' }
+                    <Button ref={ ref } className={ classes.accept } color='primary' variant={ 'contained' }
                             aria-label={ `Accept pending request from ${ request.firstName } ${ request.lastName }` }
                             onClick={ () => handleAccept(request) }>
                         Accept
