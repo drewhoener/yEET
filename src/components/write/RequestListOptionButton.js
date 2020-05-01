@@ -34,7 +34,7 @@ const RequestListOptionButton = ({ status, request, handleAccept, handleReject, 
                 <>
                     <Button ref={ ref } className={ classes.accept } color='primary' variant={ 'contained' }
                             aria-label={ `Accept pending request from ${ request.firstName } ${ request.lastName }` }
-                            onClick={ () => handleAccept(request) }>
+                            onClick={ () => handleAccept(request) } disableElevation>
                         Accept
                     </Button>
                     <Button ref={ ref } className={ classes.reject } variant={ 'outlined' }
@@ -48,7 +48,7 @@ const RequestListOptionButton = ({ status, request, handleAccept, handleReject, 
                 status === 1 &&
                 <>
                     <Button ref={ ref } className={ classes.write } color={ 'primary' }
-                            variant={ 'contained' }
+                            variant={ 'contained' } disableElevation
                             aria-label={ `Write review for ${ request.firstName } ${ request.lastName }` }
                             onClick={ () => redirectToEditor(request._id) }>
                         Write
