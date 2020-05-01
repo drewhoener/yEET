@@ -1,5 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
+import moment from 'moment';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import AcceptWritePanel from '../components/write/AcceptWritePanel';
@@ -20,7 +21,12 @@ export default function WriteView() {
     React.useEffect(() => {
         axios.get('/api/open-requests')
             .then(({ data }) => {
-                setRequests(data.requests);
+                if (data.requests && Array.isArray(data.requests)) {
+                    setRequests(data.requests.map(obj => ({
+                        ...obj,
+                        expireTime: moment(obj.expireTime)
+                    })));
+                }
             })
             .catch(err => {
                 console.log(err);

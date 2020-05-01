@@ -6,13 +6,15 @@ import CompactableRequestList from './CompactableRequestList';
 
 const useStyles = makeStyles(theme => ({
     root: {
-        display: 'flex',
         flexDirection: 'row',
         flex: 1,
         justifyContent: 'flex-start',
-        height: '100%',
         [theme.breakpoints.down('md')]: {
             flexDirection: 'column',
+        },
+        [theme.breakpoints.up('md')]: {
+            display: 'flex',
+            minHeight: '100%'
         }
     },
 }));

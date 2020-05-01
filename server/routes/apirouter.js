@@ -6,7 +6,7 @@ import Request, { PendingState } from '../database/schema/requestschema';
 import Review from '../database/schema/reviewschema';
 import authRouter from '../middleware/authrouter';
 import { authMiddleware } from '../middleware/authtoken';
-import { truncateEmployee } from '../util/serverutil';
+import { getExpireTime, truncateEmployee } from '../util/serverutil';
 import { editorRouter } from './editorrouter';
 import { requestRouter } from './requestrouter';
 
@@ -133,8 +133,8 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
                     statusName: PendingState[request.status],
                     firstName: employee.firstName,
                     lastName: employee.lastName,
-                    email: employee.email,
                     position: employee.position,
+                    expireTime: getExpireTime(request).toDate(),
                 };
             }).filter(o => !!o);
         });
@@ -399,12 +399,12 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
     const week = 1000 * 60 * 60 * 24 * 7; //prolly a better way to do this
 
     stats.receivedReviews = {
-        lastWeek: reviewsReceived.filter(r => now - r.dateWritten < week ).length,
+        lastWeek: reviewsReceived.filter(r => now - r.dateWritten < week).length,
         allTime: reviewsReceived.length
     };
 
     stats.sentReviews = {
-        lastWeek: reviewsSent.filter(r => now - r.dateWritten < week ).length,
+        lastWeek: reviewsSent.filter(r => now - r.dateWritten < week).length,
         allTime: reviewsSent.length
     };
 

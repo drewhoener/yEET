@@ -9,6 +9,8 @@ const useStyles = makeStyles(theme => ({
     container: {
         display: 'flex',
         flex: 1,
+        marginTop: theme.spacing(4),
+        marginBottom: theme.spacing(4)
     },
     halfPanel: {
         display: 'flex',

@@ -1,15 +1,14 @@
-import React from 'react';
 import { CssBaseline, TextField } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { Autocomplete } from '@material-ui/lab';
 import axios from 'axios';
-import { isMobile } from '../util';
+import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import {
     beginFetchCompanies,
     resetLoginState,
@@ -21,6 +20,7 @@ import {
     setPassword,
     setSelectedCompany
 } from '../state/selector/LoginSelector';
+import { isMobile } from '../util';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -39,6 +39,7 @@ const useStyles = makeStyles(theme => ({
     },
     employeeCompanyHolder: {
         width: '100%',
+        alignItems: 'center',
         display: 'flex',
         [theme.breakpoints.up('sm')]: {
             flexDirection: 'row'
@@ -52,6 +53,9 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.up('sm')]: {
             paddingRight: theme.spacing(1)
         }
+    },
+    translated: {
+        transform: `translateY(3px)`,
     },
     employeeId: {
         width: '100%',
@@ -204,7 +208,9 @@ function LoginView(
                     <form className={ classes.form } onSubmit={ onSubmitForm } aria-label='Login Form'
                           data-lpignore="true">
                         <div className={ classes.employeeCompanyHolder }>
-                            { select }
+                            <div className={ classes.translated }>
+                                { select }
+                            </div>
                             <div className={ classes.employeeId }>
                                 <TextField
                                     id="login-username"

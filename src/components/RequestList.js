@@ -1,16 +1,16 @@
-import { ListItemSecondaryAction, ListItemText } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import { blueGrey, green, red } from '@material-ui/core/colors';
+import { ListItemText, useMediaQuery } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
+import moment from 'moment';
 import React from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { PendingState } from '../state/action/RequestActions';
 import { pushErrorMessage } from '../state/selector/RequestSelector.js';
+import RequestCardItem from './write/RequestCardItem';
+import RequestListItem from './write/RequestListItem';
 
 const useStyle = makeStyles(theme => ({
     list: {
@@ -22,31 +22,10 @@ const useStyle = makeStyles(theme => ({
             backgroundColor: '#eeeeee'
         }
     },
-    listItemText: {
-        fontWeight: 'bold'
-    },
     emptyRequestSet: {
         textAlign: 'center',
     },
     spacedButton: {
-        marginLeft: theme.spacing(0.5),
-        marginRight: theme.spacing(0.5)
-    },
-    accept: {
-        color: green[500],
-        borderColor: green[500],
-        marginLeft: theme.spacing(0.5),
-        marginRight: theme.spacing(0.5)
-    },
-    reject: {
-        color: red.A700,
-        borderColor: red.A700,
-        marginLeft: theme.spacing(0.5),
-        marginRight: theme.spacing(0.5)
-    },
-    write: {
-        color: blueGrey[700],
-        borderColor: blueGrey[700],
         marginLeft: theme.spacing(0.5),
         marginRight: theme.spacing(0.5)
     }
@@ -55,11 +34,12 @@ const useStyle = makeStyles(theme => ({
 function RequestList({ status, requests, setRequests, emptyText, pushError }) {
 
     const classes = useStyle();
+    const RequestListComponent = useMediaQuery(theme => theme.breakpoints.down('md')) ? RequestCardItem : RequestListItem;
 
     // Using useMemo so that we don't waste time filtering every time we call this
     // The memoized value will only change if status or requests change
     const renderableRequests = React.useMemo(() => {
-        return requests.filter(request => request.statusNumber === status);
+        return requests.filter(request => request.statusNumber === status).sort((o1, o2) => o2.expireTime.valueOf() - o2.expireTime.valueOf());
     }, [status, requests]);
 
     const handleAccept = (request) => {
@@ -73,11 +53,20 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
             })
             .catch(err => {
                 pushError('error', 'Request couldn\'t be accepted. It either expired or does not exist.');
-            }).then((data) => {
-            let newRequests = requests.filter(o => o._id.toString() !== request._id.toString());
-            if (data && data.request) newRequests = [data.request, ...newRequests];
-            setRequests(newRequests);
-        });
+            })
+            .then((data) => {
+                let newRequests = requests.filter(o => o._id.toString() !== request._id.toString());
+                if (data && data.request) {
+                    newRequests = [
+                        {
+                            ...data.request,
+                            expireTime: moment(data.request.expireTime),
+                        },
+                        ...newRequests,
+                    ];
+                }
+                setRequests(newRequests);
+            });
     };
 
     const handleReject = (request) => {
@@ -140,50 +129,15 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
                             <ListItem
                                 tabIndex={ 0 }
                                 aria-labelledby={ `req_${ request._id }` }
-                                className={ classes.listItem }>
-                                <ListItemText
-                                    aria-label={ status === PendingState.COMPLETED ?
-                                        `${ PendingState[status] } review for ${ request.firstName } ${ request.lastName }` :
-                                        `${ PendingState[status] } request from ${ request.firstName } ${ request.lastName }, ${ request.position }`
-                                    }
-                                    id={ `req_${ request._id }` }
-                                    primary={ request.firstName + ' ' + request.lastName }
-                                    primaryTypographyProps={ { className: classes.listItemText } }
-                                    secondary={ request.position }
+                                className={ classes.listItem }
+                            >
+                                <RequestListComponent
+                                    status={ status }
+                                    request={ request }
+                                    handleAccept={ handleAccept }
+                                    handleReject={ handleReject }
+                                    redirectToEditor={ redirectToEditor }
                                 />
-                                <ListItemSecondaryAction>
-                                    {
-                                        status === 0 &&
-                                        <>
-                                            <Button className={ classes.accept } variant={ 'outlined' }
-                                                    aria-label={ `Accept pending request from ${ request.firstName } ${ request.lastName }` }
-                                                    onClick={ () => handleAccept(request) }>
-                                                Accept
-                                            </Button>
-                                            <Button className={ classes.reject } variant={ 'outlined' }
-                                                    aria-label={ `Reject pending request from ${ request.firstName } ${ request.lastName }` }
-                                                    onClick={ () => handleReject(request) }>
-                                                Reject
-                                            </Button>
-                                        </>
-                                    }
-                                    {
-                                        status === 1 &&
-                                        <>
-                                            <Button className={ classes.write } color={ 'primary' }
-                                                    variant={ 'outlined' }
-                                                    aria-label={ `Write review for ${ request.firstName } ${ request.lastName }` }
-                                                    onClick={ () => redirectToEditor(request._id) }>
-                                                Write
-                                            </Button>
-                                            <Button className={ classes.reject } variant={ 'outlined' }
-                                                    aria-label={ `Reject request from ${ request.firstName } ${ request.lastName }` }
-                                                    onClick={ () => handleReject(request) }>
-                                                Reject
-                                            </Button>
-                                        </>
-                                    }
-                                </ListItemSecondaryAction>
                             </ListItem>
                         </React.Fragment>
                     );
