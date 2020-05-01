@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
         }
     },
     translated: {
-        transform: `translateY(3px)`,
+        transform: 'translateY(3px)',
     },
     employeeId: {
         width: '100%',
@@ -162,6 +162,7 @@ function LoginView(
 
     const select = isMobile ? (
         <TextField
+            className={ classes.translated }
             id="mobile-native-company-select"
             select
             label="Company"
@@ -208,9 +209,7 @@ function LoginView(
                     <form className={ classes.form } onSubmit={ onSubmitForm } aria-label='Login Form'
                           data-lpignore="true">
                         <div className={ classes.employeeCompanyHolder }>
-                            <div className={ classes.translated }>
-                                { select }
-                            </div>
+                            { select }
                             <div className={ classes.employeeId }>
                                 <TextField
                                     id="login-username"
