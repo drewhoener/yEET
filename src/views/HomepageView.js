@@ -30,6 +30,12 @@ const useStyles = makeStyles(theme => ({
         padding: 8,
         margin: theme.spacing(2),
     },
+    wordsintext: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        flexDirection: 'column',
+
+    }
 }));
 
 const MyStats = ({ classes }) => {
@@ -42,18 +48,18 @@ const MyStats = ({ classes }) => {
                 _id: employeeId
             }
         })
-            .then( ({ data }) => {
+            .then(({ data }) => {
                 console.log(data);
                 setStatsData(data);
             })
             .catch(err => {
-                console.log("Error in getting stats from API");
+                console.log('Error in getting stats from API');
             });
 
     }, [employeeId]);
 
     return (
-        <div>
+        <div className={classes.wordsintext}>
              Your Stats:
         </div>
     );
