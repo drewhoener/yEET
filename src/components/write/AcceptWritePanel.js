@@ -12,9 +12,10 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.down('md')]: {
             flexDirection: 'column',
         },
-        [theme.breakpoints.up('md')]: {
+        [theme.breakpoints.up('lg')]: {
             display: 'flex',
             minHeight: '100%'
+
         }
     },
 }));
