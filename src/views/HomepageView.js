@@ -39,28 +39,47 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const MyStats = ({ classes }) => {
-    const [employeeId, setEmployeeId] = React.useState(null);
-    const [statsData, setStatsData] = React.useState(null);
+    const [statsData, setStatsData] = React.useState({
+        receivedRequests: {
+            pending: 0,
+            accepted: 0
+        },
+        receivedReviews: {
+            lastWeek: 0,
+            allTime: 0
+        },
+        sentRequests: {
+            pending: 0,
+            accepted: 0
+        },
+        sentReviews: {
+            lastWeek: 0,
+            allTime: 0
+        },
+    });
 
     React.useEffect(() => {
-        axios.get('/api/user-stats', {
-            params: {
-                _id: employeeId
-            }
-        })
+        axios.get('/api/user-stats')
             .then(({ data }) => {
-                console.log(data);
-                setStatsData(data);
+                console.log(data.stats);
+                setStatsData(data.stats);
             })
             .catch(err => {
                 console.log('Error in getting stats from API');
             });
 
-    }, [employeeId]);
-
+    }, []);
+    const { receivedRequests, receivedReviews, sentRequests, sentReviews } = statsData;
     return (
         <div className={classes.wordsintext}>
-             Your Stats:
+            <Typography>You have {receivedRequests.pending} {receivedRequests.pending === 1 ? 'request' : 'requests'}.</Typography>
+            <Typography>You have {receivedRequests.accepted} {receivedRequests.accepted === 1 ? 'request'  : 'requests'} to write.</Typography>
+            <Typography>You have recieved {receivedReviews.lastWeek} {receivedReviews.lastWeek === 1 ? 'request' : 'requests'} last week.</Typography>
+            <Typography>You have sent {sentRequests.pending} {sentRequests.pending === 1 ? 'request'  : 'requests'} and {sentRequests.accepted} {sentRequests.accepted === 1 ? 'request'  : 'requests'} have been accepted which are in the middle of being written.</Typography>
+            <Typography>You have sent {sentReviews.lastWeek} {sentReviews.lastWeek === 1 ? 'request'  : 'requests'} last week.</Typography>
+            <Typography>Space for receivedReviews.allTime if it's being used</Typography>
+            <Typography>Spaced for sentReviews.allTime if it's being used</Typography>
+             
         </div>
     );
 };
