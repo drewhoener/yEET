@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
 import React from 'react';
+import { PendingState } from '../../state/action/RequestActions';
 import RequestListOptionButton from './RequestListOptionButton';
 
 const useStyles = makeStyles(() => ({
@@ -33,7 +34,7 @@ const RequestCardItem = ({ status, request, handleAccept, handleReject, redirect
                                                         component={ 'span' }>Position: </Typography>{ request.position }
                 </Typography>
                 <Typography variant='body2'><Typography className={ classes.bold }
-                                                        component={ 'span' }>Expires: </Typography>{ moment(request.expireTime).calendar() }
+                                                        component={ 'span' }>{ status === PendingState.COMPLETED ? 'Completed: ' : 'Expires: ' } </Typography>{ moment(request.expireTime).calendar() }
                 </Typography>
 
             </CardContent>

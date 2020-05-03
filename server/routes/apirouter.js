@@ -27,13 +27,28 @@ apiRouter.get('/whoami', authMiddleware, async (req, res) => {
     Employee.findOne({
         _id: new ObjectId(req.tokenData.id),
         company: new ObjectId(req.tokenData.company)
-    }).then(user => {
+    }).then(async user => {
         if (!user) {
             res.status(404).end();
             return;
         }
-        res.status(200).json({
-            fullName: `${ user.firstName } ${ user.lastName }`
+
+        let isManager = false;
+        try {
+            const managerResults = await Employee.find({
+                company: new ObjectId(req.tokenData.company),
+                manager: new ObjectId(req.tokenData.id),
+            });
+            if (managerResults && managerResults.length) {
+                isManager = true;
+            }
+        } catch (err) {
+            console.error(err);
+        }
+
+        return res.status(200).json({
+            userName: `${ user.firstName } ${ user.lastName }`,
+            isManager,
         });
     }).catch(err => {
         res.status(404).end();
@@ -396,7 +411,8 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
 
     const now = new Date();
 
-    const week = 1000 * 60 * 60 * 24 * 7; //prolly a better way to do this
+    // prolly a better way to do this
+    const week = 1000 * 60 * 60 * 24 * 7;
 
     stats.receivedReviews = {
         lastWeek: reviewsReceived.filter(r => now - r.dateWritten < week).length,

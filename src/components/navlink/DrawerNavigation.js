@@ -11,23 +11,40 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const drawerItems = {
-    'Home': {
+const subordinateReviewCapability = [
+    {
+        path: '/my-reviews',
+        name: 'My Reviews'
+    },
+    {
+        path: '/employee',
+        name: 'My Employees\' Reviews',
+        fuzzyMatch: true
+    }
+];
+
+const drawerItemsBase = [
+    {
+        name: 'Home',
         path: '/home',
         icon: (<House/>)
     },
-    'My Reviews': {
-        path: '/my-reviews',
-        icon: (<RateReview/>)
+    {
+        name: 'My Reviews',
+        path: '/view/my-reviews',
+        basePath: '/view',
+        icon: (<RateReview/>),
     },
-    'Request Review': {
+    {
+        name: 'Request Review',
         path: '/request',
         icon: (<Send/>)
     },
-    'Write Review': {
+    {
+        name: 'Write Review',
         path: '/write',
+        basePath: '/write',
         icon: (<Create/>),
-        notify: 1,
         children: [
             {
                 path: '/accept',
@@ -39,21 +56,33 @@ const drawerItems = {
             }
         ]
     }
-};
+];
 
-const DrawerNavigation = ({ closeDrawer, children }) => {
+const DrawerNavigation = ({ closeDrawer, capabilities, children }) => {
 
     const classes = useStyles();
+
+    const drawerItems = React.useMemo(() => {
+        const items = [...drawerItemsBase];
+        if (capabilities.isManager) {
+            const myReviews = items.find(item => item.name === 'My Reviews');
+            if (myReviews) {
+                myReviews.children = [...subordinateReviewCapability];
+                myReviews.name = 'Read Reviews';
+            }
+        }
+        return items;
+    }, [capabilities]);
 
     return (
         <List>
             {
-                Object.entries(drawerItems).map(([key, value]) => {
+                drawerItems.map(({ name: key, ...value }) => {
                     if (value.children) {
                         return (
                             <CollapseNavItem
                                 key={ key.toLowerCase().replace(' ', '_') }
-                                basePath={ value.path }
+                                basePath={ value.basePath }
                                 name={ key }
                                 icon={ React.cloneElement(value.icon) }
                             >
@@ -62,13 +91,13 @@ const DrawerNavigation = ({ closeDrawer, children }) => {
                                         <RoutedListItem
                                             key={ item.name.toLowerCase().replace(' ', '_') }
                                             primary={ item.name }
-                                            to={ `${ value.path }${ item.path }` }
-                                            notify={ 0 }
+                                            to={ `${ value.basePath }${ item.path }` }
                                             onClick={ closeDrawer }
                                             headerText={ false }
                                             headerProps={ {
                                                 className: classes.drawerSubLink
                                             } }
+                                            fuzzyMatch={ value.fuzzyMatch }
                                         />
                                     ))
                                 }
@@ -81,7 +110,6 @@ const DrawerNavigation = ({ closeDrawer, children }) => {
                             icon={ React.cloneElement(value.icon) }
                             primary={ key }
                             to={ value.path }
-                            notify={ value.notify ? value.notify : 0 }
                             onClick={ closeDrawer }
                         />
                     );

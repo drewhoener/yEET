@@ -120,7 +120,9 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
     const classes = useStyles();
     const theme = useTheme();
     const [drawerOpen, setDrawerOpen] = React.useState(false);
-    const [userName, setUserName] = React.useState('');
+    const [employeeInfo, setEmployeeInfo] = React.useState({
+        userName: ''
+    });
 
     const onDrawerToggle = () => {
         setDrawerOpen(!drawerOpen);
@@ -134,10 +136,12 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
     React.useEffect(() => {
         axios.get('/api/whoami')
             .then(({ data }) => {
-                if (!data) {
-                    setUserName('');
+                if (!data || !data.userName) {
+                    setEmployeeInfo({
+                        userName: ''
+                    });
                 }
-                setUserName(data.fullName || '');
+                setEmployeeInfo(data);
             });
     }, []);
 
@@ -157,13 +161,13 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
                         <div className={ classes.userName }>
                             <Avatar className={ classes.largeAvatar }/>
                             {
-                                (userName.length > 0) &&
-                                <Typography align='center' variant='h5'>{ userName }</Typography>
+                                (employeeInfo.userName.length > 0) &&
+                                <Typography align='center' variant='h5'>{ employeeInfo.userName }</Typography>
                             }
                         </div>
                     </div>
                     <Divider/>
-                    <DrawerNavigation closeDrawer={ closeDrawer }>
+                    <DrawerNavigation closeDrawer={ closeDrawer } capabilities={ employeeInfo }>
                         <Hidden smUp>
                             <ListItem button onClick={ onLogout }>
                                 <ListItemIcon><ExitToApp/></ListItemIcon>
@@ -174,7 +178,7 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
                 </div>
             );
         },
-        [classes.toolbar, classes.userName, classes.largeAvatar, onLogout, closeDrawer, userName]
+        [classes.toolbar, classes.userName, classes.largeAvatar, onLogout, closeDrawer, employeeInfo]
     );
 
     return (
@@ -243,7 +247,7 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
                         } }
                         variant='permanent'
                         PaperProps={ {
-                            elevation: 0
+                            elevation: 1
                         } }
                         open
                     >

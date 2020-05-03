@@ -38,7 +38,7 @@ export default function MainView() {
                         <div className={ classes.toolbar }/>
                         <HomepageView/>
                     </Route>
-                    <Route path='/my-reviews'>
+                    <Route path='/view'>
                         <ReadReviewView/>
                     </Route>
                     <Route path='/request'>

@@ -268,7 +268,6 @@ function LoginView(
             return null;
         }
         if (needsRedirect) {
-            console.log(from);
             resetLoginState();
             return (
                 <Redirect to={ '/home' } from={ from }/>

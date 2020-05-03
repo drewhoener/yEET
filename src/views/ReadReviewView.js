@@ -16,9 +16,9 @@ import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
+import { Route, Switch } from 'react-router-dom';
 import { serializeNodes } from '../components/editor/EditorSerializer';
 import Loader from '../components/Loader';
-import TabbedReviewBar from '../components/TabbedReviewBar';
 
 const useStyle = makeStyles(theme => ({
     inlineFlex: {
@@ -27,6 +27,7 @@ const useStyle = makeStyles(theme => ({
         width: '100%',
         height: '100%'
     },
+    toolbar: theme.mixins.toolbar,
     panelEnclosed: {
         padding: theme.spacing(3),
         flex: 1,
@@ -62,7 +63,7 @@ const useStyle = makeStyles(theme => ({
             left: 0,
             width: '100%',
             height: '100%',
-           // overflow : 'auto'
+            // overflow : 'auto'
 
         }
     },
@@ -72,7 +73,7 @@ const useStyle = makeStyles(theme => ({
         padding: 20,
     },
     buttonwrapper: {
-        [theme.breakpoints.down('sm')]:{
+        [theme.breakpoints.down('sm')]: {
             display: 'flex',
             flex: 1,
             flexWrap: 'wrap',
@@ -93,7 +94,19 @@ const useStyle = makeStyles(theme => ({
     },
     experimentTabs: {
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        flex: 1,
+    },
+    verticalTabs: {
+        borderRight: `1px solid ${ theme.palette.divider }`,
+    },
+    tabContainer: {
+        display: 'flex',
+        backgroundColor: theme.palette.background.paper,
+        flex: '0 1 auto',
+    },
+    flexedListHolder: {
+        display: 'flex',
     }
 }));
 
@@ -169,20 +182,24 @@ const MyReviews = ({ classes }) => {
 
     return (
         <div className={ classes.experimentTabs }>
-            <Tabs
-                orientation='vertical'
-                variant='scrollable'
-                value={ selectedYear }
-                onChange={ handleTabChange }
-                aria-label='Year Selection Tabs'
-            >
-                {
-                    years.map((year, index) => (
-                        <Tab key={ `yeartab-${ year }` } id={ `tab-yearselect-${ index }` }
-                             aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
-                    ))
-                }
-            </Tabs>
+            <div className={ classes.tabContainer }>
+                <Tabs
+                    orientation='vertical'
+                    variant='scrollable'
+                    value={ selectedYear }
+                    onChange={ handleTabChange }
+                    aria-label='Year Selection Tabs'
+                    className={ classes.verticalTabs }
+                >
+                    {
+                        years.map((year, index) => (
+                            <Tab className={ classes.verticalTab } key={ `yeartab-${ year }` }
+                                 id={ `tab-yearselect-${ index }` }
+                                 aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
+                        ))
+                    }
+                </Tabs>
+            </div>
             <ReviewList classes={ classes } reviews={ reviews }/>
         </div>
     );
@@ -248,9 +265,7 @@ const ReviewList = ({ classes, reviews }) => {
             </Modal>
             {
                 Object.keys(reviews).sort((a, b) => b.localeCompare(a)).map((year) => {
-                    return <LabelledExpansionPanel key={ `YEAR-${ year }` } classes={ classes }
-                                                   onChange={ handleChange } label={ `${ year }` }
-                                                   expandedPanel={ expandedPanel }>
+                    return <div className={ classes.flexedListHolder }>
                         <List className={ classes.list }>
                             {
                                 reviews[year].sort((a, b) => new Date(b.dateWritten) - new Date(a.dateWritten)).map(review => {
@@ -263,7 +278,7 @@ const ReviewList = ({ classes, reviews }) => {
                                                               primary={ `${ review.firstName + ' ' + review.lastName }` }
                                                               primaryTypographyProps={ { className: classes.listItemText } }
                                                               secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                                                <ListItemSecondaryAction className={classes.buttonwrapper}>
+                                                <ListItemSecondaryAction className={ classes.buttonwrapper }>
                                                     <Button onClick={ setModalState(review.reviewId) }>View</Button>
                                                     <Button>Download</Button>
                                                 </ListItemSecondaryAction>
@@ -274,7 +289,7 @@ const ReviewList = ({ classes, reviews }) => {
                             }
                             <Divider/>
                         </List>
-                    </LabelledExpansionPanel>;
+                    </div>;
                 })
             }
         </div>
@@ -305,10 +320,15 @@ export default function ReadReviewView(props) {
     const classes = useStyle();
     return (
         <div className={ classes.inlineFlex }>
-            <TabbedReviewBar>
-                <MyReviews classes={ classes }/>
-                <SubordinateReviews classes={ classes }/>
-            </TabbedReviewBar>
+            <div className={ classes.toolbar }/>
+            <Switch>
+                <Route path={ '/view/my-reviews' }>
+                    <MyReviews classes={ classes }/>
+                </Route>
+                <Route exact path={ '/view/employee' }>
+                    <SubordinateReviews classes={ classes }/>
+                </Route>
+            </Switch>
         </div>
     );
 }
