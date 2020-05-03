@@ -388,6 +388,7 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
     const requestsReceived = companyRequests.filter((request) => request.userReceiving.toString() === req.tokenData.id.toString());
     const requestsSent = companyRequests.filter((request) => request.userRequesting.toString() === req.tokenData.id.toString());
 
+    // console.log('Requests in my company:');
     // console.log(companyRequests);
 
     stats.receivedRequests = {
@@ -400,14 +401,13 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
         accpeted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length
     };
 
+    const reqRecievedIds = requestsReceived.filter(r => r.status === PendingState.COMPLETED).map(r => r._id.toString());
+    const reqSentIds = requestsSent.filter(r => r.status === PendingState.COMPLETED).map(r => r._id.toString());
 
-    const companyReviews = await Review.find({ requestID: { '$in': companyRequests.map(r => r.id) } });
+    const companyReviews = await Review.find({ requestID: { '$in': companyRequests.map(r => r._id.toString()) } });
 
-    const reqRecievedIds = requestsReceived.filter(r => r.status = PendingState.COMPLETED).map(r => r.id);
-    const reqSentIds = requestsSent.filter(r => r.status = PendingState.COMPLETED).map(r => r.id);
-
-    const reviewsReceived = companyReviews.filter(rev => reqRecievedIds.includes(rev.requestID));
-    const reviewsSent = companyReviews.filter(rev => reqSentIds.includes(rev.requestID));
+    const reviewsReceived = companyReviews.filter(rev => reqRecievedIds.includes(rev.requestID.toString()));
+    const reviewsSent = companyReviews.filter(rev => reqSentIds.includes(rev.requestID.toString()));
 
     const now = new Date();
 
