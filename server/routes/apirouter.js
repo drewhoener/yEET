@@ -149,11 +149,9 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
                     userRequesting,
                     userReceiving,
                     statusNumber: request.status,
-                    statusName: PendingState[request.status],
                     firstName: employee.firstName,
                     lastName: employee.lastName,
                     position: employee.position,
-                    expireTime: getExpireTime(request).toDate(),
                     submittedTime: review != null ? review.dateWritten : getExpireTime(request).toDate()
                 };
             }).filter(o => !!o);

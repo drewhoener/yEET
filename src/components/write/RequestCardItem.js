@@ -23,10 +23,8 @@ const RequestCardItem = ({ status, request, handleAccept, handleReject, redirect
 
     const classes = useStyles();
     const expireTimeStr = React.useMemo(() => {
-        const expireTime = request.expireTime.calendar();
-        const submittedTime = request.submittedTime.calendar();
-        return status === PendingState.COMPLETED ? submittedTime : expireTime;
-    }, [request, status]);
+        return request.submittedTime.calendar();
+    }, [request]);
 
     return (
         <Card className={ classes.cardItem } ref={ ref } elevation={ 0 }>

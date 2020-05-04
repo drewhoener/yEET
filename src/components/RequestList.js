@@ -8,6 +8,7 @@ import moment from 'moment';
 import React from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { PendingState } from '../state/action/RequestActions';
 import { pushErrorMessage } from '../state/selector/RequestSelector.js';
 import RequestCardItem from './write/RequestCardItem';
 import RequestListItem from './write/RequestListItem';
@@ -42,7 +43,7 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
     // Using useMemo so that we don't waste time filtering every time we call this
     // The memoized value will only change if status or requests change
     const renderableRequests = React.useMemo(() => {
-        return requests.filter(request => request.statusNumber === status).sort((o1, o2) => o2.expireTime.valueOf() - o2.expireTime.valueOf());
+        return requests.filter(request => request.statusNumber === status).sort((o1, o2) => o2.submittedTime.valueOf() - o2.submittedTime.valueOf());
     }, [status, requests]);
 
     const handleAccept = (request) => {
@@ -63,7 +64,8 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
                     newRequests = [
                         {
                             ...data.request,
-                            expireTime: moment(data.request.expireTime),
+                            statusName: PendingState[data.request.statusNumber],
+                            submittedTime: moment(data.request.submittedTime),
                         },
                         ...newRequests,
                     ];

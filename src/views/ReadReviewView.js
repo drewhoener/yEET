@@ -225,8 +225,6 @@ const ReviewList = ({ classes, reviews }) => {
                 setReviewData(serializeNodes(JSON.parse(data.contents)));
             })
             .catch(err => {
-                // const error = {};
-                // setReviews([error]);
             });
     }, [curReview]);
 

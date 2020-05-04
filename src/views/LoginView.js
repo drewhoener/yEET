@@ -44,9 +44,9 @@ const useStyles = makeStyles(theme => ({
         }
     },
     employeeCompanyHolder: {
-        width: '100%',
         alignItems: 'center',
         display: 'flex',
+        flex: 1,
         [theme.breakpoints.up('sm')]: {
             flexDirection: 'row'
         },
@@ -55,16 +55,23 @@ const useStyles = makeStyles(theme => ({
         },
     },
     companyAC: {
-        width: '100%',
+        // width: '100%',
+        flex: 1,
         [theme.breakpoints.up('sm')]: {
             paddingRight: theme.spacing(1)
         }
     },
     translated: {
-        transform: 'translateY(3px)',
+        transform: 'translateY(4px)',
+    },
+    companyHolder: {
+        width: '100%',
+        display: 'flex',
+        flex: 1,
     },
     employeeId: {
         width: '100%',
+        flex: 1,
         [theme.breakpoints.up('sm')]: {
             paddingLeft: theme.spacing(1)
         }
@@ -178,6 +185,7 @@ function LoginView(
                 native: true,
             } }
             variant="outlined"
+            fullWidth
         >
             { companies.map(elem => (
                 <option key={ elem.companyId } value={ elem.companyId }>
@@ -216,7 +224,9 @@ function LoginView(
                         <form className={ classes.form } onSubmit={ onSubmitForm } aria-label='Login Form'
                               data-lpignore="true">
                             <div className={ classes.employeeCompanyHolder }>
-                                { select }
+                                <div className={ classes.companyHolder }>
+                                    { select }
+                                </div>
                                 <div className={ classes.employeeId }>
                                     <TextField
                                         id="login-username"

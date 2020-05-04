@@ -5,6 +5,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import AcceptWritePanel from '../components/write/AcceptWritePanel';
 import CompactableRequestList from '../components/write/CompactableRequestList';
+import { PendingState } from '../state/action/RequestActions';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -18,6 +19,7 @@ const useStyle = makeStyles(theme => ({
 export default function WriteView() {
     const classes = useStyle();
     const [requests, setRequests] = React.useState([]);
+
     React.useEffect(() => {
         axios.get('/api/open-requests')
             .then(({ data }) => {
@@ -25,8 +27,8 @@ export default function WriteView() {
 
                     const newRequests = data.requests.map(obj => ({
                         ...obj,
-                        expireTime: moment(obj.expireTime),
                         submittedTime: moment(obj.submittedTime),
+                        statusName: PendingState[obj.statusNumber],
                     }));
                     setRequests(newRequests);
                 }
@@ -35,6 +37,7 @@ export default function WriteView() {
                 console.log(err);
             });
     }, []);
+
     return (
         <React.Fragment>
             <div className={ classes.toolbar }/>
