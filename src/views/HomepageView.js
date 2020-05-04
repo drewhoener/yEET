@@ -35,7 +35,18 @@ const useStyles = makeStyles(theme => ({
         flexWrap: 'wrap',
         flexDirection: 'column',
 
-    }
+    },
+    stackableText: {
+        display: 'flex',
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        [theme.breakpoints.down('sm')]:{
+            flexDirection: 'column',
+            alignItems: 'flex-start'
+        },
+    },
+
 }));
 
 const MyStats = ({ classes }) => {
@@ -71,14 +82,29 @@ const MyStats = ({ classes }) => {
     }, []);
     const { receivedRequests, receivedReviews, sentRequests, sentReviews } = statsData;
     return (
+        // Anthony: probably could just leave them in all one div but I realized that by the time I finished ¯\_(ツ)_/¯
         <div className={classes.wordsintext}>
-            <Typography>You have {receivedRequests.pending} {receivedRequests.pending === 1 ? 'request' : 'requests'}.</Typography>
-            <Typography>You have {receivedRequests.accepted} {receivedRequests.accepted === 1 ? 'request'  : 'requests'} to write.</Typography>
-            <Typography>You have recieved {receivedReviews.lastWeek} {receivedReviews.lastWeek === 1 ? 'request' : 'requests'} last week.</Typography>
-            <Typography>You have sent {sentRequests.pending} {sentRequests.pending === 1 ? 'request'  : 'requests'} and {sentRequests.accepted} {sentRequests.accepted === 1 ? 'request'  : 'requests'} have been accepted which are in the middle of being written.</Typography>
-            <Typography>You have sent {sentReviews.lastWeek} {sentReviews.lastWeek === 1 ? 'request'  : 'requests'} last week.</Typography>
-            <Typography>Space for receivedReviews.allTime if it's being used</Typography>
-            <Typography>Spaced for sentReviews.allTime if it's being used</Typography>
+            <div className={classes.stackableText}>
+                <Typography variant='h2'>Pending Requests: </Typography>
+                <Typography variant='h2'>{receivedRequests.pending}</Typography>
+            </div>
+            <div className={classes.stackableText}>
+                <Typography variant='h3'>Reviews to Write: </Typography>
+                <Typography variant='h3'> {receivedRequests.accepted}</Typography>
+            </div>
+            <div className={classes.stackableText}>
+                <Typography variant='h4'>Requests since last week: </Typography>
+                <Typography varaint='h4'> {receivedReviews.lastWeek}</Typography>
+            </div>
+            <div className={classes.stackableText}>
+                <Typography variant='h5'> Sent Pending Requests: </Typography>
+                <Typography varaint='h5'> {sentRequests.pending}</Typography>
+            </div>
+            <div className={classes.stackableText}>
+                <Typography variant='h6'>Requests Sent since last week: </Typography>
+                <Typography variant='h6'> {sentReviews.lastWeek}</Typography>
+            </div>
+            <Typography>Or keep the text like this</Typography>
              
         </div>
     );
