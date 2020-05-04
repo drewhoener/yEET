@@ -22,16 +22,17 @@ export default function WriteView() {
         axios.get('/api/open-requests')
             .then(({ data }) => {
                 if (data.requests && Array.isArray(data.requests)) {
-                    setRequests(data.requests.map(obj => ({
+
+                    const newRequests = data.requests.map(obj => ({
                         ...obj,
-                        expireTime: moment(obj.expireTime)
-                    })));
+                        expireTime: moment(obj.expireTime),
+                        submittedTime: moment(obj.submittedTime),
+                    }));
+                    setRequests(newRequests);
                 }
             })
             .catch(err => {
                 console.log(err);
-                // const error = {};
-                // setRequests([error]);
             });
     }, []);
     return (

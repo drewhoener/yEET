@@ -18,6 +18,9 @@ const useStyle = makeStyles(theme => ({
     },
     listItem: {
         backgroundColor: '#ffffff',
+        [`@media (max-width: ${ 1449 }px)`]: {
+            paddingRight: theme.spacing(4),
+        },
         '&:hover': {
             backgroundColor: '#eeeeee'
         }
@@ -28,7 +31,7 @@ const useStyle = makeStyles(theme => ({
     spacedButton: {
         marginLeft: theme.spacing(0.5),
         marginRight: theme.spacing(0.5)
-    }
+    },
 }));
 
 function RequestList({ status, requests, setRequests, emptyText, pushError }) {

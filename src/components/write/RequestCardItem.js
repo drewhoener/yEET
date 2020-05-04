@@ -3,7 +3,6 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import moment from 'moment';
 import React from 'react';
 import { PendingState } from '../../state/action/RequestActions';
 import RequestListOptionButton from './RequestListOptionButton';
@@ -23,6 +22,11 @@ const useStyles = makeStyles(() => ({
 const RequestCardItem = ({ status, request, handleAccept, handleReject, redirectToEditor }, ref) => {
 
     const classes = useStyles();
+    const expireTimeStr = React.useMemo(() => {
+        const expireTime = request.expireTime.calendar();
+        const submittedTime = request.submittedTime.calendar();
+        return status === PendingState.COMPLETED ? submittedTime : expireTime;
+    }, [request, status]);
 
     return (
         <Card className={ classes.cardItem } ref={ ref } elevation={ 0 }>
@@ -33,8 +37,12 @@ const RequestCardItem = ({ status, request, handleAccept, handleReject, redirect
                 <Typography variant='body2'><Typography className={ classes.bold }
                                                         component={ 'span' }>Position: </Typography>{ request.position }
                 </Typography>
-                <Typography variant='body2'><Typography className={ classes.bold }
-                                                        component={ 'span' }>{ status === PendingState.COMPLETED ? 'Completed: ' : 'Expires: ' } </Typography>{ moment(request.expireTime).calendar() }
+                <Typography variant='body2'>
+                    <Typography className={ classes.bold } component={ 'span' }>
+                        {
+                            status === PendingState.COMPLETED ? 'Completed: ' : 'Expires: '
+                        }
+                    </Typography>{ expireTimeStr }
                 </Typography>
 
             </CardContent>

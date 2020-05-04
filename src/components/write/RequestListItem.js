@@ -1,6 +1,5 @@
 import { ListItemSecondaryAction, ListItemText } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import moment from 'moment';
 import React from 'react';
 import { PendingState } from '../../state/action/RequestActions';
 import RequestListOptionButton from './RequestListOptionButton';
@@ -22,8 +21,10 @@ const RequestListItem = ({ status, request, handleAccept, handleReject, redirect
 
     const classes = useStyles();
     const expireTimeStr = React.useMemo(() => {
-        return moment(request.expireTime).calendar();
-    }, [request]);
+        const expireTime = request.expireTime.calendar();
+        const submittedTime = request.submittedTime.calendar();
+        return status === PendingState.COMPLETED ? submittedTime : expireTime;
+    }, [request, status]);
 
     return (
         <>
@@ -49,7 +50,7 @@ const RequestListItem = ({ status, request, handleAccept, handleReject, redirect
                     `Request Completed ${ expireTimeStr }`
                 }
                 id={ `req_${ request._id }` }
-                primary={ 'Expires' }
+                primary={ status === PendingState.COMPLETED ? 'Completed' : 'Expires' }
                 primaryTypographyProps={ { className: classes.listItemText } }
                 secondary={ expireTimeStr }
             />

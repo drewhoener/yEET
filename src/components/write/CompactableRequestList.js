@@ -10,7 +10,11 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flex: 1,
         marginTop: theme.spacing(4),
-        marginBottom: theme.spacing(4)
+        marginBottom: theme.spacing(4),
+        [`@media screen and (min-width: ${ 1280 }px) and (max-width: ${ 1449 }px)`]: {
+            paddingRight: 0,
+            paddingLeft: 0
+        },
     },
     halfPanel: {
         display: 'flex',

@@ -130,10 +130,14 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
                 return [];
             }
             const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
+            const closedReviews = await Review.find({
+                requestID: { '$in': requests.map(o => o._id) },
+                completed: true
+            });
             return requests.map(request => {
                 const { _id, company, timeRequested, userRequesting, userReceiving } = request;
                 const employee = employees.find(e => e._id.toString() === request.userRequesting.toString());
-                console.log(employee);
+                const review = closedReviews.find(r => r.requestID.toString() === request._id.toString());
                 if (!employee) {
                     // Not ideal but what exactly are you supposed to do when you can't find a user?
                     return null;
@@ -150,8 +154,13 @@ apiRouter.get('/open-requests', authMiddleware, async (req, res) => {
                     lastName: employee.lastName,
                     position: employee.position,
                     expireTime: getExpireTime(request).toDate(),
+                    submittedTime: review != null ? review.dateWritten : getExpireTime(request).toDate()
                 };
             }).filter(o => !!o);
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).send('Internal Error');
         });
     // Get employee for each requester in requests, etc
     // Map to data structure
@@ -423,7 +432,6 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
         lastWeek: reviewsSent.filter(r => now - r.dateWritten < week).length,
         allTime: reviewsSent.length
     };
-
 
     res.status(200).json({
         stats
