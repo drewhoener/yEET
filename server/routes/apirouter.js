@@ -403,23 +403,34 @@ apiRouter.get('/review-contents', authMiddleware, async (req, res) => {
 });
 
 apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
+
     if (!req.tokenData) {
         res.status(401).send('Unauthorized');
         return;
     }
 
-    const lastLogin = req.tokenData.lastLoggedIn;
+    const user = await Employee.findOne({ _id: new ObjectId(req.tokenData.id) });
+
+    const lastLogin = user.lastLoggedIn;
+
+    const companyRequests = await Request.find({ company: new ObjectId(user.company) });
+    const companyReviews = await Review.find({ requestID: { '$in': companyRequests.map(r => r._id.toString()) } });
+
+    const requestsReceived = companyRequests.filter((request) => request.userReceiving.toString() === user._id.toString());
+    const requestsSent = companyRequests.filter((request) => request.userRequesting.toString() === user._id.toString());
+
+    const reqRecievedIds = requestsReceived.map(req => req._id);
+    const reqSentIds = requestsSent.map(req => req._id);
+
+    const reviewsReceived = companyReviews.filter(rev => reqRecievedIds.includes(rev.requestID.toString()));
+    const reviewsSent = companyReviews.filter(rev => reqSentIds.includes(rev.requestID.toString()));
 
     const stats = {};
-
-    const companyRequests = await Request.find({ company: req.tokenData.company });
-    const requestsReceived = companyRequests.filter((request) => request.userReceiving.toString() === req.tokenData.id.toString());
-    const requestsSent = companyRequests.filter((request) => request.userRequesting.toString() === req.tokenData.id.toString());
 
     stats.requests = {
         incoming: {
             pending: requestsReceived.filter(r => r.status === PendingState.PENDING).length,
-            pendingSinceLastLogin: requestsReceived.filter(r => r.status === PendingState.PENDING && r.timeRequested >  lastLogin).length,
+            pendingSinceLastLogin: requestsReceived.filter(r => r.status === PendingState.PENDING && r.timeRequested > lastLogin).length,
             accepted: requestsReceived.filter(r => r.status === PendingState.ACCEPTED).length,
             completed: requestsReceived.filter(r => r.status === PendingState.COMPLETED).length,
         },
@@ -439,15 +450,7 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
             allTime: reviewsSent.length
         }
     }
-
-    const reqRecievedIds = requestsReceived.filter(r => r.status === PendingState.COMPLETED).map(r => r._id.toString());
-    const reqSentIds = requestsSent.filter(r => r.status === PendingState.COMPLETED).map(r => r._id.toString());
-
-    const companyReviews = await Review.find({ requestID: { '$in': companyRequests.map(r => r._id.toString()) } });
-
-    const reviewsReceived = companyReviews.filter(rev => reqRecievedIds.includes(rev.requestID.toString()));
-    const reviewsSent = companyReviews.filter(rev => reqSentIds.includes(rev.requestID.toString()));
-
+ 
     res.status(200).json({
         stats
     });

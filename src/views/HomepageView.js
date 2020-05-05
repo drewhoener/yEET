@@ -81,7 +81,7 @@ const MyStats = ({ classes }) => {
                 setStatsData(data.stats);
             })
             .catch(err => {
-                console.log('Error in getting stats from API');
+                console.log(err);
             });
 
     }, []);
@@ -101,6 +101,8 @@ const MyStats = ({ classes }) => {
                 setEmployeeInfo(data);
             });
     }, []);
+
+    console.log(statsData);
 
     const { receivedRequests, receivedReviews, sentRequests, sentReviews } = statsData;
     return (
