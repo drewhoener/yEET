@@ -73,7 +73,7 @@ apiRouter.post('/logged-in', authMiddleware, async (req, res) => {
         }
     ).catch((err) => {
         console.error(err);
-    }).then(res.status(200));
+    }).then(res.sendStatus(200));
 });
 
 // noinspection JSUnresolvedFunction
