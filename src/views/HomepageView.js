@@ -77,7 +77,7 @@ const MyStats = ({ classes }) => {
                 setStatsData(data.stats);
             })
             .catch(err => {
-                console.log('Error in getting stats from API');
+                console.log(err);
             });
 
     }, []);
@@ -98,7 +98,9 @@ const MyStats = ({ classes }) => {
             });
     }, []);
 
-    const { requests, reviews } = statsData;
+    console.log(statsData);
+
+    const { receivedRequests, receivedReviews, sentRequests, sentReviews } = statsData;
     return (
         // Anthony: probably could just leave them in all one div but I realized that by the time I finished ¯\_(ツ)_/¯
         <div className={classes.wordsintext}>
