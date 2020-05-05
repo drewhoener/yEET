@@ -408,28 +408,37 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
         return;
     }
 
+    const lastLogin = req.tokenData.lastLoggedIn;
+
     const stats = {};
 
     const companyRequests = await Request.find({ company: req.tokenData.company });
     const requestsReceived = companyRequests.filter((request) => request.userReceiving.toString() === req.tokenData.id.toString());
     const requestsSent = companyRequests.filter((request) => request.userRequesting.toString() === req.tokenData.id.toString());
 
-    // console.log('Requests in my company:');
-    // console.log(companyRequests);
-
-    stats.requests = {};
-
-    stats.requests.incoming = {
-        pending: requestsReceived.filter(r => r.status === PendingState.PENDING).length,
-        accepted: requestsReceived.filter(r => r.status === PendingState.ACCEPTED).length,
-        completed: requestsReceived.filter(r => r.status === PendingState.COMPLETED).length,
+    stats.requests = {
+        incoming: {
+            pending: requestsReceived.filter(r => r.status === PendingState.PENDING).length,
+            pendingSinceLastLogin: requestsReceived.filter(r => r.status === PendingState.PENDING && r.timeRequested >  lastLogin).length,
+            accepted: requestsReceived.filter(r => r.status === PendingState.ACCEPTED).length,
+            completed: requestsReceived.filter(r => r.status === PendingState.COMPLETED).length,
+        },
+        outgoing: {
+            pending: requestsSent.filter(r => r.status === PendingState.PENDING).length,
+            accpeted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length,
+            completed: requestsSent.filter(r => r.status === PendingState.COMPLETED).length
+        }
     };
 
-    stats.requests.outgoing = {
-        pending: requestsSent.filter(r => r.status === PendingState.PENDING).length,
-        accpeted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length,
-        completed: requestsSent.filter(r => r.status === PendingState.COMPLETED).length
-    };
+    stats.reviews = {
+        incoming: {
+            sinceLastLoggin: reviewsReceived.filter(r => r.dateWritten > lastLogin).length,
+            allTime: reviewsReceived.length
+        },
+        outgoing: {
+            allTime: reviewsSent.length
+        }
+    }
 
     const reqRecievedIds = requestsReceived.filter(r => r.status === PendingState.COMPLETED).map(r => r._id.toString());
     const reqSentIds = requestsSent.filter(r => r.status === PendingState.COMPLETED).map(r => r._id.toString());
@@ -438,23 +447,6 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
 
     const reviewsReceived = companyReviews.filter(rev => reqRecievedIds.includes(rev.requestID.toString()));
     const reviewsSent = companyReviews.filter(rev => reqSentIds.includes(rev.requestID.toString()));
-
-    const now = new Date();
-
-    // prolly a better way to do this
-    const lastLogin = req.tokenData.lastLoggedIn;
-
-    stats.reviews = {};
-
-    stats.reviews.incoming = {
-        sinceLastLoggin: reviewsReceived.filter(r => r.dateWritten > lastLogin).length,
-        allTime: reviewsReceived.length
-    };
-
-    stats.reviews.outgoing = {
-        sinceLastLoggin: reviewsSent.filter(r => r.dateWritten > lastLogin).length,
-        allTime: reviewsSent.length
-    };
 
     res.status(200).json({
         stats
