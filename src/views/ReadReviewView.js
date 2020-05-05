@@ -116,7 +116,6 @@ const useStyle = makeStyles(theme => ({
     },
     yearText: {
         paddingTop: theme.spacing(2),
-        textDecoration: 'underline'
     },
     verticalTabs: {
         borderRight: `1px solid ${ theme.palette.divider }`,
