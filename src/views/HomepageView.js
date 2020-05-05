@@ -102,22 +102,22 @@ const MyStats = ({ classes }) => {
         // Anthony: probably could just leave them in all one div but I realized that by the time I finished ¯\_(ツ)_/¯
         <div className={classes.wordsintext}>
             <div className={classes.stackableText}>
-                <Typography variant='h2'>{`Welcome Back, ${employeeInfo.userName}`}</Typography>
+                <Typography variant='h2'>{`Welcome Back, ${employeeInfo.userName.split(' ')[0]}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Pending Requests: ${receivedRequests.pending}`}</Typography>
-            </div>
-            <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Reviews to Write: ${receivedRequests.accepted}`}</Typography>
+                <Typography variant='h5'>{`Pending requests: ${receivedRequests.pending}`}</Typography>
             </div>
             <div className={classes.stackableText}>
                 <Typography variant='h5'>{`Requests since last week: ${receivedReviews.lastWeek}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Sent Pending Requests: ${sentRequests.pending}`}</Typography>
+                <Typography variant='h5'>{`Reviews to Write: ${receivedRequests.accepted}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Requests Sent since last week: ${sentReviews.lastWeek}`}</Typography>
+                <Typography variant='h5'>{`Sent pending requests: ${sentRequests.pending}`}</Typography>
+            </div>
+            <div className={classes.stackableText}>
+                <Typography variant='h5'>{`Sent requests since last week: ${sentReviews.lastWeek}`}</Typography>
             </div>
         </div>
     );
