@@ -80,32 +80,45 @@ const MyStats = ({ classes }) => {
             });
 
     }, []);
+
+    const [employeeInfo, setEmployeeInfo] = React.useState({
+        userName: ''
+    });
+
+    React.useEffect(() => {
+        axios.get('/api/whoami')
+            .then(({ data }) => {
+                if (!data || !data.userName) {
+                    setEmployeeInfo({
+                        userName: ''
+                    });
+                }
+                setEmployeeInfo(data);
+            });
+    }, []);
+
     const { receivedRequests, receivedReviews, sentRequests, sentReviews } = statsData;
     return (
         // Anthony: probably could just leave them in all one div but I realized that by the time I finished ¯\_(ツ)_/¯
         <div className={classes.wordsintext}>
             <div className={classes.stackableText}>
-                <Typography variant='h2'>Pending Requests: </Typography>
-                <Typography variant='h2'>{receivedRequests.pending}</Typography>
+                <Typography variant='h2'>{`Welcome Back, ${employeeInfo.userName}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h3'>Reviews to Write: </Typography>
-                <Typography variant='h3'> {receivedRequests.accepted}</Typography>
+                <Typography variant='h5'>{`Pending Requests: ${receivedRequests.pending}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h4'>Requests since last week: </Typography>
-                <Typography varaint='h4'> {receivedReviews.lastWeek}</Typography>
+                <Typography variant='h5'>{`Reviews to Write: ${receivedRequests.accepted}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h5'> Sent Pending Requests: </Typography>
-                <Typography varaint='h5'> {sentRequests.pending}</Typography>
+                <Typography variant='h5'>{`Requests since last week: ${receivedReviews.lastWeek}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h6'>Requests Sent since last week: </Typography>
-                <Typography variant='h6'> {sentReviews.lastWeek}</Typography>
+                <Typography variant='h5'>{`Sent Pending Requests: ${sentRequests.pending}`}</Typography>
             </div>
-            <Typography>Or keep the text like this</Typography>
-             
+            <div className={classes.stackableText}>
+                <Typography variant='h5'>{`Requests Sent since last week: ${sentReviews.lastWeek}`}</Typography>
+            </div>
         </div>
     );
 };
