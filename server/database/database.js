@@ -68,6 +68,7 @@ export async function connect(user, pass, database, authDatabase) {
     // console.log(connectionURL);
 
     mongoose.set('useCreateIndex', true);
+    mongoose.set('useFindAndModify', false);
     await mongoose.connect(connectionURL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import moment from 'moment';
 import { ObjectId } from 'mongodb';
 import Company from '../database/schema/companyschema';
 import Employee from '../database/schema/employeeschema';
@@ -55,6 +56,24 @@ apiRouter.get('/whoami', authMiddleware, async (req, res) => {
         console.error(err);
     });
 
+});
+
+apiRouter.post('/logged-in', authMiddleware, async (req, res) => {
+    if (!req.tokenData) {
+        res.status(404).end();
+        return;
+    }
+    Employee.findOneAndUpdate(
+        {
+            _id: new ObjectId(req.tokenData.id),
+            company: new ObjectId(req.tokenData.company)
+        },
+        {
+            lastLoggedIn: moment().toDate()
+        }
+    ).catch((err) => {
+        console.error(err);
+    }).then(res.sendStatus(200));
 });
 
 // noinspection JSUnresolvedFunction
@@ -398,14 +417,18 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
     // console.log('Requests in my company:');
     // console.log(companyRequests);
 
-    stats.receivedRequests = {
+    stats.requests = {};
+
+    stats.requests.incoming = {
         pending: requestsReceived.filter(r => r.status === PendingState.PENDING).length,
-        accepted: requestsReceived.filter(r => r.status === PendingState.ACCEPTED).length
+        accepted: requestsReceived.filter(r => r.status === PendingState.ACCEPTED).length,
+        completed: requestsReceived.filter(r => r.status === PendingState.COMPLETED).length,
     };
 
-    stats.sentRequests = {
+    stats.requests.outgoing = {
         pending: requestsSent.filter(r => r.status === PendingState.PENDING).length,
-        accpeted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length
+        accpeted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length,
+        completed: requestsSent.filter(r => r.status === PendingState.COMPLETED).length
     };
 
     const reqRecievedIds = requestsReceived.filter(r => r.status === PendingState.COMPLETED).map(r => r._id.toString());
@@ -419,15 +442,17 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
     const now = new Date();
 
     // prolly a better way to do this
-    const week = 1000 * 60 * 60 * 24 * 7;
+    const lastLogin = req.tokenData.lastLoggedIn;
 
-    stats.receivedReviews = {
-        lastWeek: reviewsReceived.filter(r => now - r.dateWritten < week).length,
+    stats.reviews = {};
+
+    stats.reviews.incoming = {
+        sinceLastLoggin: reviewsReceived.filter(r => r.dateWritten > lastLogin).length,
         allTime: reviewsReceived.length
     };
 
-    stats.sentReviews = {
-        lastWeek: reviewsSent.filter(r => now - r.dateWritten < week).length,
+    stats.reviews.outgoing = {
+        sinceLastLoggin: reviewsSent.filter(r => r.dateWritten > lastLogin).length,
         allTime: reviewsSent.length
     };
 
