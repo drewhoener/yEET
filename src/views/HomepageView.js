@@ -193,7 +193,7 @@ export default function HomepageView(props) {
                             <Typography variant='body1'>
                                 <span className={classes.bold}>Read Reviews</span> will bring you to a page full of reviews. 
                                 These are reviews from your colleagues written about you. 
-                                They are broken down by year and sorted by date, and can be read by clicking the view button. 
+                                They are broken down by year and sorted by date, and can be read by clicking the <span className={classes.bold}>View</span> button. 
                                 These are also visible to your direct manager. 
                                 In addition, if you are yourself a manager, you can view your employees' reviews.
                                 Simply navigate to the <span className={classes.bold}>My Employees' Reviews</span> section and select the desired employee.
@@ -230,8 +230,8 @@ export default function HomepageView(props) {
                                 <span className={classes.bold}>Write Review</span> has two sections: <span className={classes.bold}>Accept/Complete Requests</span> and <span className={classes.bold}>Completed Requests</span>. 
                                 In <span className={classes.bold}>Accept/Complete Requests</span>, you can accept, reject or write incoming requests from other employees in your company. 
                                 Note that once a request is rejected, it must be sent again. 
-                                Click 'Write' to enter a rich text editor where you can save a draft or submit. 
-                                Completed Requests will display any reviews you have submitted for other users.
+                                Click <span className={classes.bold}>Write</span> to enter a rich text editor where you can save a draft or submit. 
+                                <span className={classes.bold}> Completed Requests</span> will display any reviews you have submitted for other users.
                             </Typography>
                         </div>
                     </div>
