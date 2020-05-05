@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
         flexWrap: 'wrap',
         alignItems: 'center',
         flex: 1,
-        padding: 8,
+        padding: 20,
         margin: theme.spacing(2),
     },
     wordsintext: {
