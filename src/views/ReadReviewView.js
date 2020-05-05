@@ -19,6 +19,7 @@ import ReactHtmlParser from 'react-html-parser';
 import { Route, Switch } from 'react-router-dom';
 import { serializeNodes } from '../components/editor/EditorSerializer';
 import Loader from '../components/Loader';
+import { usePrevious } from '../hooks/hooks';
 
 const useStyle = makeStyles(theme => ({
     inlineFlex: {
@@ -38,7 +39,7 @@ const useStyle = makeStyles(theme => ({
     list: {
         width: 0,
         flex: 1,
-        flexWrap: 'wrap'
+        padding: theme.spacing(3)
     },
     loader: {
         display: 'flex',
@@ -97,8 +98,33 @@ const useStyle = makeStyles(theme => ({
         flexDirection: 'row',
         flex: 1,
     },
+    reviewHolder: {
+        display: 'flex',
+        flex: 1,
+        flexDirection: 'column'
+    },
+    reviewList: {
+        display: 'flex',
+        flex: 1,
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
+        [theme.breakpoints.down('sm')]: {
+            marginLeft: theme.spacing(1),
+            marginRight: theme.spacing(1),
+        }
+    },
+    yearText: {
+        paddingTop: theme.spacing(2),
+        textDecoration: 'underline'
+    },
     verticalTabs: {
         borderRight: `1px solid ${ theme.palette.divider }`,
+    },
+    verticalTab: {
+        [theme.breakpoints.down('sm')]: {
+            minWidth: theme.spacing(9)
+        }
     },
     tabContainer: {
         display: 'flex',
@@ -151,18 +177,39 @@ const SubordinateReviews = ({ classes }) => {
     );
 };
 
-const years = [
-    2015,
-    2016,
-    2017,
-    2018,
-    2019,
-    2020
-].sort((o1, o2) => o2 - o1);
-
 const MyReviews = ({ classes }) => {
-    const [reviews, setReviews] = React.useState([]);
-    const [selectedYear, setSelectedYear] = React.useState(years.indexOf(new Date().getFullYear()));
+    const [reviews, setReviews] = React.useState({});
+    const availableYears = React.useMemo(() => {
+        const yearSet = new Set([`${ new Date().getFullYear() }`]);
+        Object.keys(reviews).forEach(key => yearSet.add(key));
+        const arr = [...yearSet];
+        arr.sort((o1, o2) => o2.localeCompare(o1));
+        return arr;
+    }, [reviews]);
+
+    const lastAvailableYears = usePrevious(availableYears);
+
+    const [selectedYear, setSelectedYear] = React.useState(-1);
+    React.useEffect(() => {
+        if (selectedYear === -1) {
+            setSelectedYear(availableYears.indexOf(`${ new Date().getFullYear() }`));
+        } else if (lastAvailableYears.length !== availableYears.length) {
+            const findYear = lastAvailableYears[selectedYear];
+            if (findYear) {
+                setSelectedYear(availableYears.indexOf(findYear));
+            }
+        }
+    }, [lastAvailableYears, availableYears, selectedYear]);
+    console.log(availableYears);
+    console.log(selectedYear);
+    const getSelectedYear = () => {
+        const year = availableYears[selectedYear];
+        if (year === undefined) {
+            return `${ new Date().getFullYear() }`;
+        }
+        return year;
+    };
+
     React.useEffect(() => {
         axios.get('/api/reviews')
             .then(({ data }) => {
@@ -182,32 +229,109 @@ const MyReviews = ({ classes }) => {
 
     return (
         <div className={ classes.experimentTabs }>
-            <div className={ classes.tabContainer }>
-                <Tabs
-                    orientation='vertical'
-                    variant='scrollable'
-                    value={ selectedYear }
-                    onChange={ handleTabChange }
-                    aria-label='Year Selection Tabs'
-                    className={ classes.verticalTabs }
-                >
-                    {
-                        years.map((year, index) => (
-                            <Tab className={ classes.verticalTab } key={ `yeartab-${ year }` }
-                                 id={ `tab-yearselect-${ index }` }
-                                 aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
-                        ))
+            {
+                availableYears.length > 1 &&
+                <div className={ classes.tabContainer }>
+                    <Tabs
+                        orientation='vertical'
+                        variant='scrollable'
+                        value={ selectedYear }
+                        onChange={ handleTabChange }
+                        aria-label='Year Selection Tabs'
+                        className={ classes.verticalTabs }
+                    >
+                        {
+                            availableYears.map((year, index) => (
+                                <Tab className={ classes.verticalTab } key={ `yeartab-${ year }` }
+                                     id={ `tab-yearselect-${ index }` }
+                                     aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
+                            ))
+                        }
+                    </Tabs>
+                </div>
+            }
+
+            <ReviewYearPanel classes={ classes } year={ getSelectedYear() } reviews={ reviews[getSelectedYear()] }/>
+        </div>
+    );
+};
+
+const ReviewYearPanel = ({ classes, reviews, year }) => {
+
+    React.useEffect(() => {
+        console.log('Got Reviews: ');
+        console.log(reviews);
+    }, [reviews]);
+
+    const [curReview, setCurReview] = React.useState(null);
+    const [reviewData, setReviewData] = React.useState('<div/>');
+    const curYear = React.useMemo(() => `${ new Date().getFullYear() }`, []);
+
+    React.useEffect(() => {
+        if (!curReview) {
+            return;
+        }
+        axios.get('/api/review-contents', {
+            params: {
+                requestId: curReview
+            }
+        })
+            .then(({ data }) => {
+                console.log(data);
+                setReviewData(serializeNodes(JSON.parse(data.contents)));
+            })
+            .catch(err => {
+            });
+    }, [curReview]);
+
+    const setModalState = state => () => {
+        console.log(state);
+        if (!state) {
+            setReviewData('<div/>');
+        }
+        setCurReview(state);
+    };
+
+    return (
+        <div className={ classes.reviewHolder }>
+            <Typography className={ classes.yearText } variant='h4' align='center'>
+                {
+                    curYear === year ?
+                        'This Year' :
+                        `Reviews from ${ year }`
+                }
+            </Typography>
+            <Paper variant={ 'outlined' } elevation={ 0 } className={ classes.reviewList }>
+                <List className={ classes.list }>
+                    { reviews &&
+                    reviews.sort((a, b) => new Date(b.dateWritten).getTime() - new Date(a.dateWritten).getTime()).map(review => {
+                        return (
+                            <React.Fragment
+                                key={ `${ review.firstName }_${ review.lastName }_${ review.reviewId }` }>
+                                <Divider/>
+                                <ListItem>
+                                    <ListItemText tabIndex={ 0 }
+                                                  primary={ `${ review.firstName + ' ' + review.lastName }` }
+                                                  primaryTypographyProps={ { className: classes.listItemText } }
+                                                  secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
+                                    <ListItemSecondaryAction className={ classes.buttonwrapper }>
+                                        <Button onClick={ setModalState(review.reviewId) }>View</Button>
+                                        <Button>Download</Button>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            </React.Fragment>
+                        );
+                    })
                     }
-                </Tabs>
-            </div>
-            <ReviewList classes={ classes } reviews={ reviews }/>
+                    <Divider/>
+                </List>
+            </Paper>
         </div>
     );
 };
 
 const ReviewList = ({ classes, reviews }) => {
-    // const [open, setOpen] = React.useState(false);
-    const [expandedPanel, setExpandedPanel] = React.useState('');
+
     const [curReview, setCurReview] = React.useState(null);
     const [reviewData, setReviewData] = React.useState('<div/>');
 
@@ -227,10 +351,6 @@ const ReviewList = ({ classes, reviews }) => {
             .catch(err => {
             });
     }, [curReview]);
-
-    const handleChange = panel => (event, isExpanded) => {
-        setExpandedPanel(isExpanded ? panel : false);
-    };
 
     const setModalState = state => () => {
         console.log(state);
