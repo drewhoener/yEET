@@ -21,8 +21,11 @@ const RequestListItem = ({ status, request, handleAccept, handleReject, redirect
 
     const classes = useStyles();
     const expireTimeStr = React.useMemo(() => {
-        return request.submittedTime.format('MM/DD/YYYY [at] hh:mm A');
-    }, [request]);
+        if (status === PendingState.COMPLETED) {
+            return request.submittedTime.format('MM/DD/YYYY [at] hh:mm A');
+        }
+        return request.submittedTime.format('MM/DD/YYYY');
+    }, [request, status]);
 
     return (
         <>

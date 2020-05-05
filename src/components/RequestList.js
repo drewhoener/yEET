@@ -43,7 +43,12 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
     // Using useMemo so that we don't waste time filtering every time we call this
     // The memoized value will only change if status or requests change
     const renderableRequests = React.useMemo(() => {
-        return requests.filter(request => request.statusNumber === status).sort((o1, o2) => o2.submittedTime.valueOf() - o2.submittedTime.valueOf());
+        return requests.filter(request => request.statusNumber === status).sort((o1, o2) => {
+            if (status === PendingState.COMPLETED) {
+                return o2.submittedTime.valueOf() - o1.submittedTime.valueOf();
+            }
+            return o1.submittedTime.valueOf() - o2.submittedTime.valueOf();
+        });
     }, [status, requests]);
 
     const handleAccept = (request) => {
