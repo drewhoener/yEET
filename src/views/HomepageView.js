@@ -60,7 +60,8 @@ const MyStats = ({ classes }) => {
             incoming: {
                 pending: 0,
                 accepted: 0,
-                completed: 0
+                completed: 0,
+                pendingSinceLastLogin: 0
             },
             outgoing: {
                 pending: 0,
@@ -68,6 +69,11 @@ const MyStats = ({ classes }) => {
                 completed: 0
             }
         },
+        reviews: {
+            incoming: {
+                reviewsSinceLastLogin: 0
+            }
+        }
     });
 
     React.useEffect(() => {
@@ -97,8 +103,6 @@ const MyStats = ({ classes }) => {
                 setEmployeeInfo(data);
             });
     }, []);
-
-    console.log(statsData);
 
     const { requests, reviews } = statsData;
     return (
@@ -132,6 +136,16 @@ const MyStats = ({ classes }) => {
             </div>
             <div className={classes.stackableText}>
                 <Typography variant='h5'>{`Completed: ${requests.outgoing.completed}`}</Typography>
+            </div>
+            <br></br>
+            <div className={classes.stackableText}>
+                <Typography variant='h4'>Since last time</Typography>
+            </div>
+            <div className={classes.stackableText}>
+                <Typography variant='h5'>{`New requests: ${requests.incoming.pendingSinceLastLogin}`}</Typography>
+            </div>
+            <div className={classes.stackableText}>
+                <Typography variant='h5'>{`New reviews: ${reviews.incoming.reviewsSinceLastLogin}`}</Typography>
             </div>
         </div>
     );

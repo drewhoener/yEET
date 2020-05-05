@@ -443,7 +443,7 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
 
     stats.reviews = {
         incoming: {
-            sinceLastLogin: reviewsReceived.filter(r => r.dateWritten > lastLogin).length,
+            reviewsSinceLastLogin: reviewsReceived.filter(r => r.completed === true && r.dateWritten > lastLogin).length,
             allTime: reviewsReceived.length
         },
         outgoing: {
