@@ -419,8 +419,8 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
     const requestsReceived = companyRequests.filter((request) => request.userReceiving.toString() === user._id.toString());
     const requestsSent = companyRequests.filter((request) => request.userRequesting.toString() === user._id.toString());
 
-    const reqRecievedIds = requestsReceived.map(req => req._id);
-    const reqSentIds = requestsSent.map(req => req._id);
+    const reqRecievedIds = requestsReceived.map(req => req._id.toString());
+    const reqSentIds = requestsSent.map(req => req._id.toString());
 
     const reviewsReceived = companyReviews.filter(rev => reqRecievedIds.includes(rev.requestID.toString()));
     const reviewsSent = companyReviews.filter(rev => reqSentIds.includes(rev.requestID.toString()));
