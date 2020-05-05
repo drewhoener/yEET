@@ -1,6 +1,7 @@
 import List from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 import { Create, House, RateReview, Send } from '@material-ui/icons';
+import { cloneDeep } from 'lodash';
 import React from 'react';
 import CollapseNavItem from './CollapseNavItem';
 import RoutedListItem from './RoutedListItem';
@@ -63,11 +64,11 @@ const DrawerNavigation = ({ closeDrawer, capabilities, children }) => {
     const classes = useStyles();
 
     const drawerItems = React.useMemo(() => {
-        const items = [...drawerItemsBase];
+        const items = cloneDeep(drawerItemsBase);
         if (capabilities.isManager) {
             const myReviews = items.find(item => item.name === 'My Reviews');
             if (myReviews) {
-                myReviews.children = [...subordinateReviewCapability];
+                myReviews.children = cloneDeep(subordinateReviewCapability);
                 myReviews.name = 'Read Reviews';
             }
         }

@@ -21,7 +21,7 @@ const RequestListItem = ({ status, request, handleAccept, handleReject, redirect
 
     const classes = useStyles();
     const expireTimeStr = React.useMemo(() => {
-        return request.submittedTime.calendar();
+        return request.submittedTime.format('MM/DD/YYYY [at] hh:mm A');
     }, [request]);
 
     return (

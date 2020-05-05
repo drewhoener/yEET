@@ -24,11 +24,14 @@ import { usePrevious } from '../hooks/hooks';
 const useStyle = makeStyles(theme => ({
     inlineFlex: {
         display: 'inline-flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         width: '100%',
         height: '100%'
     },
     toolbar: theme.mixins.toolbar,
+    flex: {
+        flex: 1,
+    },
     panelEnclosed: {
         padding: theme.spacing(3),
         flex: 1,
@@ -103,9 +106,13 @@ const useStyle = makeStyles(theme => ({
         top: 0
     },
     experimentTabs: {
-        display: 'flex',
+        position: 'sticky',
         flexDirection: 'row',
-        flex: 1,
+        flex: '0 1 auto',
+        top: 0,
+        zIndex: 100,
+        minHeight: 0,
+        display: 'block',
     },
     reviewHolder: {
         display: 'flex',
@@ -135,11 +142,12 @@ const useStyle = makeStyles(theme => ({
         }
     },
     tabContainer: {
-        position: 'sticky',
-        top: '0px',
+        // position: 'sticky',
+        // position: '-webkit-sticky',
         display: 'flex',
         backgroundColor: theme.palette.background.paper,
-        flex: '0 1 auto',
+        flex: '1 0 auto',
+        minHeight: '100%'
     },
     flexedListHolder: {
         display: 'flex',
@@ -210,8 +218,8 @@ const MyReviews = ({ classes }) => {
             }
         }
     }, [lastAvailableYears, availableYears, selectedYear]);
-    console.log(availableYears);
-    console.log(selectedYear);
+
+
     const getSelectedYear = () => {
         const year = availableYears[selectedYear];
         if (year === undefined) {
@@ -238,31 +246,34 @@ const MyReviews = ({ classes }) => {
     };
 
     return (
-        <div className={ classes.experimentTabs }>
-            {
-                availableYears.length > 1 &&
-                <div className={ classes.tabContainer }>
-                    <Tabs
-                        orientation='vertical'
-                        variant='scrollable'
-                        value={ selectedYear }
-                        onChange={ handleTabChange }
-                        aria-label='Year Selection Tabs'
-                        className={ classes.verticalTabs }
-                    >
-                        {
-                            availableYears.map((year, index) => (
-                                <Tab className={ classes.verticalTab } key={ `yeartab-${ year }` }
-                                     id={ `tab-yearselect-${ index }` }
-                                     aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
-                            ))
-                        }
-                    </Tabs>
-                </div>
-            }
-
-            <ReviewYearPanel classes={ classes } year={ getSelectedYear() } reviews={ reviews[getSelectedYear()] }/>
-        </div>
+        <>
+            <div className={ classes.experimentTabs }>
+                {
+                    availableYears.length > 1 &&
+                    <div className={ classes.tabContainer }>
+                        <Tabs
+                            orientation='vertical'
+                            variant='scrollable'
+                            value={ selectedYear }
+                            onChange={ handleTabChange }
+                            aria-label='Year Selection Tabs'
+                            className={ classes.verticalTabs }
+                        >
+                            {
+                                availableYears.map((year, index) => (
+                                    <Tab className={ classes.verticalTab } key={ `yeartab-${ year }` }
+                                         id={ `tab-yearselect-${ index }` }
+                                         aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
+                                ))
+                            }
+                        </Tabs>
+                    </div>
+                }
+            </div>
+            <div className={ classes.flex }>
+                <ReviewYearPanel classes={ classes } year={ getSelectedYear() } reviews={ reviews[getSelectedYear()] }/>
+            </div>
+        </>
     );
 };
 
@@ -319,7 +330,7 @@ const ReviewYearPanel = ({ classes, reviews, year }) => {
                             <React.Fragment
                                 key={ `${ review.firstName }_${ review.lastName }_${ review.reviewId }` }>
                                 <Divider/>
-                                <ListItem className={classes.listItem}>
+                                <ListItem className={ classes.listItem }>
                                     <ListItemText tabIndex={ 0 }
                                                   primary={ `${ review.firstName + ' ' + review.lastName }` }
                                                   primaryTypographyProps={ { className: classes.listItemText } }
@@ -447,16 +458,18 @@ function LabelledExpansionPanel(props) {
 export default function ReadReviewView(props) {
     const classes = useStyle();
     return (
-        <div className={ classes.inlineFlex }>
+        <>
             <div className={ classes.toolbar }/>
-            <Switch>
-                <Route path={ '/view/my-reviews' }>
-                    <MyReviews classes={ classes }/>
-                </Route>
-                <Route exact path={ '/view/employee' }>
-                    <SubordinateReviews classes={ classes }/>
-                </Route>
-            </Switch>
-        </div>
+            <div className={ classes.inlineFlex }>
+                <Switch>
+                    <Route path={ '/view/my-reviews' }>
+                        <MyReviews classes={ classes }/>
+                    </Route>
+                    <Route exact path={ '/view/employee' }>
+                        <SubordinateReviews classes={ classes }/>
+                    </Route>
+                </Switch>
+            </div>
+        </>
     );
 }
