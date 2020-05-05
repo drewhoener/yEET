@@ -113,7 +113,7 @@ const MyStats = ({ classes }) => {
                 <Typography variant='h5'>{`Requests since last week: ${receivedReviews.lastWeek}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Reviews to Write: ${receivedRequests.accepted}`}</Typography>
+                <Typography variant='h5'>{`Reviews to write: ${receivedRequests.accepted}`}</Typography>
             </div>
             <div className={classes.stackableText}>
                 <Typography variant='h5'>{`Sent pending requests: ${sentRequests.pending}`}</Typography>
