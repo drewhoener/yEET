@@ -163,7 +163,7 @@ export default function HomepageView(props) {
                     <div className={classes.wordsintext}>
                         <div className={classes.stackableText}>
                             <Typography variant='h6'>
-                                Header
+                                Peer Evaluation
                             </Typography>
                         </div>
                         <div className={classes.stackableText}>
