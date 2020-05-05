@@ -33,6 +33,7 @@ const useStyles = makeStyles(theme => ({
     },
     wordsintext: {
         display: 'flex',
+        flex: 1,
         flexWrap: 'wrap',
         flexDirection: 'column',
 
@@ -47,6 +48,9 @@ const useStyles = makeStyles(theme => ({
             alignItems: 'flex-start'
         },
     },
+    bold: {
+        fontWeight: 450
+    }
 
 }));
 
@@ -102,8 +106,8 @@ const MyStats = ({ classes }) => {
     return (
         // Anthony: probably could just leave them in all one div but I realized that by the time I finished ¯\_(ツ)_/¯
         <div className={classes.wordsintext}>
-            <div className={classes.stackableText}>
-                <Typography variant='h2'>{`Welcome back, ${employeeInfo.userName.split(' ')[0]}`}</Typography>
+            <div>
+                <Typography variant='h2' align='center'>{`Welcome back, ${employeeInfo.userName.split(' ')[0]}`}</Typography>
             </div>
             <br></br>
             <div className={classes.stackableText}>
@@ -136,8 +140,13 @@ export default function HomepageView(props) {
                 <Paper className={ classes.paper }>
                     <div className={classes.wordsintext}>
                         <div className={classes.stackableText}>
+                            <Typography variant='h6'>
+                                Header
+                            </Typography>
+                        </div>
+                        <div className={classes.stackableText}>
                             <Typography variant='body1'>
-                                This is your Employee Evaluation Tool (yEET). 
+                                This is <em>your Employee Evaluation Tool (yEET)</em>. 
                                 It is the latest and greatest peer evaluation tool at your company's convenience. 
                                 For employees who need a faster way to manage their evaluations, yEET streamlines peer assessment
                                     and focuses on an intuitive and responsive approach. 
@@ -148,44 +157,59 @@ export default function HomepageView(props) {
                         <div className={classes.stackableText}>
                             <Typography variant='body1'>
                                 You are currently on the homepage of yEET. 
-                                Here, statistics based on your activity are availible at a glance. 
+                                Here, statistics based on your activity are available at a glance. 
                                 You can see your profile in the corner and below that, the navigation. 
                             </Typography>
                         </div>
                         <br></br>
                         <div className={classes.stackableText}>
+                            <Typography variant='h6'>
+                                Reading Reviews
+                            </Typography>
+                        </div>
+                        <div className={classes.stackableText}>
                             <Typography variant='body1'>
-                                My Reviews will bring you to a page full of reviews. 
+                                <span className={classes.bold}>Read Reviews</span> will bring you to a page full of reviews. 
                                 These are reviews from your colleagues written about you. 
                                 They are broken down by year and sorted by date, and can be read by clicking the view button. 
                                 These are also visible to your direct manager. 
                                 In addition, if you are yourself a manager, you can view your employees' reviews.
-                                Simply navigate to the My Employees' Reviews section and select the desired employee.
+                                Simply navigate to the <span className={classes.bold}>My Employees' Reviews</span> section and select the desired employee.
                             </Typography>
                         </div>
                         <br></br>
                         <div className={classes.stackableText}>
+                            <Typography variant='h6'>
+                                Requesting Reviews
+                            </Typography>
+                        </div>
+                        <div className={classes.stackableText}>
                             <Typography variant='body1'>
-                                Request review will bring you to a directory of co-workers. 
+                                <span className={classes.bold}>Request Review</span> will bring you to a directory of co-workers. 
                                 You can search by name, position or employee ID in the search bar at the top. 
-                                When you have found the employee(s) you would like to send a request from, simply click request. 
+                                When you have found the employee(s) you would like to send a request to, simply click request. 
                                 If you'd like to send many at once, use the checkboxes. 
-                                A button has a few potential states. 
-                                'Request' means you do not have an active request sent to that user. 
-                                'Pending' means the user has not accepted or rejected your active request. 
-                                'In Progress' or 'Writing' on mobile means the user has accepted, but as yet to submit a final review. 
-                                If you would like to cancel the request, this can be done for any 'Pending' request by clicking again. 
+                                A button has a few potential states.  
+                                <span className={classes.bold}> Request</span> means you do not have an active request sent to that user. 
+                                <span className={classes.bold}> Pending</span> means the user has not accepted or rejected your active request. 
+                                <span className={classes.bold}> In Progress</span> or <span className={classes.bold}>Writing</span> on mobile means the user has accepted, but has yet to submit a final review. 
+                                If you would like to cancel the request, this can be done for any <span className={classes.bold}>Pending</span> request by clicking again. 
                                 Otherwise, the request cannot be rescinded.
                             </Typography>
                         </div>
                         <br></br>
                         <div className={classes.stackableText}>
+                            <Typography variant='h6'>
+                                Writing Reviews
+                            </Typography>
+                        </div>
+                        <div className={classes.stackableText}>
                             <Typography variant='body1'>
-                                Write Review has two sections: Accept/Complete Requests and Completed Requests. 
-                                In Accept/Complete Requests, you can accept, reject or write incoming requests from other employees in your company. 
+                                <span className={classes.bold}>Write Review</span> has two sections: <span className={classes.bold}>Accept/Complete Requests</span> and <span className={classes.bold}>Completed Requests</span>. 
+                                In <span className={classes.bold}>Accept/Complete Requests</span>, you can accept, reject or write incoming requests from other employees in your company. 
                                 Note that once a request is rejected, it must be sent again. 
                                 Click 'Write' to enter a rich text editor where you can save a draft or submit. 
-                                Completed Requests will display any requests you have submitted to other users.
+                                Completed Requests will display any reviews you have submitted for other users.
                             </Typography>
                         </div>
                     </div>
