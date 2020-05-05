@@ -105,6 +105,7 @@ const MyStats = ({ classes }) => {
             <div className={classes.stackableText}>
                 <Typography variant='h2'>{`Welcome back, ${employeeInfo.userName.split(' ')[0]}`}</Typography>
             </div>
+            <br></br>
             <div className={classes.stackableText}>
                 <Typography variant='h5'>{`Pending requests: ${receivedRequests.pending}`}</Typography>
             </div>
