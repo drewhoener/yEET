@@ -41,6 +41,15 @@ const useStyle = makeStyles(theme => ({
         flex: 1,
         padding: theme.spacing(3)
     },
+    listItem: {
+        backgroundColor: '#ffffff',
+        [`@media (max-width: ${ 1449 }px)`]: {
+            paddingRight: theme.spacing(4),
+        },
+        '&:hover': {
+            backgroundColor: '#eeeeee'
+        }
+    },
     loader: {
         display: 'flex',
         alignItems: 'center',
@@ -308,7 +317,7 @@ const ReviewYearPanel = ({ classes, reviews, year }) => {
                             <React.Fragment
                                 key={ `${ review.firstName }_${ review.lastName }_${ review.reviewId }` }>
                                 <Divider/>
-                                <ListItem>
+                                <ListItem className={classes.listItem}>
                                     <ListItemText tabIndex={ 0 }
                                                   primary={ `${ review.firstName + ' ' + review.lastName }` }
                                                   primaryTypographyProps={ { className: classes.listItemText } }
