@@ -427,7 +427,7 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
 
     stats.requests.outgoing = {
         pending: requestsSent.filter(r => r.status === PendingState.PENDING).length,
-        accpeted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length,
+        accepted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length,
         completed: requestsSent.filter(r => r.status === PendingState.COMPLETED).length
     };
 

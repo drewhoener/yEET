@@ -56,21 +56,17 @@ const useStyles = makeStyles(theme => ({
 
 const MyStats = ({ classes }) => {
     const [statsData, setStatsData] = React.useState({
-        receivedRequests: {
-            pending: 0,
-            accepted: 0
-        },
-        receivedReviews: {
-            lastWeek: 0,
-            allTime: 0
-        },
-        sentRequests: {
-            pending: 0,
-            accepted: 0
-        },
-        sentReviews: {
-            lastWeek: 0,
-            allTime: 0
+        requests: {
+            incoming: {
+                pending: 0,
+                accepted: 0,
+                completed: 0
+            },
+            outgoing: {
+                pending: 0,
+                accepted: 0,
+                completed: 0
+            }
         },
     });
 
@@ -102,7 +98,7 @@ const MyStats = ({ classes }) => {
             });
     }, []);
 
-    const { receivedRequests, receivedReviews, sentRequests, sentReviews } = statsData;
+    const { requests, reviews } = statsData;
     return (
         // Anthony: probably could just leave them in all one div but I realized that by the time I finished ¯\_(ツ)_/¯
         <div className={classes.wordsintext}>
@@ -111,19 +107,29 @@ const MyStats = ({ classes }) => {
             </div>
             <br></br>
             <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Pending requests: ${receivedRequests.pending}`}</Typography>
+                <Typography variant='h4'>Incoming</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Requests since last week: ${receivedReviews.lastWeek}`}</Typography>
+                <Typography variant='h5'>{`Pending: ${requests.incoming.pending}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Reviews to write: ${receivedRequests.accepted}`}</Typography>
+                <Typography variant='h5'>{`Accepted: ${requests.incoming.accepted}`}</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Sent pending requests: ${sentRequests.pending}`}</Typography>
+                <Typography variant='h5'>{`Completed: ${requests.incoming.completed}`}</Typography>
+            </div>
+            <br></br>
+            <div className={classes.stackableText}>
+                <Typography variant='h4'>Outgoing</Typography>
             </div>
             <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Sent requests since last week: ${sentReviews.lastWeek}`}</Typography>
+                <Typography variant='h5'>{`Pending: ${requests.outgoing.pending}`}</Typography>
+            </div>
+            <div className={classes.stackableText}>
+                <Typography variant='h5'>{`Accepted: ${requests.outgoing.accepted}`}</Typography>
+            </div>
+            <div className={classes.stackableText}>
+                <Typography variant='h5'>{`Completed: ${requests.outgoing.completed}`}</Typography>
             </div>
         </div>
     );
