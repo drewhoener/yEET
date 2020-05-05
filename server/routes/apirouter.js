@@ -436,18 +436,14 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
         },
         outgoing: {
             pending: requestsSent.filter(r => r.status === PendingState.PENDING).length,
-            accpeted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length,
+            accepted: requestsSent.filter(r => r.status === PendingState.ACCEPTED).length,
             completed: requestsSent.filter(r => r.status === PendingState.COMPLETED).length
         }
     };
 
-    const companyReviews = await Review.find({ requestID: { '$in': companyRequests.map(r => r._id.toString()) } });
-    const reviewsReceived = companyReviews.filter(rev => reqRecievedIds.includes(rev.requestID.toString()));
-    const reviewsSent = companyReviews.filter(rev => reqSentIds.includes(rev.requestID.toString()));
-
     stats.reviews = {
         incoming: {
-            sinceLastLoggin: reviewsReceived.filter(r => r.dateWritten > lastLogin).length,
+            sinceLastLogin: reviewsReceived.filter(r => r.dateWritten > lastLogin).length,
             allTime: reviewsReceived.length
         },
         outgoing: {

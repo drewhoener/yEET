@@ -100,7 +100,7 @@ const MyStats = ({ classes }) => {
 
     console.log(statsData);
 
-    const { receivedRequests, receivedReviews, sentRequests, sentReviews } = statsData;
+    const { requests, reviews } = statsData;
     return (
         // Anthony: probably could just leave them in all one div but I realized that by the time I finished ¯\_(ツ)_/¯
         <div className={classes.wordsintext}>
