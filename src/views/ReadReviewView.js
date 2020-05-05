@@ -135,6 +135,8 @@ const useStyle = makeStyles(theme => ({
         }
     },
     tabContainer: {
+        position: 'sticky',
+        top: '0px',
         display: 'flex',
         backgroundColor: theme.palette.background.paper,
         flex: '0 1 auto',

@@ -1,5 +1,5 @@
-import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
+import mongoose, { Schema } from 'mongoose';
 
 const SALT_ROUNDS = 12;
 
@@ -13,6 +13,7 @@ const employeeSchema = new Schema({
     position: { type: String, required: true },
     manager: { type: mongoose.ObjectId, required: false, 'default': null },
     company: { type: mongoose.ObjectId, required: true },
+    lastLoggedIn: { type: Date, default: new Date() }
 });
 
 employeeSchema.pre('save', function (next) {

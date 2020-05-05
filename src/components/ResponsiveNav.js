@@ -142,6 +142,11 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
                     });
                 }
                 setEmployeeInfo(data);
+            })
+            .then(() => {
+                axios.post('/api/logged-in')
+                    .then(() => console.log('Updated login time'))
+                    .catch(console.error);
             });
     }, []);
 

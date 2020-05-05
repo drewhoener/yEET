@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import moment from 'moment';
 import { ObjectId } from 'mongodb';
 import Company from '../database/schema/companyschema';
 import Employee from '../database/schema/employeeschema';
@@ -55,6 +56,24 @@ apiRouter.get('/whoami', authMiddleware, async (req, res) => {
         console.error(err);
     });
 
+});
+
+apiRouter.post('/logged-in', authMiddleware, async (req, res) => {
+    if (!req.tokenData) {
+        res.status(404).end();
+        return;
+    }
+    Employee.findOneAndUpdate(
+        {
+            _id: new ObjectId(req.tokenData.id),
+            company: new ObjectId(req.tokenData.company)
+        },
+        {
+            lastLoggedIn: moment().toDate()
+        }
+    ).catch((err) => {
+        console.error(err);
+    }).then(res.status(200));
 });
 
 // noinspection JSUnresolvedFunction
