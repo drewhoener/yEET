@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -105,6 +105,7 @@ const MyStats = ({ classes }) => {
             <div className={classes.stackableText}>
                 <Typography variant='h2'>{`Welcome back, ${employeeInfo.userName.split(' ')[0]}`}</Typography>
             </div>
+            <br></br>
             <div className={classes.stackableText}>
                 <Typography variant='h5'>{`Pending requests: ${receivedRequests.pending}`}</Typography>
             </div>
@@ -140,8 +141,7 @@ export default function HomepageView(props) {
                                 It is the latest and greatest peer evaluation tool at your company's convenience. 
                                 For employees who need a faster way to manage their evaluations, yEET streamlines peer assessment
                                     and focuses on an intuitive and responsive approach. 
-                                Brought to you in coordination with 
-                                    <Link to="https://www.ultimatesoftware.com/"> Ultimate Software</Link>.
+                                Brought to you in coordination with <Link href="https://www.ultimatesoftware.com/">Ultimate Software</Link>.
                             </Typography>
                         </div>
                         <br></br>
