@@ -1,4 +1,4 @@
-import { ListItemText, Paper } from '@material-ui/core';
+import { ListItemText, Paper, useMediaQuery } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
@@ -23,6 +23,7 @@ const ReviewYearPanel = ({ classes, reviews, year, employeeName = undefined, pus
     const [curReview, setCurReview] = React.useState(null);
     const [reviewData, setReviewData] = React.useState('<div/>');
     const curYear = React.useMemo(() => `${ new Date().getFullYear() }`, []);
+    const small = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
     React.useEffect(() => {
         if (!curReview) {
@@ -67,7 +68,7 @@ const ReviewYearPanel = ({ classes, reviews, year, employeeName = undefined, pus
     };
 
     return (
-        <div className={ classes.reviewHolder }>
+        <div className={ classes.reviewHolder } id={ `reviewpanel-year-${ year }` }>
             <ReviewModal open={ !!curReview } onClose={ setModalState(null) } data={ reviewData }/>
             <Typography className={ classes.yearText } variant='h4' align='center'>
                 {
@@ -86,15 +87,19 @@ const ReviewYearPanel = ({ classes, reviews, year, employeeName = undefined, pus
                                     <ListItemText tabIndex={ 0 }
                                                   primary={ `${ review.firstName + ' ' + review.lastName }` }
                                                   primaryTypographyProps={ { className: classes.listItemText } }
-                                                  secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
+                                                  aria-label={ `Peer Evaluation from ${ review.firstName } ${ review.lastName }, completed ${ moment(review.dateWritten).format('dddd, MMMM Do [at] hh:mm A') }` }
+                                                  secondary={ `${ moment(review.dateWritten).format('MM/DD/YYYY') }` }/>
                                     <ListItemSecondaryAction className={ classes.buttonwrapper }>
                                         <Button
                                             variant={ 'contained' }
                                             color={ 'primary' }
                                             disableElevation
+                                            aria-label={ `Read Review from ${ review.firstName } ${ review.lastName }` }
                                             onClick={ setModalState(review.reviewId) }
                                         >
-                                            Read Review
+                                            {
+                                                `Read${ small ? '' : ' Review' }`
+                                            }
                                         </Button>
                                         {
                                             /*

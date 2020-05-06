@@ -163,12 +163,13 @@ const SubordinateReviews = ({ classes }) => {
                                             <ListItemText tabIndex={ 0 }
                                                           primary={ `${ employee.fullName }` }
                                                           primaryTypographyProps={ { className: classes.listItemText } }
-                                                          secondary={ `${ employee.position } ${ employee.reviewsThisYear ? `(${ employee.reviewsThisYear } reviews this year)` : '' }` }/>
+                                                          secondary={ `${ employee.position } ${ employee.reviewsThisYear ? `(${ employee.reviewsThisYear } reviews)` : '' }` }/>
                                             <ListItemSecondaryAction className={ classes.buttonwrapper }>
                                                 <Button
                                                     variant={ 'contained' }
                                                     color={ 'primary' }
                                                     disableElevation
+                                                    aria-label={ `View reviews of ${ employee.fullName }` }
                                                     onClick={ redirectToEmployee(employee._id) }
                                                 >
                                                     View
@@ -265,7 +266,8 @@ const MyReviews = ({ classes, match }) => {
                                     availableYears.map((year, index) => (
                                         <Tab className={ classes.verticalTab } key={ `yeartab-${ year }` }
                                              id={ `tab-yearselect-${ index }` }
-                                             aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
+                                             aria-label={ `Reviews from ${ year }` }
+                                             aria-controls={ `reviewpanel-year-${ year }` } label={ year }/>
                                     ))
                                 }
                             </Tabs>

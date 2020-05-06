@@ -135,7 +135,7 @@ const MyStats = ({ classes }) => {
             <div className={ classes.boxContainer }>
                 <div className={ classes.box }>
                     <div className={ classes.stackableText }>
-                        <Typography align={ 'center' } variant='h4'>Requests sent to you</Typography>
+                        <Typography align={ 'center' } variant='h4'>Requests you received</Typography>
                     </div>
                     <div className={ classes.stackableText }>
                         <Typography variant='h5'>{ `Pending: ${ requests.incoming.pending }` }</Typography>
@@ -150,7 +150,7 @@ const MyStats = ({ classes }) => {
                 <div className={ classes.mobileSpacer }/>
                 <div className={ classes.box }>
                     <div className={ classes.stackableText }>
-                        <Typography align={ 'center' } variant='h4'>Requests you've sent</Typography>
+                        <Typography align={ 'center' } variant='h4'>Requests you sent</Typography>
                     </div>
                     <div className={ classes.stackableText }>
                         <Typography variant='h5'>{ `Pending: ${ requests.outgoing.pending }` }</Typography>
