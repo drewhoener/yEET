@@ -42,16 +42,25 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flex: 1,
         flexDirection: 'row',
-        alignItems: 'flex-end',
+        justifyContent: 'center',
         [theme.breakpoints.down('sm')]:{
-            flexDirection: 'column',
-            alignItems: 'flex-start'
+            flexDirection: 'column'
         },
     },
     bold: {
         fontWeight: 450
+    },
+    boxContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        [theme.breakpoints.down('sm')]:{
+            flexDirection: 'column'
+        },
+    },
+    box: {
+        flex: 1
     }
-
 }));
 
 const MyStats = ({ classes }) => {
@@ -111,41 +120,47 @@ const MyStats = ({ classes }) => {
             <div>
                 <Typography variant='h2' align='center'>{`Welcome back, ${employeeInfo.userName.split(' ')[0]}`}</Typography>
             </div>
-            <br></br>
-            <div className={classes.stackableText}>
-                <Typography variant='h4'>Incoming</Typography>
-            </div>
-            <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Pending: ${requests.incoming.pending}`}</Typography>
-            </div>
-            <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Accepted: ${requests.incoming.accepted}`}</Typography>
-            </div>
-            <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Completed: ${requests.incoming.completed}`}</Typography>
-            </div>
-            <br></br>
-            <div className={classes.stackableText}>
-                <Typography variant='h4'>Outgoing</Typography>
-            </div>
-            <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Pending: ${requests.outgoing.pending}`}</Typography>
-            </div>
-            <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Accepted: ${requests.outgoing.accepted}`}</Typography>
-            </div>
-            <div className={classes.stackableText}>
-                <Typography variant='h5'>{`Completed: ${requests.outgoing.completed}`}</Typography>
-            </div>
-            <br></br>
-            <div className={classes.stackableText}>
-                <Typography variant='h4'>Since last time</Typography>
-            </div>
-            <div className={classes.stackableText}>
-                <Typography variant='h5'>{`New requests: ${requests.incoming.pendingSinceLastLogin}`}</Typography>
-            </div>
-            <div className={classes.stackableText}>
-                <Typography variant='h5'>{`New reviews: ${reviews.incoming.reviewsSinceLastLogin}`}</Typography>
+            <br></br><br></br>
+            <div className={classes.boxContainer}>
+                <div className={classes.box}>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h4'>Incoming</Typography>
+                    </div>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h5'>{`Pending: ${requests.incoming.pending}`}</Typography>
+                    </div>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h5'>{`Accepted: ${requests.incoming.accepted}`}</Typography>
+                    </div>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h5'>{`Completed: ${requests.incoming.completed}`}</Typography>
+                    </div>
+                </div>
+                <div className={classes.box}>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h4'>Outgoing</Typography>
+                    </div>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h5'>{`Pending: ${requests.outgoing.pending}`}</Typography>
+                    </div>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h5'>{`Accepted: ${requests.outgoing.accepted}`}</Typography>
+                    </div>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h5'>{`Completed: ${requests.outgoing.completed}`}</Typography>
+                    </div>
+                </div>
+                <div className={classes.box}>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h4'>Since last time</Typography>
+                    </div>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h5'>{`New requests: ${requests.incoming.pendingSinceLastLogin}`}</Typography>
+                    </div>
+                    <div className={classes.stackableText}>
+                        <Typography variant='h5'>{`New reviews: ${reviews.incoming.reviewsSinceLastLogin}`}</Typography>
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -172,12 +187,7 @@ export default function HomepageView(props) {
                                 It is the latest and greatest peer evaluation tool at your company's convenience. 
                                 For employees who need a faster way to manage their evaluations, yEET streamlines peer assessment
                                     and focuses on an intuitive and responsive approach. 
-                                Brought to you in coordination with <Link href="https://www.ultimatesoftware.com/">Ultimate Software</Link>.
-                            </Typography>
-                        </div>
-                        <br></br>
-                        <div className={classes.stackableText}>
-                            <Typography variant='body1'>
+                                Brought to you in coordination with <Link href="https://www.ultimatesoftware.com/">Ultimate Software</Link>. 
                                 You are currently on the homepage of yEET. 
                                 Here, statistics based on your activity are available at a glance. 
                                 You can see your profile in the corner and below that, the navigation. 
