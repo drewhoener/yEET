@@ -15,11 +15,6 @@ import ReviewModal from './ReviewModal';
 
 const ReviewYearPanel = ({ classes, reviews, year, employeeName = undefined, pushError }) => {
 
-    React.useEffect(() => {
-        console.log('Got Reviews: ');
-        console.log(reviews);
-    }, [reviews]);
-
     const [curReview, setCurReview] = React.useState(null);
     const [reviewData, setReviewData] = React.useState('<div/>');
     const curYear = React.useMemo(() => `${ new Date().getFullYear() }`, []);
@@ -43,7 +38,7 @@ const ReviewYearPanel = ({ classes, reviews, year, employeeName = undefined, pus
                 setCurReview(null);
                 pushError('severe', 'You don\'t have permission to read this review');
             });
-    }, [curReview]);
+    }, [pushError, curReview]);
 
     const getYearText = React.useCallback(() => {
         const text = curYear === year ? 'This Year' : `${ year }`;

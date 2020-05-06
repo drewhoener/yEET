@@ -119,7 +119,7 @@ function LoginView(
     const { from } = location.state || { from: { pathname: '/' } };
 
     React.useEffect(() => {
-        console.log('We think login view mounted');
+        // console.log('We think login view mounted');
         fetchCompanies();
 
         axios.get('/api/auth/validate')

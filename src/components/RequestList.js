@@ -52,7 +52,6 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
     }, [status, requests]);
 
     const handleAccept = (request) => {
-        console.log('accepted');
         axios.post('/api/accept-request', request)
             .then(({ data }) => {
                 if (data && data.request) {
@@ -80,7 +79,6 @@ function RequestList({ status, requests, setRequests, emptyText, pushError }) {
     };
 
     const handleReject = (request) => {
-        console.log('rejected');
         axios.post('/api/delete-request', request)
             .then(() => {
                 pushError('success', 'Request rejected');

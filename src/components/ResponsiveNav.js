@@ -145,7 +145,6 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
             })
             .then(() => {
                 axios.post('/api/logged-in')
-                    .then(() => console.log('Updated login time'))
                     .catch(console.error);
             });
     }, []);

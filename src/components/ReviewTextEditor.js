@@ -204,7 +204,7 @@ function ReviewTextEditor({ pushError, ...props }) {
                 if (!data.userData || !data.requestingData || !data.request) {
                     return;
                 }
-                console.log(data);
+                // console.log(data);
                 if (data.contents) {
                     const jsonData = JSON.parse(data.contents);
                     if (!jsonData.children || !Array.isArray(jsonData.children)) {
@@ -262,10 +262,10 @@ function ReviewTextEditor({ pushError, ...props }) {
 
     const onSaveDraft = React.useCallback(() => {
         if (isSaving) {
-            console.log('Stopping save procedure because we\'re saving');
+            // console.log('Stopping save procedure because we\'re saving');
             return;
         }
-        console.log('Setting save var for draft');
+        // console.log('Setting save var for draft');
         setIsSaving(true);
         prepareSave(false, editorState)
             .then(response => {
@@ -282,15 +282,15 @@ function ReviewTextEditor({ pushError, ...props }) {
 
     const submitReview = () => {
         if (isSaving) {
-            console.log('Stopping submit procedure because we\'re saving');
+            // console.log('Stopping submit procedure because we\'re saving');
             return;
         }
-        console.log('Setting save var for review');
+        // console.log('Setting save var for review');
         setIsSaving(true);
         prepareSave(true, editorState)
             .then(response => {
                 setSaveOnUnmount(false);
-                console.log(response);
+                // console.log(response);
             })
             .catch(err => {
                 console.error(err);
@@ -299,7 +299,7 @@ function ReviewTextEditor({ pushError, ...props }) {
             })
             .then(() => {
                 setSaveOnUnmount(false);
-                console.log(`Save on Unmount is ${ saveOnUnmount }`);
+                // console.log(`Save on Unmount is ${ saveOnUnmount }`);
                 setIsSaving(false);
                 setDialogOpen(true);
             });
@@ -308,10 +308,10 @@ function ReviewTextEditor({ pushError, ...props }) {
     React.useEffect(() => {
         return () => {
             if (saveOnUnmount) {
-                console.log('Set Saving Draft');
+                // console.log('Set Saving Draft');
                 prepareSave(false, editor.children)
                     .then(response => {
-                        console.log(response);
+                        // console.log(response);
                         if (response.status === 201) {
                             pushError('success', 'Review Sent!');
                             return;
