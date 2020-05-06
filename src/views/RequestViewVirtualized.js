@@ -125,7 +125,6 @@ function RequestViewVirtualized(
                                             ref={ filterAnchor }
                                             aria-haspopup='true'
                                             aria-controls={ filterWindowOpen ? 'employee-list-filters' : undefined }
-                                            onClick={ toggleFilterWindow }
                                         >
                                             <FilterList/>
                                         </IconButton>
