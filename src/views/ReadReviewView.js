@@ -19,6 +19,7 @@ import ReactHtmlParser from 'react-html-parser';
 import { Route, Switch } from 'react-router-dom';
 import { serializeNodes } from '../components/editor/EditorSerializer';
 import Loader from '../components/Loader';
+import ReviewModal from '../components/viewer/ReviewModal';
 import { usePrevious } from '../hooks/hooks';
 
 const useStyle = makeStyles(theme => ({
@@ -58,33 +59,6 @@ const useStyle = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    modalcontainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        position: 'absolute',
-        overflow: 'auto',
-        '&>div': {
-            flex: 1,
-            display: 'flex',
-            paddingLeft: 0,
-            paddingRight: 0,
-            flexWrap: 'wrap',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            // overflow : 'auto'
-
-        }
-    },
-    modalpaper: {
-        flex: 1,
-        flexWrap: 'wrap',
-        padding: 20,
-    },
     buttonwrapper: {
         [theme.breakpoints.down('sm')]: {
             display: 'flex',
@@ -93,17 +67,6 @@ const useStyle = makeStyles(theme => ({
             flexDirection: 'column',
         }
 
-    },
-    modaltext: {
-        flex: 1,
-        flexWrap: 'wrap',
-        flexDirection: 'column',
-    },
-    modalbutton: {
-        flex: 1,
-        display: 'flex',
-        justifyContent: 'flex-end',
-        top: 0
     },
     experimentTabs: {
         position: 'sticky',
@@ -330,6 +293,7 @@ const ReviewYearPanel = ({ classes, reviews, year }) => {
 
     return (
         <div className={ classes.reviewHolder }>
+            <ReviewModal open={ !!curReview } onClose={ setModalState(null) } data={ reviewData }/>
             <Typography className={ classes.yearText } variant='h4' align='center'>
                 {
                     curYear === year ?
