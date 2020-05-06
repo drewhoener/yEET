@@ -36,7 +36,7 @@ editorRouter.post('/save-review', authMiddleware, async (req, res) => {
     }
 
     if (request.status === PendingState.COMPLETED) {
-        res.sendStatus(201);
+        res.sendStatus(200);
         return;
     }
 

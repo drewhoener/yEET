@@ -312,7 +312,7 @@ function ReviewTextEditor({ pushError, ...props }) {
                 prepareSave(false, editor.children)
                     .then(response => {
                         // console.log(response);
-                        if (response.status === 201) {
+                        if (response.status === 200) {
                             pushError('success', 'Review Sent!');
                             return;
                         }
