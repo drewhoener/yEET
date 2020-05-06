@@ -1,24 +1,18 @@
-import React from 'react';
+import { TextField } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { Snackbar, TextField } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import { Search } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-import { AutoSizer } from 'react-virtualized';
-import Loader from '../components/Loader';
 import Divider from '@material-ui/core/Divider';
-import EmployeeList from '../components/EmployeeList';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+import { FilterList } from '@material-ui/icons';
+import React from 'react';
 import { connect } from 'react-redux';
-import {
-    closeTopErrorMessage,
-    fetchOrUpdateEmployees,
-    popErrorMessage,
-    setAndRefreshFilter
-} from '../state/selector/RequestSelector';
+import { AutoSizer } from 'react-virtualized';
+import EmployeeList from '../components/EmployeeList';
+import Loader from '../components/Loader';
+import RequestFilteredMenu from '../components/RequestFilteredMenu';
 import RequestInfoData from '../components/RequestInfoData';
-import Slide from '@material-ui/core/Slide';
-import Alert from '@material-ui/lab/Alert';
+import { fetchOrUpdateEmployees, setAndRefreshFilter } from '../state/selector/RequestSelector';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -68,21 +62,15 @@ const useStyle = makeStyles(theme => ({
     },
 }));
 
-function SlideTransition(props) {
-    return <Slide { ...props } direction="up"/>;
-}
-
 function RequestViewVirtualized(
     {
         searchFilter,
         loading,
-        errorMessages,
         setSearchFilter,
         fetchOrUpdateEmployees,
-        popErrorMessage,
-        closeTopErrorMessage
     }) {
     const classes = useStyle();
+
     // On load fetch or update employees if needed
     // On unload uncache the search filter
     React.useEffect(() => {
@@ -91,6 +79,31 @@ function RequestViewVirtualized(
             setSearchFilter('');
         };
     }, [setSearchFilter, fetchOrUpdateEmployees]);
+
+    const [filterWindowOpen, setFilterWindowOpen] = React.useState(false);
+    const filterAnchor = React.useRef(null);
+    const prevOpenState = React.useRef(filterWindowOpen);
+    // Restore focus on close window
+    React.useEffect(() => {
+        if (prevOpenState.current === true && filterWindowOpen === false) {
+            // noinspection JSUnresolvedFunction
+            filterAnchor.current.focus();
+        }
+
+        prevOpenState.current = filterWindowOpen;
+    }, [filterWindowOpen]);
+
+    const toggleFilterWindow = () => {
+        setFilterWindowOpen((prev) => !prev);
+    };
+
+    const closeFilterWindow = (event) => {
+        if (event && filterAnchor.current && filterAnchor.current.contains(event.target)) {
+            return;
+        }
+
+        setFilterWindowOpen(false);
+    };
 
     return (
         <React.Fragment>
@@ -106,13 +119,21 @@ function RequestViewVirtualized(
                                 value={ searchFilter }
                                 InputProps={ {
                                     endAdornment: (
-                                        <IconButton position='end' aria-label='Search'>
-                                            <Search/>
+                                        <IconButton
+                                            position='end'
+                                            aria-label='edit filters'
+                                            ref={ filterAnchor }
+                                            aria-haspopup='true'
+                                            aria-controls={ filterWindowOpen ? 'employee-list-filters' : undefined }
+                                        >
+                                            <FilterList/>
                                         </IconButton>
                                     ),
                                 } }
                                 onChange={ e => setSearchFilter(e.target.value) }
                             />
+                            <RequestFilteredMenu ref={ filterAnchor } open={ filterWindowOpen }
+                                                 closeWindow={ closeFilterWindow }/>
                             <RequestInfoData/>
                         </div>
                         <Divider/>
@@ -128,49 +149,21 @@ function RequestViewVirtualized(
                         </div>
                     </Paper>
                 </Container>
-                {/* Holder for snackbar messages */ }
-                <div>
-                    {
-
-                        errorMessages.filter((val, idx) => idx === 0)
-                            .map(message => {
-                                return (
-                                    <Snackbar
-                                        key={ `error-message-${ message.key }` }
-                                        open={ message.open }
-                                        autoHideDuration={ 3500 }
-                                        TransitionComponent={ SlideTransition }
-                                        onClose={ () => closeTopErrorMessage() }
-                                        TransitionProps={ {
-                                            onExited: () => popErrorMessage()
-                                        } }
-                                        disableWindowBlurListener
-                                    >
-                                        <Alert action={ undefined } severity={ message.severity }>
-                                            { message.content }
-                                        </Alert>
-                                    </Snackbar>
-                                );
-                            })
-
-                    }
-                </div>
             </div>
         </React.Fragment>
     );
 }
 
 const mapStateToProps = state => ({
-    searchFilter: state.requests.filter,
+    searchFilter: state.requests.filter.text,
     loading: state.requests.loading,
-    errorMessages: state.requests.errorMessages,
 });
 
 const mapDispatchToProps = dispatch => ({
-    setSearchFilter: filter => dispatch(setAndRefreshFilter(filter)),
+    setSearchFilter: filter => {
+        dispatch(setAndRefreshFilter(filter));
+    },
     fetchOrUpdateEmployees: () => dispatch(fetchOrUpdateEmployees()),
-    popErrorMessage: () => dispatch(popErrorMessage()),
-    closeTopErrorMessage: () => dispatch(closeTopErrorMessage()),
 });
 
 export default connect(

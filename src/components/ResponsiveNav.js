@@ -1,19 +1,20 @@
 import { CssBaseline } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
+import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import useTheme from '@material-ui/core/styles/useTheme';
 import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import { AccountBox, Create, ExitToApp, House, RateReview, Send } from '@material-ui/icons';
+import { ExitToApp } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -22,7 +23,7 @@ import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import logo from '../img/logo.png';
 import { resetRequestState } from '../state/selector/RequestSelector';
-import RoutedListItem from './RoutedListItem';
+import DrawerNavigation from './navlink/DrawerNavigation';
 
 const drawerWidth = 250;
 const useStyles = makeStyles(theme => ({
@@ -80,6 +81,19 @@ const useStyles = makeStyles(theme => ({
     whiteButton: {
         color: theme.status.logout,
         borderColor: theme.status.logout
+    },
+    userName: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(1)
+    },
+    largeAvatar: {
+        width: theme.spacing(9),
+        height: theme.spacing(9),
+        marginBottom: theme.spacing(0.75)
     }
 }));
 
@@ -101,35 +115,14 @@ ElevationScroll.propTypes = {
     window: PropTypes.func
 };
 
-const drawerItems = {
-    'Home': {
-        path: '/home',
-        icon: (<House/>)
-    },
-    'My Reviews': {
-        path: '/my-reviews',
-        icon: (<RateReview/>)
-    },
-    'Request Review': {
-        path: '/request',
-        icon: (<Send/>)
-    },
-    'Write Review': {
-        path: '/write',
-        icon: (<Create/>),
-        notify: 1
-    },
-    'My Account': {
-        path: '/account',
-        icon: (<AccountBox/>)
-    }
-};
-
 function ResponsiveNav({ container, resetRequestState, ...rest }) {
     const history = useHistory();
     const classes = useStyles();
     const theme = useTheme();
     const [drawerOpen, setDrawerOpen] = React.useState(false);
+    const [employeeInfo, setEmployeeInfo] = React.useState({
+        userName: ''
+    });
 
     const onDrawerToggle = () => {
         setDrawerOpen(!drawerOpen);
@@ -140,6 +133,22 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
 
     }, [setDrawerOpen]);
 
+    React.useEffect(() => {
+        axios.get('/api/whoami')
+            .then(({ data }) => {
+                if (!data || !data.userName) {
+                    setEmployeeInfo({
+                        userName: ''
+                    });
+                }
+                setEmployeeInfo(data);
+            })
+            .then(() => {
+                axios.post('/api/logged-in')
+                    .catch(console.error);
+            });
+    }, []);
+
     const onLogout = React.useCallback(() => {
         axios.post('/api/auth/logout')
             .then().catch().then(() => {
@@ -149,36 +158,31 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
     }, [history, resetRequestState]);
 
     const drawer = React.useMemo(() => {
-            console.log('Memoizing Drawer!');
             return (
                 <div>
                     {/* <div className={classes.toolbar} />*/ }
-                    <div className={ classes.toolbar }/>
+                    <div className={ classes.toolbar }>
+                        <div className={ classes.userName }>
+                            <Avatar className={ classes.largeAvatar }/>
+                            {
+                                (employeeInfo.userName.length > 0) &&
+                                <Typography align='center' variant='h5'>{ employeeInfo.userName }</Typography>
+                            }
+                        </div>
+                    </div>
                     <Divider/>
-                    <List>
-                        {
-                            Object.entries(drawerItems).map(([key, value]) => (
-                                <RoutedListItem
-                                    key={ key.toLowerCase().replace(' ', '_') }
-                                    icon={ React.cloneElement(value.icon) }
-                                    primary={ key }
-                                    to={ value.path }
-                                    notify={ value.notify ? value.notify : 0 }
-                                    onClick={ closeDrawer }
-                                />
-                            ))
-                        }
+                    <DrawerNavigation closeDrawer={ closeDrawer } capabilities={ employeeInfo }>
                         <Hidden smUp>
                             <ListItem button onClick={ onLogout }>
                                 <ListItemIcon><ExitToApp/></ListItemIcon>
                                 <ListItemText primary="Logout"/>
                             </ListItem>
                         </Hidden>
-                    </List>
+                    </DrawerNavigation>
                 </div>
             );
         },
-        [classes.toolbar, onLogout, closeDrawer]
+        [classes.toolbar, classes.userName, classes.largeAvatar, onLogout, closeDrawer, employeeInfo]
     );
 
     return (
@@ -247,7 +251,7 @@ function ResponsiveNav({ container, resetRequestState, ...rest }) {
                         } }
                         variant='permanent'
                         PaperProps={ {
-                            elevation: 0
+                            elevation: 1
                         } }
                         open
                     >

@@ -1,10 +1,26 @@
-import { FilterAction, RequestAction } from '../action/RequestActions';
 import axios from 'axios';
 import { batch } from 'react-redux';
+import { FilterAction, RequestAction } from '../action/RequestActions';
 
 export function resetRequestState() {
     return {
         type: RequestAction.RESET_STATE
+    };
+}
+
+export function toggleStatusFilterOption(option, state) {
+    return (dispatch, getState) => {
+        batch(() => {
+            dispatch({
+                type: FilterAction.TOGGLE_STATUS_FILTER,
+                payload: {
+                    toggleState: state,
+                    type: option,
+                    curOptions: getState().requests.filter.options
+                }
+            });
+            dispatch(updateShownEntries());
+        });
     };
 }
 
@@ -17,12 +33,26 @@ export function setAndRefreshFilter(filter) {
 
 function setSearchFilter(filter, employees, searcher) {
     return {
-        type: FilterAction.UPDATE_FILTER,
+        type: FilterAction.UPDATE_SEARCH_FILTER,
         payload: {
             filter,
             employees,
             searcher
         },
+    };
+}
+
+export function updateShownEntries() {
+    return (dispatch, getState) => {
+        const state = getState();
+        dispatch({
+            type: RequestAction.UPDATE_SHOWN_ENTRIES,
+            payload: {
+                employees: state.requests.employees,
+                selected: state.requests.selectedEmployees,
+                options: state.requests.filter.options
+            }
+        });
     };
 }
 
@@ -70,7 +100,7 @@ export function popErrorMessage() {
     };
 }
 
-function pushErrorMessage(severity, message) {
+export function pushErrorMessage(severity, message) {
     return {
         type: RequestAction.PUSH_ERROR_MESSAGE,
         severity,
@@ -92,10 +122,21 @@ export function deleteRequest(employeeObjId) {
     return dispatch => {
         axios.post('/api/request/cancel', { requestedEmployee: employeeObjId.toString() })
             .then(response => {
-                dispatch(removeRequestState(employeeObjId));
+                batch(() => {
+                    dispatch(pushErrorMessage('success', response.data.message));
+                    dispatch(removeRequestState(employeeObjId));
+                });
+
             })
             .catch(err => {
                 console.error(err);
+                if (err.response) {
+                    const { data } = err.response;
+                    if (data && data.message) {
+                        dispatch(pushErrorMessage('warning', data.message));
+                    }
+                }
+                dispatch(fetchRequestStates());
             });
     };
 }
@@ -123,7 +164,7 @@ function fetchRequestStates() {
 
 function receiveEmployees(employees) {
     return (dispatch, getState) => {
-        const filter = getState().requests.filter;
+        const filter = getState().requests.filter.text;
         setTimeout(() => {
             batch(() => {
                 dispatch(setEmployees(employees));
@@ -202,14 +243,16 @@ export function sendRequests(requestIds) {
                 batch(() => {
                     dispatch(unselectEmployees(requestIds));
                     dispatch(fetchRequestStates());
-                    if (response.data.message) {
+                    if (response && response.data.message) {
                         dispatch(pushErrorMessage('success', response.data.message));
                     }
                 });
             })
             .catch(err => {
                 console.log(err.response);
-                dispatch(pushErrorMessage('error', err.response.data.message));
+                if (err.response) {
+                    dispatch(pushErrorMessage('error', err.response.data.message));
+                }
             });
     };
 }

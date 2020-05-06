@@ -1,15 +1,14 @@
-import React from 'react';
 import { CssBaseline, TextField } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { Autocomplete } from '@material-ui/lab';
 import axios from 'axios';
-import { isMobile } from '../util';
+import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import {
     beginFetchCompanies,
     resetLoginState,
@@ -21,13 +20,20 @@ import {
     setPassword,
     setSelectedCompany
 } from '../state/selector/LoginSelector';
+import { isMobile } from '../util';
 
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
+    },
+    content: {
+        display: 'flex',
+        flexGrow: 1,
+        flexDirection: 'column',
+        height: '100vh',
+        minHeight: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '75vh'
     },
     form: {
         display: 'flex',
@@ -38,8 +44,9 @@ const useStyles = makeStyles(theme => ({
         }
     },
     employeeCompanyHolder: {
-        width: '100%',
+        alignItems: 'center',
         display: 'flex',
+        flex: 1,
         [theme.breakpoints.up('sm')]: {
             flexDirection: 'row'
         },
@@ -48,13 +55,23 @@ const useStyles = makeStyles(theme => ({
         },
     },
     companyAC: {
-        width: '100%',
+        // width: '100%',
+        flex: 1,
         [theme.breakpoints.up('sm')]: {
             paddingRight: theme.spacing(1)
         }
     },
+    translated: {
+        transform: 'translateY(4px)',
+    },
+    companyHolder: {
+        width: '100%',
+        display: 'flex',
+        flex: 1,
+    },
     employeeId: {
         width: '100%',
+        flex: 1,
         [theme.breakpoints.up('sm')]: {
             paddingLeft: theme.spacing(1)
         }
@@ -102,7 +119,7 @@ function LoginView(
     const { from } = location.state || { from: { pathname: '/' } };
 
     React.useEffect(() => {
-        console.log('We think login view mounted');
+        // console.log('We think login view mounted');
         fetchCompanies();
 
         axios.get('/api/auth/validate')
@@ -158,6 +175,7 @@ function LoginView(
 
     const select = isMobile ? (
         <TextField
+            className={ classes.translated }
             id="mobile-native-company-select"
             select
             label="Company"
@@ -167,6 +185,7 @@ function LoginView(
                 native: true,
             } }
             variant="outlined"
+            fullWidth
         >
             { companies.map(elem => (
                 <option key={ elem.companyId } value={ elem.companyId }>
@@ -196,65 +215,69 @@ function LoginView(
     const form = (
         <div className={ classes.root }>
             <CssBaseline/>
-            <Container height='100%'>
-                <Paper variant='outlined' elevation={ 16 }>
-                    <Typography color='primary' fontWeight='fontWeightBold' align='center'
-                                variant='h1'>yEET</Typography>
-                    <Typography align='center' variant='subtitle1'>Your Employee Evaluation Tool</Typography>
-                    <form className={ classes.form } onSubmit={ onSubmitForm } aria-label='Login Form'
-                          data-lpignore="true">
-                        <div className={ classes.employeeCompanyHolder }>
-                            { select }
-                            <div className={ classes.employeeId }>
-                                <TextField
-                                    id="login-username"
-                                    label="Employee ID"
-                                    placeholder="ID Number"
-                                    fullWidth
-                                    margin='normal'
-                                    variant='outlined'
-                                    InputLabelProps={ { shrink: true } }
-                                    value={ employeeId }
-                                    disabled={ loading }
-                                    onChange={ event => onChange(setEmployeeId, event) }
-                                />
+            <div className={ classes.content }>
+                <Container>
+                    <Paper variant='outlined' elevation={ 16 }>
+                        <Typography color='primary' fontWeight='fontWeightBold' align='center'
+                                    variant='h1'>yEET</Typography>
+                        <Typography align='center' variant='subtitle1'>Your Employee Evaluation Tool</Typography>
+                        <form className={ classes.form } onSubmit={ onSubmitForm } aria-label='Login Form'
+                              data-lpignore="true">
+                            <div className={ classes.employeeCompanyHolder }>
+                                <div className={ classes.companyHolder }>
+                                    { select }
+                                </div>
+                                <div className={ classes.employeeId }>
+                                    <TextField
+                                        id="login-username"
+                                        label="Employee ID"
+                                        placeholder="ID Number"
+                                        fullWidth
+                                        margin='normal'
+                                        variant='outlined'
+                                        InputLabelProps={ { shrink: true } }
+                                        value={ employeeId }
+                                        disabled={ loading }
+                                        onChange={ event => onChange(setEmployeeId, event) }
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <TextField
-                            id="login-password"
-                            label="Password"
-                            placeholder="Password"
-                            type='password'
-                            fullWidth
-                            margin='normal'
-                            variant='outlined'
-                            InputLabelProps={ { shrink: true } }
-                            value={ password }
-                            disabled={ loading }
-                            // error={true}
-                            // helperText={'Helper Text Text'}
-                            FormHelperTextProps={ { className: classes.helperCenered } }
-                            onChange={ event => onChange(setPassword, event) }
-                        />
-                        <Button
-                            className={ classes.loginButton }
-                            variant='contained'
-                            color='primary'
-                            size='large'
-                            type='submit'
-                            aria-label="Login"
-                            disableElevation
-                            disableFocusRipple
-                            fullWidth
-                            disabled={ loading }
-                        >
-                            Login
-                        </Button>
-                        <Typography className={ classes.errorText } variant='subtitle1' color='error'
-                                    hidden={ !errorText.length }>{ errorText }</Typography>
-                    </form>
-                </Paper>
-            </Container>
+                            <TextField
+                                id="login-password"
+                                label="Password"
+                                placeholder="Password"
+                                type='password'
+                                fullWidth
+                                margin='normal'
+                                variant='outlined'
+                                InputLabelProps={ { shrink: true } }
+                                value={ password }
+                                disabled={ loading }
+                                // error={true}
+                                // helperText={'Helper Text Text'}
+                                FormHelperTextProps={ { className: classes.helperCenered } }
+                                onChange={ event => onChange(setPassword, event) }
+                            />
+                            <Button
+                                className={ classes.loginButton }
+                                variant='contained'
+                                color='primary'
+                                size='large'
+                                type='submit'
+                                aria-label="Login"
+                                disableElevation
+                                disableFocusRipple
+                                fullWidth
+                                disabled={ loading }
+                            >
+                                Login
+                            </Button>
+                            <Typography className={ classes.errorText } variant='subtitle1' color='error'
+                                        hidden={ !errorText.length }>{ errorText }</Typography>
+                        </form>
+                    </Paper>
+                </Container>
+            </div>
         </div>
     );
 
@@ -263,7 +286,6 @@ function LoginView(
             return null;
         }
         if (needsRedirect) {
-            console.log(from);
             resetLoginState();
             return (
                 <Redirect to={ '/home' } from={ from }/>

@@ -1,4 +1,4 @@
-import { green, grey } from '@material-ui/core/colors';
+import { blueGrey, grey, lightBlue } from '@material-ui/core/colors';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -11,8 +11,10 @@ import MainView from './views/MainView';
 
 const theme = createMuiTheme({
     palette: {
-        primary: green,
-        secondary: green,
+        primary: {
+            main: blueGrey[500]
+        },
+        secondary: lightBlue,
     },
     status: {
         danger: 'orange',

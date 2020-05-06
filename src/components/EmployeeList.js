@@ -1,16 +1,16 @@
-import { List } from 'react-virtualized';
-import React from 'react';
+import { Checkbox, ListItemIcon, ListItemText } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
-import { Checkbox, ListItemIcon, ListItemText } from '@material-ui/core';
-import { connect } from 'react-redux';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { toggleEmployeeSelect } from '../state/selector/RequestSelector';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import React from 'react';
+import { connect } from 'react-redux';
+import { List } from 'react-virtualized';
+import { toggleEmployeeSelect, updateShownEntries } from '../state/selector/RequestSelector';
 import { colorButtonTheme } from '../util';
 import ThemedStatusButton from './requestbutton/ThemedStatusButton';
 
-const useStyle = makeStyles(theme => ({
+const useStyle = makeStyles(() => ({
     smallScrollbar: {
         '&::-webkit-scrollbar': {
             width: '0.8em',
@@ -36,64 +36,81 @@ function EmployeeList(
         selectedEmployees,
         requestStates,
         selectEmployee,
+        updateShownEntries,
         ...rest
     }) {
 
     const classes = useStyle();
 
+    React.useEffect(() => {
+        updateShownEntries();
+    }, [updateShownEntries, selectedEmployees, requestStates]);
+
     const SecondaryActionWrapper = ({ ...props }) => <ListItemSecondaryAction { ...props }/>;
     SecondaryActionWrapper.muiName = ListItemSecondaryAction.muiName;
 
-    const rowRenderer = ({
-                             // Unique key within array of rows
-                             key,
-                             // Index of row within collection
-                             index,
-                             // The List is currently being scrolled
-                             isScrolling,
-                             // This row is visible within the List (eg it is not an overscanned row)
-                             isVisible,
-                             // Style object to be applied to row (to position it)
-                             style,
-                         }) => {
+    const rowRenderer = React.useCallback(
+        ({
+             // Unique key within array of rows
+             key,
+             // Index of row within collection
+             index,
+             // The List is currently being scrolled
+             isScrolling,
+             // This row is visible within the List (eg it is not an overscanned row)
+             isVisible,
+             // Style object to be applied to row (to position it)
+             style,
+         }) => {
 
-        if (index % 2 === 1) {
-            return (<Divider key={ key } style={ style }/>);
-        }
+            if (index % 2 === 1) {
+                return (<Divider key={ key } style={ style }/>);
+            }
 
-        const employee = employees[filteredEmployees[Math.floor(index / 2)]];
-        if (!employee) {
-            return null;
-        }
-        const requestState = requestStates[employee._id.toString()];
-        const hasRequest = !!requestState;
+            const employee = employees[filteredEmployees[Math.floor(index / 2)]];
+            if (!employee) {
+                return null;
+            }
+            const requestState = requestStates[employee._id.toString()];
+            const hasRequest = !!requestState;
+            const isChecked = selectedEmployees.some(item => employee._id.toString() === item) && !hasRequest;
 
-        return (
-            <div key={ key } style={ style }>
-                <ListItem disabled={ hasRequest } ContainerComponent='div' role={ undefined } disableRipple button
-                          onClick={ selectEmployee(employee._id.toString()) }>
-                    <ListItemIcon>
-                        <Checkbox
-                            edge="start"
-                            checked={ selectedEmployees.some(item => employee._id.toString() === item) && !hasRequest }
-                            disabled={ hasRequest }
-                            tabIndex={ -1 }
-                            disableRipple
-                            inputProps={ { 'aria-labelledby': 'Add or Remove from Review Request' } }
-                            color='primary'
+            return (
+                <div key={ key } style={ style }>
+                    <ListItem
+                        disabled={ hasRequest }
+                        ContainerComponent='div'
+                        role={ 'button' }
+                        disableRipple
+                        button
+                        onClick={ selectEmployee(employee._id.toString()) }
+                        aria-label={ `${ employee.fullName } ${ employee.position }, click to ${ !isChecked ? 'select' : 'deselect' }.` }
+                    >
+                        <ListItemIcon>
+                            <Checkbox
+                                edge="start"
+                                checked={ isChecked }
+                                disabled={ hasRequest }
+                                tabIndex={ -1 }
+                                disableRipple
+                                inputProps={ { 'aria-label': 'Add or Remove from Review Request' } }
+                                color='primary'
+                            />
+                        </ListItemIcon>
+                        <ListItemText primary={ employee.fullName }
+                                      secondary={ `${ employee.position }` }
                         />
-                    </ListItemIcon>
-                    <ListItemText primary={ employee.fullName }
-                                  secondary={ employee.position }
-                    />
-                    <ListItemSecondaryAction>
-                        <ThemedStatusButton type={ hasRequest ? requestState.statusName : '' }
-                                            employeeObjId={ employee._id }/>
-                    </ListItemSecondaryAction>
-                </ListItem>
-            </div>
-        );
-    };
+                        <ListItemSecondaryAction>
+                            <ThemedStatusButton
+                                type={ hasRequest ? requestState.statusName : '' }
+                                employeeObjId={ employee._id }
+                                employeeName={ employee.fullName }
+                            />
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                </div>
+            );
+        }, [employees, filteredEmployees, selectedEmployees, requestStates, selectEmployee]);
 
     return (
         <ThemeProvider theme={ colorButtonTheme }>
@@ -105,6 +122,7 @@ function EmployeeList(
                 rowHeight={ ({ index }) => index % 2 === 1 ? 1 : 72 }
                 rowRenderer={ rowRenderer }
                 overscanRowCount={ 5 }
+                aria-label={ `employee list, ${ filteredEmployees.length } shown` }
                 { ...rest }
             />
         </ThemeProvider>
@@ -118,8 +136,9 @@ const mapStateToProps = state => ({
     requestStates: state.requests.requestStates.byKey,
 });
 
-const mapDispatchToProps = (dispatch, getState) => ({
+const mapDispatchToProps = (dispatch) => ({
     selectEmployee: idx => () => dispatch(toggleEmployeeSelect(idx)),
+    updateShownEntries: () => dispatch(updateShownEntries()),
 });
 
 export default connect(

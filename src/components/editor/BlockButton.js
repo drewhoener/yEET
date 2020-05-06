@@ -55,6 +55,7 @@ export function BlockTextButton({ format, className = '', text, onClick, grouped
                     classes.coloredToggleButton
                 ])
             }
+            aria-label={ `Toggle format ${ format }${ isBlockActive(editor, format) ? ' (Selected)' : '' }` }
             size='small'
             value={ format }
             selected={ isBlockActive(editor, format) }
@@ -83,6 +84,7 @@ export function BlockButton({ format, className = '', IconComponent, iconProps =
                     classes.coloredToggleButton
                 ])
             }
+            aria-label={ `Toggle format ${ format }${ isBlockActive(editor, format) ? ' (Selected)' : '' }` }
             size='small'
             value={ format }
             selected={ isBlockActive(editor, format) }
