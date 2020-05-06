@@ -422,7 +422,7 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
     const reqRecievedIds = requestsReceived.map(req => req._id.toString());
     const reqSentIds = requestsSent.map(req => req._id.toString());
 
-    const reviewsReceived = companyReviews.filter(rev => reqRecievedIds.includes(rev.requestID.toString()));
+    const reviewsReceived = companyReviews.filter(rev => reqSentIds.includes(rev.requestID.toString()));
     const reviewsSent = companyReviews.filter(rev => reqSentIds.includes(rev.requestID.toString()));
 
     const stats = {};
@@ -443,7 +443,7 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
 
     stats.reviews = {
         incoming: {
-            reviewsSinceLastLogin: reviewsReceived.filter(r => r.completed === true && r.dateWritten > lastLogin).length,
+            reviewsSinceLastLogin: reviewsReceived.filter(r => r.completed && r.dateWritten > lastLogin).length,
             allTime: reviewsReceived.length
         },
         outgoing: {
