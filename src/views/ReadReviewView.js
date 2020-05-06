@@ -1,4 +1,4 @@
-import { Container, ExpansionPanel, ListItemText, Paper } from '@material-ui/core';
+import { Container, ExpansionPanel, ListItemText, Paper, useTheme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -24,9 +24,9 @@ import { usePrevious } from '../hooks/hooks';
 const useStyle = makeStyles(theme => ({
     inlineFlex: {
         display: 'inline-flex',
-        flexDirection: 'row',
         width: '100%',
-        height: '100%'
+        height: '100%',
+        overflow: 'auto',
     },
     toolbar: theme.mixins.toolbar,
     flex: {
@@ -107,12 +107,16 @@ const useStyle = makeStyles(theme => ({
     },
     experimentTabs: {
         position: 'sticky',
-        flexDirection: 'row',
+        // flexDirection: 'row',
         flex: '0 1 auto',
         top: 0,
         zIndex: 100,
         minHeight: 0,
-        display: 'block',
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'auto'
     },
     reviewHolder: {
         display: 'flex',
@@ -142,12 +146,16 @@ const useStyle = makeStyles(theme => ({
         }
     },
     tabContainer: {
-        // position: 'sticky',
-        // position: '-webkit-sticky',
         display: 'flex',
         backgroundColor: theme.palette.background.paper,
-        flex: '1 0 auto',
-        minHeight: '100%'
+        flex: '1 1 auto',
+        minHeight: 'calc(100% - 56px)',
+        '@media (min-width:0px) and (orientation: landscape)': {
+            minHeight: 'calc(100% - 48px)'
+        },
+        '@media (min-width:600px)': {
+            minHeight: 'calc(100% - 64px)'
+        }
     },
     flexedListHolder: {
         display: 'flex',
@@ -197,9 +205,13 @@ const SubordinateReviews = ({ classes }) => {
 
 const MyReviews = ({ classes }) => {
     const [reviews, setReviews] = React.useState({});
+    const [selectedYear, setSelectedYear] = React.useState(-1);
+    const theme = useTheme();
+
+    console.log(theme);
+
     const availableYears = React.useMemo(() => {
-        const yearSet = new Set([`${ new Date().getFullYear() }`]);
-        Object.keys(reviews).forEach(key => yearSet.add(key));
+        const yearSet = new Set([`${ new Date().getFullYear() }`, ...Object.keys(reviews)]);
         const arr = [...yearSet];
         arr.sort((o1, o2) => o2.localeCompare(o1));
         return arr;
@@ -207,7 +219,6 @@ const MyReviews = ({ classes }) => {
 
     const lastAvailableYears = usePrevious(availableYears);
 
-    const [selectedYear, setSelectedYear] = React.useState(-1);
     React.useEffect(() => {
         if (selectedYear === -1) {
             setSelectedYear(availableYears.indexOf(`${ new Date().getFullYear() }`));
@@ -250,27 +261,31 @@ const MyReviews = ({ classes }) => {
             <div className={ classes.experimentTabs }>
                 {
                     availableYears.length > 1 &&
-                    <div className={ classes.tabContainer }>
-                        <Tabs
-                            orientation='vertical'
-                            variant='scrollable'
-                            value={ selectedYear }
-                            onChange={ handleTabChange }
-                            aria-label='Year Selection Tabs'
-                            className={ classes.verticalTabs }
-                        >
-                            {
-                                availableYears.map((year, index) => (
-                                    <Tab className={ classes.verticalTab } key={ `yeartab-${ year }` }
-                                         id={ `tab-yearselect-${ index }` }
-                                         aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
-                                ))
-                            }
-                        </Tabs>
-                    </div>
+                    <>
+                        <div className={ classes.toolbar }/>
+                        <div className={ classes.tabContainer }>
+                            <Tabs
+                                orientation='vertical'
+                                variant='scrollable'
+                                value={ selectedYear }
+                                onChange={ handleTabChange }
+                                aria-label='Year Selection Tabs'
+                                className={ classes.verticalTabs }
+                            >
+                                {
+                                    availableYears.map((year, index) => (
+                                        <Tab className={ classes.verticalTab } key={ `yeartab-${ year }` }
+                                             id={ `tab-yearselect-${ index }` }
+                                             aria-controls={ `reviewpanel-year-${ index }` } label={ year }/>
+                                    ))
+                                }
+                            </Tabs>
+                        </div>
+                    </>
                 }
             </div>
             <div className={ classes.flex }>
+                <div className={ classes.toolbar }/>
                 <ReviewYearPanel classes={ classes } year={ getSelectedYear() } reviews={ reviews[getSelectedYear()] }/>
             </div>
         </>
@@ -459,7 +474,6 @@ export default function ReadReviewView(props) {
     const classes = useStyle();
     return (
         <>
-            <div className={ classes.toolbar }/>
             <div className={ classes.inlineFlex }>
                 <Switch>
                     <Route path={ '/view/my-reviews' }>
