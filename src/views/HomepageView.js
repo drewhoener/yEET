@@ -136,6 +136,7 @@ const MyStats = ({ classes }) => {
                         <Typography variant='h5'>{`Completed: ${requests.incoming.completed}`}</Typography>
                     </div>
                 </div>
+                <br></br>
                 <div className={classes.box}>
                     <div className={classes.stackableText}>
                         <Typography variant='h4'>Outgoing</Typography>
@@ -150,6 +151,7 @@ const MyStats = ({ classes }) => {
                         <Typography variant='h5'>{`Completed: ${requests.outgoing.completed}`}</Typography>
                     </div>
                 </div>
+                <br></br>
                 <div className={classes.box}>
                     <div className={classes.stackableText}>
                         <Typography variant='h4'>Since last time</Typography>
