@@ -141,22 +141,22 @@ const filteredEmployeesReducer = createReducer([...InitialRequestState.filteredE
         }
 
         const alreadyFiltered = [...state];
-        console.log('Already Filtered users');
-        console.log(alreadyFiltered);
+        // console.log('Already Filtered users');
+        // console.log(alreadyFiltered);
 
         let alreadyFilteredMapped = alreadyFiltered.map(idx => ({
             employee: employees[idx],
             idx
         })).filter(o => o.employee !== undefined);
-        console.log('Mapped');
-        console.log(alreadyFilteredMapped);
+        // console.log('Mapped');
+        // console.log(alreadyFilteredMapped);
 
         const unselected = alreadyFilteredMapped.filter(employee => {
             const existsInSelected = selected.some(selectedEmployee => selectedEmployee === employee.employee._id);
             return !existsInSelected;
         });
-        console.log('Unselected Employees');
-        console.log(unselected);
+        // console.log('Unselected Employees');
+        // console.log(unselected);
 
         const selectedMappedUsers = selected.map(selectedUser => {
             const idx = employees.findIndex(employee => employee._id === selectedUser);
@@ -166,8 +166,8 @@ const filteredEmployeesReducer = createReducer([...InitialRequestState.filteredE
             };
         }).filter(obj => alreadyFiltered.includes(obj.idx));
 
-        console.log('Selected Users Mapped:');
-        console.log(selectedMappedUsers);
+        // console.log('Selected Users Mapped:');
+        // console.log(selectedMappedUsers);
 
         // Don't show selected users
         if (!options.includes(StatusFilter.SHOW_SELECTED)) {
@@ -177,8 +177,8 @@ const filteredEmployeesReducer = createReducer([...InitialRequestState.filteredE
             });
         }
 
-        console.log('Without Selected');
-        console.log(alreadyFilteredMapped);
+        // console.log('Without Selected');
+        // console.log(alreadyFilteredMapped);
 
         return alreadyFilteredMapped.map(o => o.idx);
     }
