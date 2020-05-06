@@ -26,13 +26,17 @@ editorRouter.post('/save-review', authMiddleware, async (req, res) => {
         _id: new ObjectId(requestId),
         company: new ObjectId(req.tokenData.company),
         userReceiving: new ObjectId(req.tokenData.id),
-        status: PendingState.ACCEPTED
     });
 
     // console.log(request);
 
-    if (!request) {
+    if (!request || request.status === PendingState.PENDING || request.status === PendingState.REJECTED) {
         res.status(404).send('Requested Resource not found');
+        return;
+    }
+
+    if (request.status === PendingState.COMPLETED) {
+        res.sendStatus(201);
         return;
     }
 

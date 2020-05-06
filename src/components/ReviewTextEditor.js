@@ -289,28 +289,33 @@ function ReviewTextEditor({ pushError, ...props }) {
         setIsSaving(true);
         prepareSave(true, editorState)
             .then(response => {
+                setSaveOnUnmount(false);
                 console.log(response);
             })
             .catch(err => {
                 console.error(err);
+                setSaveOnUnmount(true);
                 setDialogState('failure');
             })
             .then(() => {
-                setIsSaving(false);
                 setSaveOnUnmount(false);
+                console.log(`Save on Unmount is ${ saveOnUnmount }`);
+                setIsSaving(false);
                 setDialogOpen(true);
             });
     };
 
     React.useEffect(() => {
         return () => {
-            console.log('In useEffect return value');
-            console.log(editor);
             if (saveOnUnmount) {
-                console.error('Saving Draft Data in UseEffect');
+                console.log('Set Saving Draft');
                 prepareSave(false, editor.children)
                     .then(response => {
                         console.log(response);
+                        if (response.status === 201) {
+                            pushError('success', 'Review Sent!');
+                            return;
+                        }
                         pushError('success', 'Draft Saved!');
                     })
                     .catch(err => {

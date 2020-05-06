@@ -34,7 +34,7 @@ employeeSchema.methods.validatePassword = function (password) {
     return bcrypt.compare(password, this.passwordHash);
 };
 
-employeeSchema.methods.hasManager = () => {
+employeeSchema.methods.hasManager = function () {
     return this.manager !== null;
 };
 

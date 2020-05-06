@@ -125,8 +125,11 @@ const MyStats = ({ classes }) => {
         // Anthony: probably could just leave them in all one div but I realized that by the time I finished ¯\_(ツ)_/¯
         <div className={classes.wordsintext}>
             <div>
-                <Typography variant='h2'
-                            align='center'>{ `Welcome back, ${ employeeInfo.userName.split(' ')[0] }` }</Typography>
+                <Typography variant='h2' gutterBottom align='center'>
+                    {
+                        `Welcome back, ${ employeeInfo.userName.split(' ')[0] }`
+                    }
+                </Typography>
             </div>
             <div className={ classes.mobileSpacer }/>
             <div className={ classes.boxContainer }>

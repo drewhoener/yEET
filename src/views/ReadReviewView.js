@@ -1,25 +1,18 @@
-import { Container, ExpansionPanel, ListItemText, Paper, useTheme } from '@material-ui/core';
+import { ListItemText, Paper } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Modal from '@material-ui/core/Modal';
 import { makeStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import axios from 'axios';
-import moment from 'moment';
 import React from 'react';
-import ReactHtmlParser from 'react-html-parser';
-import { Route, Switch } from 'react-router-dom';
-import { serializeNodes } from '../components/editor/EditorSerializer';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import Loader from '../components/Loader';
-import ReviewModal from '../components/viewer/ReviewModal';
+import ReviewYearPanel from '../components/viewer/ReviewYearPanel';
 import { usePrevious } from '../hooks/hooks';
 
 const useStyle = makeStyles(theme => ({
@@ -126,19 +119,20 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const SubordinateReviews = ({ classes }) => {
-    const [expandedPanel, setExpandedPanel] = React.useState('');
-    const [loading, setLoading] = React.useState(true);
 
-    const handleChange = panel => (event, isExpanded) => {
-        setExpandedPanel(isExpanded ? panel : false);
+    const [loading, setLoading] = React.useState(true);
+    const [employees, setEmployees] = React.useState([]);
+    const history = useHistory();
+
+    const redirectToEmployee = employeeId => () => {
+        history.push(`/view/my-reviews/${ employeeId }`);
     };
 
-    const [reviews, setReviews] = React.useState([]);
     React.useEffect(() => {
-        axios.get('/api/employee-reviews')
+        axios.get('/api/my-employees')
             .then(({ data }) => {
                 console.log(data);
-                setReviews(data.reviews);
+                setEmployees(data.employees);
                 setLoading(false);
             })
             .catch(err => {
@@ -147,31 +141,57 @@ const SubordinateReviews = ({ classes }) => {
     }, []);
     return (
         <div className={ classes.panelEnclosed }>
+            <div className={ classes.toolbar }/>
             <div className={ classes.loader }>
                 <Loader visible={ loading }/>
             </div>
             {
                 !loading &&
-                Object.keys(reviews).map((name) => {
-                    return (
-                        <LabelledExpansionPanel key={ `EMPLOYEE-${ name }` } classes={ classes }
-                                                onChange={ handleChange } label={ `${ name }` }
-                                                expandedPanel={ expandedPanel }>
-                            <ReviewList classes={ classes } reviews={ reviews[[name]] }/>
-                        </LabelledExpansionPanel>
-                    );
-                })
+                <>
+                    <Typography className={ classes.yearText } variant='h4' align='center'>
+                        My Employees
+                    </Typography>
+                    <Paper variant={ 'outlined' } elevation={ 0 } className={ classes.reviewList }>
+                        <List className={ classes.list }>
+                            { employees &&
+                            employees.sort((o1, o2) => o1.lastName.localeCompare(o2.lastName)).map(employee => {
+                                return (
+                                    <React.Fragment
+                                        key={ `${ employee.firstName }_${ employee.lastName }_${ employee._id }` }>
+                                        <Divider/>
+                                        <ListItem className={ classes.listItem }>
+                                            <ListItemText tabIndex={ 0 }
+                                                          primary={ `${ employee.fullName }` }
+                                                          primaryTypographyProps={ { className: classes.listItemText } }
+                                                          secondary={ `${ employee.position } ${ employee.reviewsThisYear ? `(${ employee.reviewsThisYear } reviews this year)` : '' }` }/>
+                                            <ListItemSecondaryAction className={ classes.buttonwrapper }>
+                                                <Button
+                                                    variant={ 'contained' }
+                                                    color={ 'primary' }
+                                                    disableElevation
+                                                    onClick={ redirectToEmployee(employee._id) }
+                                                >
+                                                    View
+                                                </Button>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    </React.Fragment>
+                                );
+                            })
+                            }
+                            <Divider/>
+                        </List>
+                    </Paper>
+                </>
             }
         </div>
     );
 };
 
-const MyReviews = ({ classes }) => {
+const MyReviews = ({ classes, match }) => {
     const [reviews, setReviews] = React.useState({});
+    const [employeeName, setEmployeeName] = React.useState(undefined);
     const [selectedYear, setSelectedYear] = React.useState(-1);
-    const theme = useTheme();
-
-    console.log(theme);
 
     const availableYears = React.useMemo(() => {
         const yearSet = new Set([`${ new Date().getFullYear() }`, ...Object.keys(reviews)]);
@@ -203,17 +223,23 @@ const MyReviews = ({ classes }) => {
     };
 
     React.useEffect(() => {
-        axios.get('/api/reviews')
+        axios.get('/api/reviews', {
+            params: {
+                employee: (match && match.params && match.params.employeeId) ? match.params.employeeId : undefined
+            }
+        })
             .then(({ data }) => {
-                console.log(data);
                 setReviews(data.reviews);
+                if (data.employeeName) {
+                    setEmployeeName(data.employeeName);
+                }
             })
             .catch(err => {
                 // const error = {};
                 // setReviews([error]);
             });
 
-    }, []);
+    }, [match]);
 
     const handleTabChange = (event, newValue) => {
         setSelectedYear(newValue);
@@ -249,190 +275,13 @@ const MyReviews = ({ classes }) => {
             </div>
             <div className={ classes.flex }>
                 <div className={ classes.toolbar }/>
-                <ReviewYearPanel classes={ classes } year={ getSelectedYear() } reviews={ reviews[getSelectedYear()] }/>
+                <ReviewYearPanel classes={ classes } year={ getSelectedYear() } reviews={ reviews[getSelectedYear()] }
+                                 employeeName={ employeeName }
+                />
             </div>
         </>
     );
 };
-
-const ReviewYearPanel = ({ classes, reviews, year }) => {
-
-    React.useEffect(() => {
-        console.log('Got Reviews: ');
-        console.log(reviews);
-    }, [reviews]);
-
-    const [curReview, setCurReview] = React.useState(null);
-    const [reviewData, setReviewData] = React.useState('<div/>');
-    const curYear = React.useMemo(() => `${ new Date().getFullYear() }`, []);
-
-    React.useEffect(() => {
-        if (!curReview) {
-            return;
-        }
-        axios.get('/api/review-contents', {
-            params: {
-                requestId: curReview
-            }
-        })
-            .then(({ data }) => {
-                console.log(data);
-                setReviewData(serializeNodes(JSON.parse(data.contents)));
-            })
-            .catch(err => {
-            });
-    }, [curReview]);
-
-    const setModalState = state => () => {
-        console.log(state);
-        if (!state) {
-            setReviewData('<div/>');
-        }
-        setCurReview(state);
-    };
-
-    return (
-        <div className={ classes.reviewHolder }>
-            <ReviewModal open={ !!curReview } onClose={ setModalState(null) } data={ reviewData }/>
-            <Typography className={ classes.yearText } variant='h4' align='center'>
-                {
-                    curYear === year ?
-                        'This Year' :
-                        `Reviews from ${ year }`
-                }
-            </Typography>
-            <Paper variant={ 'outlined' } elevation={ 0 } className={ classes.reviewList }>
-                <List className={ classes.list }>
-                    { reviews &&
-                    reviews.sort((a, b) => new Date(b.dateWritten).getTime() - new Date(a.dateWritten).getTime()).map(review => {
-                        return (
-                            <React.Fragment
-                                key={ `${ review.firstName }_${ review.lastName }_${ review.reviewId }` }>
-                                <Divider/>
-                                <ListItem className={ classes.listItem }>
-                                    <ListItemText tabIndex={ 0 }
-                                                  primary={ `${ review.firstName + ' ' + review.lastName }` }
-                                                  primaryTypographyProps={ { className: classes.listItemText } }
-                                                  secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                                    <ListItemSecondaryAction className={ classes.buttonwrapper }>
-                                        <Button onClick={ setModalState(review.reviewId) }>View</Button>
-                                        <Button>Download</Button>
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                            </React.Fragment>
-                        );
-                    })
-                    }
-                    <Divider/>
-                </List>
-            </Paper>
-        </div>
-    );
-};
-
-const ReviewList = ({ classes, reviews }) => {
-
-    const [curReview, setCurReview] = React.useState(null);
-    const [reviewData, setReviewData] = React.useState('<div/>');
-
-    React.useEffect(() => {
-        if (!curReview) {
-            return;
-        }
-        axios.get('/api/review-contents', {
-            params: {
-                requestId: curReview
-            }
-        })
-            .then(({ data }) => {
-                console.log(data);
-                setReviewData(serializeNodes(JSON.parse(data.contents)));
-            })
-            .catch(err => {
-            });
-    }, [curReview]);
-
-    const setModalState = state => () => {
-        console.log(state);
-        if (!state) {
-            setReviewData('<div/>');
-        }
-        setCurReview(state);
-    };
-
-    return (
-        <div className={ classes.panelEnclosed }>
-            <Modal open={ !!curReview } onClose={ setModalState(null) } className={ classes.modalcontainer }>
-                <Container maxWidth='md'>
-                    <Paper elevation={ 4 } className={ classes.modalpaper }>
-                        <div>
-                            {
-                                curReview &&
-                                <>
-                                    <div tabIndex={ -1 } className={ classes.modalbutton }>
-                                        <Button onClick={ setModalState(null) }> Close </Button>
-                                    </div>
-                                    <div className={ classes.modaltext }>
-                                        { ReactHtmlParser(reviewData) }
-                                    </div>
-                                </>
-                            }
-                        </div>
-                    </Paper>
-                </Container>
-            </Modal>
-            {
-                Object.keys(reviews).sort((a, b) => b.localeCompare(a)).map((year) => {
-                    return <div className={ classes.flexedListHolder }>
-                        <List className={ classes.list }>
-                            {
-                                reviews[year].sort((a, b) => new Date(b.dateWritten) - new Date(a.dateWritten)).map(review => {
-                                    return (
-                                        <React.Fragment
-                                            key={ `${ review.firstName }_${ review.lastName }_${ review.reviewId }` }>
-                                            <Divider/>
-                                            <ListItem>
-                                                <ListItemText tabIndex={ 0 }
-                                                              primary={ `${ review.firstName + ' ' + review.lastName }` }
-                                                              primaryTypographyProps={ { className: classes.listItemText } }
-                                                              secondary={ `${ moment(Date.parse(review.dateWritten)).calendar() }` }/>
-                                                <ListItemSecondaryAction className={ classes.buttonwrapper }>
-                                                    <Button onClick={ setModalState(review.reviewId) }>View</Button>
-                                                    <Button>Download</Button>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        </React.Fragment>
-                                    );
-                                })
-                            }
-                            <Divider/>
-                        </List>
-                    </div>;
-                })
-            }
-        </div>
-
-    );
-};
-
-function LabelledExpansionPanel(props) {
-    const { children, classes, expandedPanel, onChange, label } = props;
-    return (
-        <ExpansionPanel TransitionProps={ { unmountOnExit: true } } expanded={ expandedPanel === label }
-                        onChange={ onChange(label) }>
-            <ExpansionPanelSummary
-                expandIcon={ <ExpandMoreIcon/> }
-                aria-controls="panel1bh-content"
-                id="panel1bh-header"
-            >
-                <Typography className={ classes.heading }>{ label }</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-                { children }
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
-    );
-}
 
 export default function ReadReviewView(props) {
     const classes = useStyle();
@@ -440,9 +289,12 @@ export default function ReadReviewView(props) {
         <>
             <div className={ classes.inlineFlex }>
                 <Switch>
-                    <Route path={ '/view/my-reviews' }>
+                    <Route exact path={ '/view/my-reviews/' }>
                         <MyReviews classes={ classes }/>
                     </Route>
+                    <Route path={ '/view/my-reviews/:employeeId' } render={ routeProps => (
+                        <MyReviews classes={ classes } { ...routeProps }/>
+                    ) }/>
                     <Route exact path={ '/view/employee' }>
                         <SubordinateReviews classes={ classes }/>
                     </Route>

@@ -270,56 +270,58 @@ apiRouter.post('/delete-request', authMiddleware, async (req, res) => {
     }
 });
 
-apiRouter.get('/employee-reviews', authMiddleware, async (req, res) => {
+apiRouter.get('/my-employees', authMiddleware, async (req, res) => {
 
-    const employees = await Employee.find({ company: new ObjectId(req.tokenData.company), manager: req.tokenData.id });
-
-    const reviews = {};
-
-    for (const employee of employees) {
-        // console.log(employee.firstName);
-        reviews[`${ employee.firstName } ${ employee.lastName }`] = await Request.find({
-            status: PendingState.COMPLETED,
-            company: new ObjectId(req.tokenData.company),
-            userRequesting: new ObjectId(employee._id)
-        })
-            .then(async requests => {
-                const allEmployees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
-                if (!requests || !requests.length) {
-                    return [];
-                }
-
-                // console.log(requests);
-
-                const subReviews = await Review.find({ requestID: { '$in': requests.map(r => r._id) } });
-
-
-                // console.log(subReviews);
-
-                return reviewsByYear(subReviews.map(review => {
-                    // console.log(review);
-                    const request = requests.find((_req) => _req._id.toString() === review.requestID.toString());
-                    // console.log(request);
-                    const sendingEmployee = allEmployees.find(e => e._id.toString() === request.userReceiving.toString());
-                    return {
-                        requestId: request._id,
-                        reviewId: review._id,
-                        contents: review.contents,
-                        dateWritten: review.dateWritten,
-                        isCompleted: review.completed,
-                        firstName: sendingEmployee.firstName,
-                        lastName: sendingEmployee.lastName,
-                        email: sendingEmployee.email,
-                        position: sendingEmployee.position,
-                    };
-                }));
-
-            });
+    if (!req.tokenData) {
+        res.status(401).send('Unauthorized');
+        return;
     }
 
-    res.status(200).json({
-        reviews
-    });
+    try {
+        const employees = await Employee.find({
+            company: new ObjectId(req.tokenData.company),
+            manager: req.tokenData.id
+        });
+
+        const allRequests = await Request.find({
+            company: req.tokenData.company,
+            status: PendingState.COMPLETED
+        });
+        const allReviews = await Review.find({
+            requestID: { '$in': allRequests.map(request => request._id) }
+        });
+
+        if (!employees) {
+            res.sendStatus(500);
+            return;
+        }
+
+        const thisYear = new Date().getFullYear();
+
+        res.status(200).json({
+            employees: employees.map(e => {
+                const employee = truncateEmployee(e);
+                const reviewsThisYear = allRequests.filter(request => {
+                    if (request.userRequesting.toString() !== employee._id.toString()) {
+                        return false;
+                    }
+                    const review = allReviews.find(review => review.requestID.toString() === request._id.toString());
+                    if (!review || !review.completed) {
+                        return false;
+                    }
+                    return review.dateWritten.getFullYear() === thisYear;
+                }).length;
+                return {
+                    ...employee,
+                    reviewsThisYear
+                };
+            }),
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send();
+    }
 
 });
 
@@ -330,47 +332,75 @@ apiRouter.get('/reviews', authMiddleware, async (req, res) => {
         return;
     }
 
-    const reviews = await Request.find({
-        status: PendingState.COMPLETED,
-        company: new ObjectId(req.tokenData.company),
-        userRequesting: new ObjectId(req.tokenData.id)
-    })
-        .then(async requests => {
-            const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
-            if (!requests || !requests.length) {
-                return [];
-            }
+    let employeeObjId = req.tokenData.id;
+    if (req.query.employee) {
+        employeeObjId = req.query.employee;
+    }
+    try {
 
-            // console.log(requests);/
+        if (!employeeObjId) {
+            res.sendStatus(404);
+            return;
+        }
 
-            const reviews = await Review.find({ requestID: { '$in': requests.map(r => r._id) } });
-
-
-            return reviewsByYear(reviews.map(review => {
-                // console.log(review);
-                const request = requests.find((_req) => _req._id.toString() === review.requestID.toString());
-                // console.log(request);
-                const employee = employees.find(e => e._id.toString() === request.userReceiving.toString());
-                return {
-                    requestId: request._id,
-                    reviewId: review._id,
-                    dateWritten: review.dateWritten,
-                    isCompleted: review.completed,
-                    firstName: employee.firstName,
-                    lastName: employee.lastName,
-                    email: employee.email,
-                    position: employee.position,
-                };
-            }));
-
+        const requestingEmployee = await Employee.findOne({
+            company: new ObjectId(req.tokenData.company),
+            _id: new ObjectId(employeeObjId)
         });
 
+        if (!requestingEmployee) {
+            res.sendStatus(404);
+            return;
+        }
 
-    // console.log(reviews);
+        if (requestingEmployee._id.toString() !== req.tokenData.id && (requestingEmployee.hasManager() && requestingEmployee.manager.toString() !== req.tokenData.id)) {
+            res.sendStatus(403);
+            return;
+        }
 
-    res.status(200).json({
-        reviews
-    });
+        const reviews = await Request.find({
+            status: PendingState.COMPLETED,
+            company: new ObjectId(req.tokenData.company),
+            userRequesting: new ObjectId(employeeObjId)
+        })
+            .then(async requests => {
+                const employees = await Employee.find({ company: new ObjectId(req.tokenData.company) });
+                if (!requests || !requests.length) {
+                    return [];
+                }
+
+                const reviews = await Review.find({ requestID: { '$in': requests.map(r => r._id) } });
+
+                return reviewsByYear(reviews.map(review => {
+                    // console.log(review);
+                    const request = requests.find((_req) => _req._id.toString() === review.requestID.toString());
+                    // console.log(request);
+                    const employee = employees.find(e => e._id.toString() === request.userReceiving.toString());
+                    return {
+                        requestId: request._id,
+                        reviewId: review._id,
+                        dateWritten: review.dateWritten,
+                        isCompleted: review.completed,
+                        firstName: employee.firstName,
+                        lastName: employee.lastName,
+                        email: employee.email,
+                        position: employee.position,
+                    };
+                }));
+
+            });
+
+
+        // console.log(reviews);
+
+        res.status(200).json({
+            employeeName: requestingEmployee._id.toString() === req.tokenData.id ? undefined : requestingEmployee.firstName,
+            reviews
+        });
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
 });
 
 apiRouter.get('/review-contents', authMiddleware, async (req, res) => {
@@ -395,7 +425,23 @@ apiRouter.get('/review-contents', authMiddleware, async (req, res) => {
         return;
     }
 
-    console.log(review);
+    const requestAbout = await Request.findOne({
+        _id: review.requestID
+    });
+
+    if (!requestAbout) {
+        res.sendStatus(404);
+        return;
+    }
+
+    const userAbout = await Employee.findOne({
+        _id: requestAbout.userRequesting
+    });
+
+    if (!userAbout || (userAbout._id.toString() !== req.tokenData.id && (userAbout.hasManager() && userAbout.manager.toString() !== req.tokenData.id))) {
+        res.sendStatus(403);
+        return;
+    }
 
     res.status(200).json({
         contents: review.contents
@@ -450,7 +496,7 @@ apiRouter.get('/user-stats', authMiddleware, async (req, res) => {
             allTime: reviewsSent.length
         }
     }
- 
+
     res.status(200).json({
         stats
     });
